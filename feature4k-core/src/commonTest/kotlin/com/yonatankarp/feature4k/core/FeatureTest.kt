@@ -1,0 +1,267 @@
+package com.yonatankarp.feature4k.core
+
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import com.yonatankarp.feature4k.core.FeatureFixtures.basicFeature
+import com.yonatankarp.feature4k.core.FeatureFixtures.disabledFeature
+import com.yonatankarp.feature4k.core.FeatureFixtures.enabledFeature
+import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithGroup
+import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithPermissions
+import com.yonatankarp.feature4k.core.FeatureFixtures.fullFeature
+import kotlin.test.*
+
+class FeatureTest {
+
+    @Test
+    fun `should create feature with minimal constructor`() {
+        // Given
+        val uid = "feature1"
+
+        // When
+        val feature = Feature(uid = uid)
+
+        // Then
+        assertEquals("feature1", feature.uid)
+        assertFalse(feature.enabled)
+        assertNull(feature.description)
+        assertNull(feature.group)
+        assertTrue(feature.permissions.isEmpty())
+    }
+
+    @Test
+    fun `should create feature with all properties`() {
+        // Given
+        val uid = "feature1"
+        val enabled = true
+        val description = "Test feature"
+        val group = "testGroup"
+        val permissions = setOf("ADMIN", "USER")
+
+        // When
+        val feature = Feature(
+            uid = uid,
+            enabled = enabled,
+            description = description,
+            group = group,
+            permissions = permissions
+        )
+
+        // Then
+        assertEquals(uid, feature.uid)
+        assertTrue(feature.enabled)
+        assertEquals(description, feature.description)
+        assertEquals(group, feature.group)
+        assertEquals(permissions, feature.permissions)
+    }
+
+    @Test
+    fun `should fail when uid is blank`() {
+        // Given
+        val blankUid = ""
+
+        // When & Then
+        assertFailsWith<IllegalArgumentException> {
+            Feature(uid = blankUid)
+        }
+    }
+
+    @Test
+    fun `should fail when uid contains only whitespace`() {
+        // Given
+        val whitespaceUid = "   "
+
+        // When & Then
+        assertFailsWith<IllegalArgumentException> {
+            Feature(uid = whitespaceUid)
+        }
+    }
+
+    @Test
+    fun `should enable feature`() {
+        // Given
+        val feature = disabledFeature()
+
+        // When
+        val enabled = feature.enable()
+
+        // Then
+        assertFalse(feature.enabled)
+        assertTrue(enabled.enabled)
+        assertEquals(feature.uid, enabled.uid)
+    }
+
+    @Test
+    fun `should disable feature`() {
+        // Given
+        val feature = enabledFeature()
+
+        // When
+        val disabled = feature.disable()
+
+        // Then
+        assertTrue(feature.enabled)
+        assertFalse(disabled.enabled)
+        assertEquals(feature.uid, disabled.uid)
+    }
+
+    @Test
+    fun `hasPermissions should return true when permissions exist`() {
+        // Given
+        val feature = featureWithPermissions()
+
+        // When
+        val result = feature.hasPermissions()
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `hasPermissions should return false when no permissions`() {
+        // Given
+        val feature = basicFeature()
+
+        // When
+        val result = feature.hasPermissions()
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `hasGroup should return true when group exists`() {
+        // Given
+        val feature = featureWithGroup()
+
+        // When
+        val result = feature.hasGroup()
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `hasGroup should return false when group is null`() {
+        // Given
+        val feature = basicFeature()
+
+        // When
+        val result = feature.hasGroup()
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `hasGroup should return false when group is blank`() {
+        // Given
+        val uid = "feature1"
+        val blankGroup = "   "
+
+        // When
+        val feature = Feature(uid = uid, group = blankGroup)
+        val result = feature.hasGroup()
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should serialize and deserialize feature`() {
+        // Given
+        val feature = fullFeature()
+
+        // When
+        val json = Json.encodeToString(feature)
+        val deserialized = Json.decodeFromString<Feature>(json)
+
+        // Then
+        assertEquals(feature, deserialized)
+    }
+
+    @Test
+    fun `should serialize feature with minimal properties`() {
+        // Given
+        val feature = basicFeature()
+
+        // When
+        val json = Json.encodeToString(feature)
+
+        // Then
+        assertTrue(json.contains("\"uid\":\"feature1\""))
+        assertTrue(json.contains("\"enabled\":false"))
+    }
+
+    @Test
+    fun `should handle copy with modifications`() {
+        // Given
+        val original = disabledFeature()
+        val newDescription = "Modified"
+
+        // When
+        val modified = original.copy(enabled = true, description = newDescription)
+
+        // Then
+        assertEquals("feature1", modified.uid)
+        assertTrue(modified.enabled)
+        assertEquals(newDescription, modified.description)
+        assertFalse(original.enabled)
+    }
+
+    @Test
+    fun `should respect data class equality`() {
+        // Given
+        val feature1 = enabledFeature()
+        val feature2 = enabledFeature()
+        val feature3 = disabledFeature()
+
+        // When
+        val equals12 = feature1 == feature2
+        val equals13 = feature1 == feature3
+
+        // Then
+        assertTrue(equals12)
+        assertFalse(equals13)
+    }
+
+    @Test
+    fun `should have consistent hashCode`() {
+        // Given
+        val feature1 = enabledFeature()
+        val feature2 = enabledFeature()
+
+        // When
+        val hash1 = feature1.hashCode()
+        val hash2 = feature2.hashCode()
+
+        // Then
+        assertEquals(hash1, hash2)
+    }
+
+    @Test
+    fun `should support empty permissions set`() {
+        // Given
+        val uid = "feature1"
+        val emptyPermissions = emptySet<String>()
+
+        // When
+        val feature = Feature(uid = uid, permissions = emptyPermissions)
+
+        // Then
+        assertTrue(feature.permissions.isEmpty())
+        assertFalse(feature.hasPermissions())
+    }
+
+    @Test
+    fun `should maintain permissions immutability`() {
+        // Given
+        val uid = "feature1"
+        val permissions = setOf("ADMIN", "USER")
+
+        // When
+        val feature = Feature(uid = uid, permissions = permissions)
+
+        // Then
+        assertEquals(permissions, feature.permissions)
+    }
+}

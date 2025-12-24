@@ -8,5 +8,9 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.serialization.json)
         }
+
+        commonTest.dependencies {
+            implementation(project(":feature4k-test"))
+        }
     }
 }
