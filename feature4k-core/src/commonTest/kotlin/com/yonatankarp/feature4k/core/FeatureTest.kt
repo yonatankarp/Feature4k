@@ -1,13 +1,14 @@
 package com.yonatankarp.feature4k.core
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import com.yonatankarp.feature4k.core.FeatureFixtures.basicFeature
 import com.yonatankarp.feature4k.core.FeatureFixtures.disabledFeature
 import com.yonatankarp.feature4k.core.FeatureFixtures.enabledFeature
 import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithGroup
 import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithPermissions
 import com.yonatankarp.feature4k.core.FeatureFixtures.fullFeature
+import com.yonatankarp.feature4k.exception.InvalidFeatureIdentifierException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 class FeatureTest {
@@ -60,9 +61,11 @@ class FeatureTest {
         val blankUid = ""
 
         // When & Then
-        assertFailsWith<IllegalArgumentException> {
+        val exception = assertFailsWith<InvalidFeatureIdentifierException> {
             Feature(uid = blankUid)
         }
+        assertEquals(blankUid, exception.featureUid)
+        assertEquals("UID cannot be blank", exception.reason)
     }
 
     @Test
@@ -71,9 +74,11 @@ class FeatureTest {
         val whitespaceUid = "   "
 
         // When & Then
-        assertFailsWith<IllegalArgumentException> {
+        val exception = assertFailsWith<InvalidFeatureIdentifierException> {
             Feature(uid = whitespaceUid)
         }
+        assertEquals(whitespaceUid, exception.featureUid)
+        assertEquals("UID cannot be blank", exception.reason)
     }
 
     @Test

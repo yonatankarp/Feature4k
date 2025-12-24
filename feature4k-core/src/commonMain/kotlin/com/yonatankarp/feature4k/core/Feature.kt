@@ -1,5 +1,6 @@
 package com.yonatankarp.feature4k.core
 
+import com.yonatankarp.feature4k.exception.InvalidFeatureIdentifierException
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -26,7 +27,9 @@ data class Feature(
     val permissions: Set<String> = emptySet()
 ) {
     init {
-        require(uid.isNotBlank()) { "Feature UID cannot be blank" }
+        if (uid.isBlank()) {
+            throw InvalidFeatureIdentifierException(uid, "UID cannot be blank")
+        }
     }
 
     /**
