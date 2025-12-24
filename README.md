@@ -61,5 +61,41 @@ Feature4k is built with modularity in mind. You only include what you use.
 ./gradlew assemble
 ```
 
+## 🚀 CI/CD
+
+### Continuous Integration
+
+![CI](https://github.com/yonatankarp/Feature4k/actions/workflows/ci.yml/badge.svg)
+
+Every pull request and push to the `main` branch automatically triggers:
+- Build for all supported platforms (JVM, linuxX64)
+- Test execution for all platforms
+- Gradle dependency caching for faster builds
+
+### Publishing Releases
+
+Releases are automatically published to GitHub Packages when you push a version tag:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The release workflow will:
+- Extract version from the tag (e.g., `v1.0.0` → `1.0.0`)
+- Build all platform artifacts
+- Sign artifacts with GPG (if configured)
+- Publish to GitHub Packages
+- Create a GitHub Release with auto-generated release notes
+
+### Required Secrets
+
+To enable release publishing with GPG signing, configure these repository secrets:
+
+- `GPG_PRIVATE_KEY`: GPG private key for artifact signing (optional)
+- `GPG_PASSPHRASE`: GPG key passphrase (optional)
+
+The `GITHUB_TOKEN` is automatically provided by GitHub Actions.
+
 ---
 *Inspired by [FF4J](https://github.com/ff4j/ff4j).*
