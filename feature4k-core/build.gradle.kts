@@ -1,5 +1,6 @@
 plugins {
     id("feature4k.multiplatform")
+    id("feature4k.publish")
     alias(libs.plugins.kotlin.serialization)
 }
 

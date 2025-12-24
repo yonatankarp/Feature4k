@@ -10,7 +10,13 @@
 .settings
 .springBeans
 .sts4-cache
+
+# Claude
 .claude
+openspec
+AGENTS.md
+CLAUDE.md
+docs
 
 ### IntelliJ IDEA ###
 .idea
