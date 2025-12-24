@@ -10,8 +10,12 @@ plugins {
 
 plugins.withId("org.jetbrains.kotlin.multiplatform") {
     configure<KotlinMultiplatformExtension> {
-        jvm().withSourcesJar()
-        linuxX64().withSourcesJar()
+        jvm {
+            withSourcesJar()
+        }
+        linuxX64 {
+            withSourcesJar()
+        }
     }
 }
 
