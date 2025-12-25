@@ -5,39 +5,47 @@ package com.yonatankarp.feature4k.utils
  */
 actual interface Logger {
     /**
- * Logs a debug-level message.
- *
- * @param message The message to log.
- */
-actual fun debug(message: String)
+     * Logs a debug-level message.
+     *
+     * @param message The message to log.
+     */
+    actual fun debug(message: String)
+
     /**
- * Logs an informational message.
- *
- * @param message The message to log.
- */
-actual fun info(message: String)
+     * Logs an informational message.
+     *
+     * @param message The message to log.
+     */
+    actual fun info(message: String)
+
     /**
- * Logs a warning message.
- *
- * @param message The warning message to log.
- */
-actual fun warn(message: String)
+     * Logs a warning message.
+     *
+     * @param message The warning message to log.
+     */
+    actual fun warn(message: String)
+
     /**
- * Logs an error entry that includes the logger's name and optional throwable details.
- *
- * Writes an error-level log line prefixed with the logger name; if `throwable` is non-null,
- * the throwable's stack trace is included in the log output.
- *
- * @param message The error message to log.
- * @param throwable An optional throwable whose stack trace will be logged; pass `null` to omit.
- */
-actual fun error(message: String, throwable: Throwable?)
+     * Logs an error entry that includes the logger's name and optional throwable details.
+     *
+     * Writes an error-level log line prefixed with the logger name; if `throwable` is non-null,
+     * the throwable's stack trace is included in the log output.
+     *
+     * @param message The error message to log.
+     * @param throwable An optional throwable whose stack trace will be logged; pass `null` to omit.
+     */
+    actual fun error(
+        message: String,
+        throwable: Throwable?,
+    )
 }
 
 /**
  * Console-based logger implementation for Native platforms.
  */
-private class ConsoleLogger(private val name: String) : Logger {
+private class ConsoleLogger(
+    private val name: String,
+) : Logger {
     /**
      * Writes a debug-level log line to standard output, prefixed with the log level and logger name.
      *
@@ -50,7 +58,7 @@ private class ConsoleLogger(private val name: String) : Logger {
     /**
      * Logs an informational message to the console using a standardized prefix that includes the logger name.
      *
-     * @param message The message to log. 
+     * @param message The message to log.
      */
     override fun info(message: String) {
         println("[INFO] [$name] $message")
@@ -73,7 +81,10 @@ private class ConsoleLogger(private val name: String) : Logger {
      * @param message The error message to log.
      * @param throwable An optional throwable whose stack trace will be logged on a separate error line if not null.
      */
-    override fun error(message: String, throwable: Throwable?) {
+    override fun error(
+        message: String,
+        throwable: Throwable?,
+    ) {
         println("[ERROR] [$name] $message")
         throwable?.let {
             println("[ERROR] [$name] ${it.stackTraceToString()}")

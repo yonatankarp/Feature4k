@@ -34,7 +34,10 @@ expect interface Logger {
      * @param message The message to log
      * @param throwable Optional throwable/exception to log
      */
-    fun error(message: String, throwable: Throwable? = null)
+    fun error(
+        message: String,
+        throwable: Throwable? = null,
+    )
 }
 
 /**

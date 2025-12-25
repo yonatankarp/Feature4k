@@ -28,5 +28,8 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
+      - name: Check code formatting
+        run: ./gradlew spotlessCheck --no-daemon
+
       - name: Build and test ${{ matrix.target }}
         run: ./gradlew ${{ matrix.target }}Test --no-daemon

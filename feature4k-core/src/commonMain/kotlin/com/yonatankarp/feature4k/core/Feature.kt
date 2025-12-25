@@ -24,7 +24,7 @@ data class Feature(
     @EncodeDefault val enabled: Boolean = false,
     val description: String? = null,
     val group: String? = null,
-    val permissions: Set<String> = emptySet()
+    val permissions: Set<String> = emptySet(),
 ) {
     init {
         if (uid.isBlank()) {

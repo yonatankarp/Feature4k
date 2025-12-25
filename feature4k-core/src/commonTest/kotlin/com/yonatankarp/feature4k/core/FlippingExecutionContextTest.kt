@@ -96,7 +96,7 @@ class FlippingExecutionContextTest {
                 .withClient("web-app")
                 .withServer("server-02")
                 .withParam("role", "admin")
-                .withParam("team", "engineering")
+                .withParam("team", "engineering"),
         ) {
             assertEquals("alice", user)
             assertEquals("web-app", client)
@@ -108,12 +108,13 @@ class FlippingExecutionContextTest {
 
     @Test
     fun `context can be serialized and deserialized`() {
-        val original = FlippingExecutionContext(
-            user = "bob",
-            client = "api-client",
-            server = "server-03",
-            customParams = mapOf("env" to "staging", "version" to "1.2.3")
-        )
+        val original =
+            FlippingExecutionContext(
+                user = "bob",
+                client = "api-client",
+                server = "server-03",
+                customParams = mapOf("env" to "staging", "version" to "1.2.3"),
+            )
 
         val json = Json.encodeToString(FlippingExecutionContext.serializer(), original)
         val deserialized = Json.decodeFromString(FlippingExecutionContext.serializer(), json)
@@ -126,7 +127,7 @@ class FlippingExecutionContextTest {
         with(
             FlippingExecutionContext()
                 .withParam("key1", "value1")
-                .withParam("key2", "value2")
+                .withParam("key2", "value2"),
         ) {
             assertEquals("value1", getParam("key1"))
             assertEquals("value2", getParam("key2"))
@@ -138,7 +139,7 @@ class FlippingExecutionContextTest {
         with(
             FlippingExecutionContext()
                 .withParam("key1", "value1")
-                .withParams(mapOf("key2" to "value2", "key3" to "value3"))
+                .withParams(mapOf("key2" to "value2", "key3" to "value3")),
         ) {
             assertEquals("value1", getParam("key1"))
             assertEquals("value2", getParam("key2"))

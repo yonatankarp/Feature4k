@@ -9,5 +9,5 @@ import com.yonatankarp.feature4k.exception.Feature4kException.GroupException
  */
 class GroupNotFoundException(
     val groupName: String,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : GroupException("Group not found: $groupName", cause)

@@ -25,7 +25,7 @@ class UidTest {
         val uuidPattern = Regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
         assertTrue(
             uuidPattern.matches(uid.lowercase()),
-            "Generated UID should match UUID format, got: $uid"
+            "Generated UID should match UUID format, got: $uid",
         )
     }
 

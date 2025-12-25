@@ -1,7 +1,17 @@
 package com.yonatankarp.feature4k.utils
 
-import kotlinx.cinterop.*
-import platform.posix.*
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.refTo
+import kotlinx.cinterop.set
+import platform.posix.fclose
+import platform.posix.fopen
+import platform.posix.fread
+import platform.posix.rand
+import platform.posix.srand
+import platform.posix.time
 
 /**
  * Linux/Native implementation of UUID generation.
@@ -25,26 +35,16 @@ actual object Uid {
             val ptr = uuid.refTo(0).getPointer(this)
 
             // Try to read from /dev/urandom for high-quality randomness
-            val file = fopen("/dev/urandom", "rb")
-            if (file != null) {
-                val bytesToRead = uuid.size.toULong()
-                val bytesRead = fread(ptr, 1.convert(), bytesToRead, file)
-                fclose(file)
+            fopen("/dev/urandom", "rb")
+                ?.let { file ->
+                    val bytesToRead = uuid.size.toULong()
+                    val bytesRead = fread(ptr, 1.convert(), bytesToRead, file)
+                    fclose(file)
 
-                if (bytesRead != bytesToRead) {
-                    // Fallback: seed rand() and generate bytes
-                    srand(time(null)?.toUInt() ?: 0u)
-                    for (i in 0 until uuid.size) {
-                        ptr[i] = (rand() and 0xFF).toByte()
+                    if (bytesRead != bytesToRead) {
+                        inMemoryRandomSeed(uuid)
                     }
-                }
-            } else {
-                // Fallback: seed rand() and generate bytes
-                srand(time(null)?.toUInt() ?: 0u)
-                for (i in 0 until uuid.size) {
-                    ptr[i] = (rand() and 0xFF).toByte()
-                }
-            }
+                } ?: inMemoryRandomSeed(uuid)
         }
 
         // Set version (4) and variant bits according to RFC 4122
@@ -58,6 +58,14 @@ actual object Uid {
                 val byte = uuid[i].toInt() and 0xFF
                 append(byte.toString(16).padStart(2, '0'))
             }
+        }
+    }
+
+    private fun MemScope.inMemoryRandomSeed(uuid: ByteArray) {
+        val ptr = uuid.refTo(0).getPointer(this)
+        srand(time(null).toUInt())
+        for (i in 0 until uuid.size) {
+            ptr[i] = (rand() and 0xFF).toByte()
         }
     }
 }
