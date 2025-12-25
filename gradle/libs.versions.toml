@@ -6,6 +6,7 @@ kmp-datetime = "0.6.0"
 ktor = "2.3.12"
 android-library = "8.2.2"
 jvm-toolchain = "21"
+slf4j = "2.0.9"
 
 [libraries]
 # KMP Common
@@ -23,6 +24,9 @@ android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref
 
 # Testing
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+
+# JVM Platform-Specific
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
