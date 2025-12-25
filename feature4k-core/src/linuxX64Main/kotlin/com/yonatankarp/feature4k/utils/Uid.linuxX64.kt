@@ -16,8 +16,27 @@ actual object Uid {
         // Fill with random bytes
         memScoped {
             val ptr = uuid.refTo(0).getPointer(this)
-            for (i in 0 until 16) {
-                ptr[i] = (rand() and 0xFF).toByte()
+
+            // Try to read from /dev/urandom for high-quality randomness
+            val file = fopen("/dev/urandom", "rb")
+            if (file != null) {
+                val bytesToRead = uuid.size.toULong()
+                val bytesRead = fread(ptr, 1.convert(), bytesToRead, file)
+                fclose(file)
+
+                if (bytesRead != bytesToRead) {
+                    // Fallback: seed rand() and generate bytes
+                    srand(time(null)?.toUInt() ?: 0u)
+                    for (i in 0 until uuid.size) {
+                        ptr[i] = (rand() and 0xFF).toByte()
+                    }
+                }
+            } else {
+                // Fallback: seed rand() and generate bytes
+                srand(time(null)?.toUInt() ?: 0u)
+                for (i in 0 until uuid.size) {
+                    ptr[i] = (rand() and 0xFF).toByte()
+                }
             }
         }
 
