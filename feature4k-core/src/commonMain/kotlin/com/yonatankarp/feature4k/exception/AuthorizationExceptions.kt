@@ -4,6 +4,8 @@ import com.yonatankarp.feature4k.exception.Feature4kException.AuthorizationExcep
 
 /**
  * Thrown when an authorization manager is required but not provided.
+ *
+ * @author Yonatan Karp-Rudin
  */
 class AuthorizationsNotProvidedException(
     message: String = "Authorization manager is required but not provided",
@@ -15,6 +17,7 @@ class AuthorizationsNotProvidedException(
  *
  * @property requiredPermissions The permissions required for the operation
  * @property userPermissions The permissions the user actually has
+ * @author Yonatan Karp-Rudin
  */
 class InsufficientPermissionsException(
     val requiredPermissions: Set<String>,

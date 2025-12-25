@@ -6,6 +6,7 @@ import com.yonatankarp.feature4k.exception.Feature4kException.FeatureException
  * Thrown when a requested feature cannot be found in the store.
  *
  * @property featureUid The unique identifier of the feature that was not found
+ * @author Yonatan Karp-Rudin
  */
 class FeatureNotFoundException(
     val featureUid: String,
@@ -16,6 +17,7 @@ class FeatureNotFoundException(
  * Thrown when attempting to create a feature that already exists.
  *
  * @property featureUid The unique identifier of the feature that already exists
+ * @author Yonatan Karp-Rudin
  */
 class FeatureAlreadyExistException(
     val featureUid: String,
@@ -27,6 +29,7 @@ class FeatureAlreadyExistException(
  *
  * @property featureUid The invalid feature identifier
  * @property reason The reason why the identifier is invalid
+ * @author Yonatan Karp-Rudin
  */
 class InvalidFeatureIdentifierException(
     val featureUid: String,
@@ -39,6 +42,7 @@ class InvalidFeatureIdentifierException(
  *
  * @property featureUid The unique identifier of the feature
  * @property requiredPermissions The permissions required to access the feature
+ * @author Yonatan Karp-Rudin
  */
 class FeatureAccessException(
     val featureUid: String,

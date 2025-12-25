@@ -16,6 +16,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+/**
+ * Tests for Feature class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class FeatureTest {
     @Test
     fun `should create feature with minimal constructor`() {

@@ -6,6 +6,7 @@ import com.yonatankarp.feature4k.exception.Feature4kException.GroupException
  * Thrown when a requested feature group cannot be found.
  *
  * @property groupName The name of the group that was not found
+ * @author Yonatan Karp-Rudin
  */
 class GroupNotFoundException(
     val groupName: String,

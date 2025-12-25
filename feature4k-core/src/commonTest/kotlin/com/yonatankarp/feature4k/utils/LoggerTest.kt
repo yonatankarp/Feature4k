@@ -3,6 +3,11 @@ package com.yonatankarp.feature4k.utils
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
+/**
+ * Tests for Logger interface.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class LoggerTest {
     @Test
     fun `logger can be created with name`() {

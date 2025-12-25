@@ -4,6 +4,8 @@ import java.util.UUID
 
 /**
  * JVM implementation of UUID generation using java.util.UUID.
+ *
+ * @author Yonatan Karp-Rudin
  */
 actual object Uid {
     /**

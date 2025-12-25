@@ -5,6 +5,8 @@ package com.yonatankarp.feature4k.utils
  *
  * Provides a multiplatform abstraction for generating unique identifiers.
  * Each platform implements this using its native UUID capabilities.
+ *
+ * @author Yonatan Karp-Rudin
  */
 expect object Uid {
     /**

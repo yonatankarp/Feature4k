@@ -3,6 +3,11 @@ package com.yonatankarp.feature4k.property
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 
+/**
+ * Factory object for creating Property instances of various types.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 object PropertyFactory {
     /**
      * Create a PropertyString configured with the given name and value.
@@ -58,6 +63,7 @@ object PropertyFactory {
      * @param name The property's identifier.
      * @param value The property's boolean value.
      * @param description Optional human-readable description for the property.
+     * @param fixedValues Allowed set of values for the property.
      * @param readOnly Whether the property is read-only.
      * @return A PropertyBoolean initialized with the supplied arguments.
      */
@@ -249,7 +255,7 @@ object PropertyFactory {
      * @param name The property's identifier.
      * @param value The initial Instant value.
      * @param description Optional human-readable description.
-     * @param fixedValues A set of permitted LocalDateTime values for the property.
+     * @param fixedValues A set of permitted Instant values for the property.
      * @param readOnly `true` if the property cannot be modified, `false` otherwise.
      * @return A PropertyInstant populated with the provided name, value, description, fixedValues, and readOnly flag.
      */

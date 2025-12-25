@@ -7,6 +7,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyInstant class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyInstantTest {
     @Test
     fun `stores name and value`() {

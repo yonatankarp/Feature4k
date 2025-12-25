@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyByte class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyByteTest {
     @Test
     fun `stores name and value`() {

@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
  * for validation.
  *
  * @param T The type of the property value
+ * @author Yonatan Karp-Rudin
  */
 @Serializable
 sealed class Property<T> {

@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyDouble class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyDoubleTest {
     @Test
     fun `stores name and value`() {

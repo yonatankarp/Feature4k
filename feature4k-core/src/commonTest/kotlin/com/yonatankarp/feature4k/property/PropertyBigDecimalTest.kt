@@ -7,6 +7,11 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyBigDecimal class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyBigDecimalTest {
     @Test
     fun `stores name and value`() {

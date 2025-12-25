@@ -3,6 +3,8 @@ package com.yonatankarp.feature4k.core
 /**
  * Test fixtures for Feature objects.
  * These can be reused across different test modules.
+ *
+ * @author Yonatan Karp-Rudin
  */
 object FeatureFixtures {
     fun basicFeature() = Feature(uid = "feature1")

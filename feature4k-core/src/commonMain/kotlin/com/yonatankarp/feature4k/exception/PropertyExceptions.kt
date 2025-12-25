@@ -6,6 +6,7 @@ import com.yonatankarp.feature4k.exception.Feature4kException.PropertyException
  * Thrown when a requested property cannot be found in the store.
  *
  * @property propertyName The name of the property that was not found
+ * @author Yonatan Karp-Rudin
  */
 class PropertyNotFoundException(
     val propertyName: String,
@@ -16,6 +17,7 @@ class PropertyNotFoundException(
  * Thrown when attempting to create a property that already exists.
  *
  * @property propertyName The name of the property that already exists
+ * @author Yonatan Karp-Rudin
  */
 class PropertyAlreadyExistException(
     val propertyName: String,
@@ -28,6 +30,7 @@ class PropertyAlreadyExistException(
  * @property propertyName The name of the property
  * @property expectedType The expected type of the property
  * @property actualType The actual type provided
+ * @author Yonatan Karp-Rudin
  */
 class InvalidPropertyTypeException(
     val propertyName: String,
@@ -45,6 +48,7 @@ class InvalidPropertyTypeException(
  * @property propertyName The name of the property
  * @property value The invalid value
  * @property allowedValues The set of allowed values
+ * @author Yonatan Karp-Rudin
  */
 class InvalidPropertyValueException(
     val propertyName: String,

@@ -5,6 +5,8 @@ package com.yonatankarp.feature4k.store
  *
  * Store events enable real-time observation of changes through Flow,
  * supporting use cases like cache invalidation, audit logging, and UI updates.
+ *
+ * @author Yonatan Karp-Rudin
  */
 sealed class StoreEvent {
     abstract val featureId: String

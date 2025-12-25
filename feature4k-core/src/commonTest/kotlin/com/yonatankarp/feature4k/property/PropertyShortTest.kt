@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyShort class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyShortTest {
     @Test
     fun `stores name and value`() {

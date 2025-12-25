@@ -5,6 +5,8 @@ package com.yonatankarp.feature4k.exception
  *
  * This hierarchy allows for type-safe exception handling and provides
  * domain-specific error information throughout the feature flag system.
+ *
+ * @author Yonatan Karp-Rudin
  */
 sealed class Feature4kException(
     message: String,

@@ -16,6 +16,7 @@ import kotlinx.serialization.Serializable
  * @property description Human-readable description of the feature
  * @property group Optional group name for organizing related features
  * @property permissions Set of permissions required to use this feature
+ * @author Yonatan Karp-Rudin
  */
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable

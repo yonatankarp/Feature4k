@@ -10,6 +10,8 @@ import kotlinx.serialization.Serializable
  * @property value Current boolean value
  * @property description Optional description
  * @property fixedValues Set of allowed boolean values (empty if no restrictions)
+ * @property readOnly Whether the property is read-only
+ * @author Yonatan Karp-Rudin
  */
 @Serializable
 @SerialName("boolean")

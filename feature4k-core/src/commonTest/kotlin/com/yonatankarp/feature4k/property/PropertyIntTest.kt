@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyInt class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyIntTest {
     @Test
     fun `stores name and value`() {

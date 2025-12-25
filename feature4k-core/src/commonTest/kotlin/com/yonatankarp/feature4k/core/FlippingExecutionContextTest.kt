@@ -7,6 +7,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+/**
+ * Tests for FlippingExecutionContext class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class FlippingExecutionContextTest {
     @Test
     fun `empty context has all null fields`() {
