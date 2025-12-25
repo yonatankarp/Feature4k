@@ -800,7 +800,7 @@ abstract class FeatureStoreContract {
         assertEquals(2, events.size)
         assertTrue(
             events.all { it is StoreEvent.Disabled },
-            "Not all events is disabled",
+            "Not all events are Disabled",
         )
         assertTrue(
             events.any { it.featureId == "feature1" },
@@ -884,7 +884,7 @@ abstract class FeatureStoreContract {
         assertEquals(3, events.size)
         assertTrue(
             events.all { it is StoreEvent.Deleted },
-            "Not all events is deleted",
+            "Not all events are Deleted",
         )
         assertTrue(
             events.any { it.featureId == "feature1" },
@@ -921,9 +921,9 @@ abstract class FeatureStoreContract {
 
         // Then - verify Created events for new features
         assertEquals(2, events.size)
-        assertTrue(events.all { it is StoreEvent.Created }, "Not all events is created")
-        assertTrue(events.any { it.featureId == "new1" }, "Feature with id new1")
-        assertTrue(events.any { it.featureId == "new2" }, "Feature with id new2")
+        assertTrue(events.all { it is StoreEvent.Created }, "Not all events are Created")
+        assertTrue(events.any { it.featureId == "new1" }, "Feature with id new1 is missing")
+        assertTrue(events.any { it.featureId == "new2" }, "Feature with id new2 is missing")
     }
 
     @Test
