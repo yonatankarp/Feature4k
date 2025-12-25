@@ -9,26 +9,43 @@ object FeatureFixtures {
 
     fun enabledFeature() = Feature(uid = "feature1", enabled = true)
 
+    /**
+     * Creates a disabled Feature test fixture with a fixed UID.
+     *
+     * @return a `Feature` with uid "feature1" and enabled = false.
+     */
     fun disabledFeature() = Feature(uid = "feature1", enabled = false)
 
-    fun featureWithPermissions() =
-        Feature(
-            uid = "feature1",
-            permissions = setOf("ADMIN"),
-        )
+    /**
+     * Creates a Feature with uid "feature1" and permissions containing "ADMIN".
+     *
+     * @return A Feature whose uid is "feature1" and whose permissions set contains "ADMIN".
+     */
+    fun featureWithPermissions() = Feature(
+        uid = "feature1",
+        permissions = setOf("ADMIN"),
+    )
 
-    fun featureWithGroup() =
-        Feature(
-            uid = "feature1",
-            group = "testGroup",
-        )
+    /**
+     * Creates a Feature configured with uid "feature1" and group "testGroup".
+     *
+     * @return A Feature instance with `uid = "feature1"` and `group = "testGroup"`.
+     */
+    fun featureWithGroup() = Feature(
+        uid = "feature1",
+        group = "testGroup",
+    )
 
-    fun fullFeature() =
-        Feature(
-            uid = "feature1",
-            enabled = true,
-            description = "Test feature",
-            group = "testGroup",
-            permissions = setOf("ADMIN", "USER"),
-        )
+    /**
+     * Creates a Feature configured for tests with uid "feature1".
+     *
+     * @return A Feature with uid "feature1", enabled = true, description = "Test feature", group = "testGroup", and permissions set containing "ADMIN" and "USER".
+     */
+    fun fullFeature() = Feature(
+        uid = "feature1",
+        enabled = true,
+        description = "Test feature",
+        group = "testGroup",
+        permissions = setOf("ADMIN", "USER"),
+    )
 }

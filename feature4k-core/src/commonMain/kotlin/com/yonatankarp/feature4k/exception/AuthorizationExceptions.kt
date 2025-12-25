@@ -21,7 +21,7 @@ class InsufficientPermissionsException(
     val userPermissions: Set<String>,
     cause: Throwable? = null,
 ) : AuthorizationException(
-        "Insufficient permissions. Required: ${requiredPermissions.joinToString()}, " +
-            "User has: ${userPermissions.joinToString()}",
-        cause,
-    )
+    "Insufficient permissions. Required: ${requiredPermissions.joinToString()}, " +
+        "User has: ${userPermissions.joinToString()}",
+    cause,
+)
