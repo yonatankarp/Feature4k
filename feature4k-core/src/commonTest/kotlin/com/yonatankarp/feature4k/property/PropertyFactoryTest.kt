@@ -8,6 +8,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyFactory class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyFactoryTest {
     @Test
     fun `creates string property`() {

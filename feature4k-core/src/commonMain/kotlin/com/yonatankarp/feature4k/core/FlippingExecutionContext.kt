@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
  * @property client Optional client identifier (e.g., application name, client ID)
  * @property server Optional server identifier (e.g., hostname, server instance)
  * @property customParams Additional custom parameters for strategy evaluation
+ * @author Yonatan Karp-Rudin
  */
 @Serializable
 data class FlippingExecutionContext(

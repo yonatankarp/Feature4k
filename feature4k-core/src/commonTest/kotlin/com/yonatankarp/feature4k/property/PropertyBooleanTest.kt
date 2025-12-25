@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyBoolean class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyBooleanTest {
     @Test
     fun `stores name and value`() {

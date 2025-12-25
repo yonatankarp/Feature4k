@@ -16,6 +16,8 @@ import platform.posix.time
 /**
  * Linux/Native implementation of UUID generation.
  * Uses a combination of timestamp and random bytes for UUID generation.
+ *
+ * @author Yonatan Karp-Rudin
  */
 @OptIn(ExperimentalForeignApi::class)
 actual object Uid {

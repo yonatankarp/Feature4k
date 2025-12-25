@@ -4,6 +4,8 @@ import org.slf4j.LoggerFactory
 
 /**
  * JVM implementation of Logger using SLF4J.
+ *
+ * @author Yonatan Karp-Rudin
  */
 actual interface Logger {
     /**

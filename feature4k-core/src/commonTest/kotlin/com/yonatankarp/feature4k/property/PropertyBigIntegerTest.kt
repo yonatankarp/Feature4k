@@ -7,6 +7,11 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyBigInteger class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyBigIntegerTest {
     @Test
     fun `stores name and value`() {

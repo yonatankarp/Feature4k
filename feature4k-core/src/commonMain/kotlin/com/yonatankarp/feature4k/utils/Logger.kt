@@ -5,6 +5,8 @@ package com.yonatankarp.feature4k.utils
  *
  * Provides a multiplatform abstraction for logging. Each platform implements
  * this using appropriate logging mechanisms (e.g., SLF4J on JVM, console on other platforms).
+ *
+ * @author Yonatan Karp-Rudin
  */
 expect interface Logger {
     /**

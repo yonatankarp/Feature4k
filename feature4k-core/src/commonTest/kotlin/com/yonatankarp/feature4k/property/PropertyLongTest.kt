@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyLong class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyLongTest {
     @Test
     fun `stores name and value`() {

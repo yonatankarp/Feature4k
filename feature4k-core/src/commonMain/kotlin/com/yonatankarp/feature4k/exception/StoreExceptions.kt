@@ -6,6 +6,7 @@ import com.yonatankarp.feature4k.exception.Feature4kException.StoreException
  * Thrown when a store operation fails due to an underlying storage issue.
  *
  * @property operation The operation that failed (e.g., "read", "write", "delete")
+ * @author Yonatan Karp-Rudin
  */
 class StoreOperationException(
     val operation: String,
@@ -15,6 +16,8 @@ class StoreOperationException(
 
 /**
  * Thrown when a store connection cannot be established or is lost.
+ *
+ * @author Yonatan Karp-Rudin
  */
 class StoreConnectionException(
     message: String = "Failed to connect to store",

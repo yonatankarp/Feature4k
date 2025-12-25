@@ -8,6 +8,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+/**
+ * Tests for PropertyString class.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class PropertyStringTest {
     @Test
     fun `stores name and value`() {

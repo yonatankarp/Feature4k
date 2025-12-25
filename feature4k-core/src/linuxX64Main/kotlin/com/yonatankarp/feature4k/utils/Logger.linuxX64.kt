@@ -2,6 +2,8 @@ package com.yonatankarp.feature4k.utils
 
 /**
  * Linux/Native implementation of Logger using console output.
+ *
+ * @author Yonatan Karp-Rudin
  */
 actual interface Logger {
     /**

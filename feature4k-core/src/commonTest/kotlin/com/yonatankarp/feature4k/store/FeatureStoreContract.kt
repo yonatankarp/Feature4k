@@ -21,6 +21,8 @@ import kotlin.test.assertTrue
  *
  * All FeatureStore implementations must extend this class and implement [createStore]
  * to ensure consistent behavior across different store implementations.
+ *
+ * @author Yonatan Karp-Rudin
  */
 abstract class FeatureStoreContract {
     /**

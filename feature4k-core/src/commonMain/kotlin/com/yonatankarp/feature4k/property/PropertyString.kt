@@ -10,6 +10,8 @@ import kotlinx.serialization.Serializable
  * @property value Current string value
  * @property description Optional description
  * @property fixedValues Set of allowed string values (empty if no restrictions)
+ * @property readOnly Whether the property is read-only
+ * @author Yonatan Karp-Rudin
  */
 @Serializable
 @SerialName("string")

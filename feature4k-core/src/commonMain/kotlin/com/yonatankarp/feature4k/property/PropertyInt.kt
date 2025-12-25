@@ -10,6 +10,8 @@ import kotlinx.serialization.Serializable
  * @property value Current integer value
  * @property description Optional description
  * @property fixedValues Set of allowed integer values (empty if no restrictions)
+ * @property readOnly Whether the property is read-only
+ * @author Yonatan Karp-Rudin
  */
 @Serializable
 @SerialName("int")

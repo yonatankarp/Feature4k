@@ -4,6 +4,11 @@ import kotlin.test.Test
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
+/**
+ * Tests for Uid object.
+ *
+ * @author Yonatan Karp-Rudin
+ */
 class UidTest {
     @Test
     fun `generate returns non-empty string`() {
