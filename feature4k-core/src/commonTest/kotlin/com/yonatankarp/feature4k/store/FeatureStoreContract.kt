@@ -4,6 +4,7 @@ import com.yonatankarp.feature4k.core.Feature
 import com.yonatankarp.feature4k.exception.FeatureAlreadyExistException
 import com.yonatankarp.feature4k.exception.FeatureNotFoundException
 import com.yonatankarp.feature4k.exception.GroupNotFoundException
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -83,7 +84,8 @@ abstract class FeatureStoreContract {
     fun `should return feature after creation`() = runTest {
         // Given
         val store = createStore()
-        val feature = Feature(uid = "test", enabled = true, description = "Test feature")
+        val feature =
+            Feature(uid = "test", enabled = true, description = "Test feature")
 
         // When
         store += feature
@@ -114,11 +116,13 @@ abstract class FeatureStoreContract {
     fun `should update feature using set operator when exists`() = runTest {
         // Given
         val store = createStore()
-        val original = Feature(uid = "test", enabled = false, description = "Original")
+        val original =
+            Feature(uid = "test", enabled = false, description = "Original")
         store += original
 
         // When
-        val updated = Feature(uid = "test", enabled = true, description = "Updated")
+        val updated =
+            Feature(uid = "test", enabled = true, description = "Updated")
         store["test"] = updated
 
         // Then
@@ -351,6 +355,18 @@ abstract class FeatureStoreContract {
     }
 
     @Test
+    fun `should fail to remove group if feature is not in group`() = runTest {
+        // Given
+        val store = createStore()
+        store += Feature(uid = "test", enabled = true, group = "mygroup")
+
+        // When / Then
+        assertFailsWith<GroupNotFoundException> {
+            store.removeFromGroup("test", "anotherGroup")
+        }
+    }
+
+    @Test
     fun `should throw FeatureNotFoundException when removing non-existent feature from group`() = runTest {
         // Given
         val store = createStore()
@@ -477,7 +493,11 @@ abstract class FeatureStoreContract {
     fun `should remove role from feature`() = runTest {
         // Given
         val store = createStore()
-        store += Feature(uid = "test", enabled = true, permissions = setOf("ROLE_ADMIN", "ROLE_USER"))
+        store += Feature(
+            uid = "test",
+            enabled = true,
+            permissions = setOf("ROLE_ADMIN", "ROLE_USER"),
+        )
 
         // When
         store.removeRoleFromFeature("test", "ROLE_ADMIN")
@@ -525,10 +545,18 @@ abstract class FeatureStoreContract {
     fun `should overwrite existing features when importing`() = runTest {
         // Given
         val store = createStore()
-        store += Feature(uid = "feature1", enabled = false, description = "Original")
+        store += Feature(
+            uid = "feature1",
+            enabled = false,
+            description = "Original",
+        )
         val features =
             listOf(
-                Feature(uid = "feature1", enabled = true, description = "Updated"),
+                Feature(
+                    uid = "feature1",
+                    enabled = true,
+                    description = "Updated",
+                ),
                 Feature(uid = "feature2", enabled = true),
             )
 
@@ -567,14 +595,17 @@ abstract class FeatureStoreContract {
     fun `should emit Enabled event when feature is enabled`() = runTest {
         // Given
         val store = createStore()
-        store += Feature(uid = "test", enabled = false)
         val events = mutableListOf<StoreEvent>()
 
         // When
         val job =
             launch {
-                store.observeChanges().take(1).toList(events)
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
             }
+        store += Feature(uid = "test", enabled = false)
         store.enable("test")
         job.join()
 
@@ -588,14 +619,17 @@ abstract class FeatureStoreContract {
     fun `should emit Disabled event when feature is disabled`() = runTest {
         // Given
         val store = createStore()
-        store += Feature(uid = "test", enabled = true)
         val events = mutableListOf<StoreEvent>()
 
         // When
         val job =
             launch {
-                store.observeChanges().take(1).toList(events)
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
             }
+        store += Feature(uid = "test", enabled = true)
         store.disable("test")
         job.join()
 
@@ -609,14 +643,17 @@ abstract class FeatureStoreContract {
     fun `should emit Updated event when feature is updated`() = runTest {
         // Given
         val store = createStore()
-        store += Feature(uid = "test", enabled = true)
         val events = mutableListOf<StoreEvent>()
 
         // When
         val job =
             launch {
-                store.observeChanges().take(1).toList(events)
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
             }
+        store += Feature(uid = "test", enabled = true)
         store["test"] = Feature(uid = "test", enabled = false)
         job.join()
 
@@ -630,14 +667,17 @@ abstract class FeatureStoreContract {
     fun `should emit Deleted event when feature is deleted`() = runTest {
         // Given
         val store = createStore()
-        store += Feature(uid = "test", enabled = true)
         val events = mutableListOf<StoreEvent>()
 
         // When
         val job =
             launch {
-                store.observeChanges().take(1).toList(events)
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
             }
+        store += Feature(uid = "test", enabled = true)
         store -= "test"
         job.join()
 
@@ -645,6 +685,281 @@ abstract class FeatureStoreContract {
         assertEquals(1, events.size)
         assertTrue(events[0] is StoreEvent.Deleted)
         assertEquals("test", events[0].featureId)
+    }
+
+    @Test
+    fun `should emit RoleUpdated event when feature role is updated`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        // When
+        val job =
+            launch {
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
+            }
+        store += Feature(uid = "test", enabled = true)
+        store.grantRoleOnFeature(featureId = "test", roleName = "testRole")
+        job.join()
+
+        // Then
+        assertEquals(1, events.size)
+        val event = events[0] as? StoreEvent.RoleUpdated
+        assertNotNull(event)
+        assertEquals("test", event.featureId)
+    }
+
+    @Test
+    fun `should emit RoleDeleted event when feature role is removed`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        // When
+        val job =
+            launch {
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
+            }
+
+        store += Feature(
+            uid = "test",
+            enabled = true,
+            permissions = setOf("testRole"),
+        )
+        store.removeRoleFromFeature(
+            featureId = "test",
+            roleName = "testRole",
+        )
+        job.join()
+
+        // Then
+        assertEquals(1, events.size)
+        val event = events[0] as? StoreEvent.RoleDeleted
+        assertNotNull(event)
+        assertEquals("test", event.featureId)
+    }
+
+    @Test
+    fun `should emit Enabled events when group is enabled`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        // When
+        val job =
+            launch {
+                store.observeChanges()
+                    .drop(3) // Skip 3 Created events from setup
+                    .take(2)
+                    .toList(events)
+            }
+        store += Feature(uid = "feature1", enabled = false, group = "mygroup")
+        store += Feature(uid = "feature2", enabled = false, group = "mygroup")
+        store += Feature(
+            uid = "feature3",
+            enabled = false,
+            group = "othergroup",
+        )
+        store.enableGroup("mygroup")
+        job.join()
+
+        // Then
+        assertEquals(2, events.size)
+        assertTrue(events.all { it is StoreEvent.Enabled })
+        assertTrue(events.any { it.featureId == "feature1" })
+        assertTrue(events.any { it.featureId == "feature2" })
+    }
+
+    @Test
+    fun `should emit Disabled events when group is disabled`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        // When
+        val job =
+            launch {
+                store.observeChanges()
+                    .drop(3) // Skip 3 Created events from setup
+                    .take(2)
+                    .toList(events)
+            }
+        store += Feature(uid = "feature1", enabled = true, group = "mygroup")
+        store += Feature(uid = "feature2", enabled = true, group = "mygroup")
+        store += Feature(uid = "feature3", enabled = true, group = "othergroup")
+        store.disableGroup("mygroup")
+        job.join()
+
+        // Then
+        assertEquals(2, events.size)
+        assertTrue(
+            events.all { it is StoreEvent.Disabled },
+            "Not all events is disabled",
+        )
+        assertTrue(
+            events.any { it.featureId == "feature1" },
+            "Feature with id feature1 is missing",
+        )
+        assertTrue(
+            events.any { it.featureId == "feature2" },
+            "Feature with id feature2 is missing",
+        )
+    }
+
+    @Test
+    fun `should emit Updated event when feature is added to group`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        // When
+        val job =
+            launch {
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
+            }
+        store += Feature(uid = "test", enabled = true)
+        store.addToGroup("test", "mygroup")
+        job.join()
+
+        // Then
+        assertEquals(1, events.size)
+        assertTrue(events[0] is StoreEvent.Updated)
+        assertEquals("test", events[0].featureId)
+    }
+
+    @Test
+    fun `should emit Updated event when feature is removed from group`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        // When
+        val job =
+            launch {
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
+            }
+        store += Feature(uid = "test", enabled = true, group = "mygroup")
+        store.removeFromGroup("test", "mygroup")
+        job.join()
+
+        // Then
+        assertEquals(1, events.size)
+        assertTrue(events[0] is StoreEvent.Updated)
+        assertEquals("test", events[0].featureId)
+    }
+
+    @Test
+    fun `should emit Deleted events when clearing all features`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        // When
+        val job =
+            launch {
+                store.observeChanges()
+                    .drop(3) // Skip 3 Created events from setup
+                    .take(3)
+                    .toList(events)
+            }
+        store += Feature(uid = "feature1", enabled = true)
+        store += Feature(uid = "feature2", enabled = false)
+        store += Feature(uid = "feature3", enabled = true)
+        store.clear()
+        job.join()
+
+        // Then
+        assertEquals(3, events.size)
+        assertTrue(
+            events.all { it is StoreEvent.Deleted },
+            "Not all events is deleted",
+        )
+        assertTrue(
+            events.any { it.featureId == "feature1" },
+            "Feature with id feature1 is missing",
+        )
+        assertTrue(
+            events.any { it.featureId == "feature2" },
+            "Feature with id feature2 is missing",
+        )
+        assertTrue(
+            events.any { it.featureId == "feature3" },
+            "Feature with id feature3 is missing",
+        )
+    }
+
+    @Test
+    fun `should emit Created events when importing features`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        val featuresToImport = listOf(
+            Feature(uid = "new1", enabled = true),
+            Feature(uid = "new2", enabled = false),
+        )
+
+        // When
+        val job =
+            launch {
+                store.observeChanges().take(2).toList(events)
+            }
+        store.importFeatures(featuresToImport)
+        job.join()
+
+        // Then - verify Created events for new features
+        assertEquals(2, events.size)
+        assertTrue(events.all { it is StoreEvent.Created }, "Not all events is created")
+        assertTrue(events.any { it.featureId == "new1" }, "Feature with id new1")
+        assertTrue(events.any { it.featureId == "new2" }, "Feature with id new2")
+    }
+
+    @Test
+    fun `should emit Updated event when importing existing feature`() = runTest {
+        // Given
+        val store = createStore()
+        val events = mutableListOf<StoreEvent>()
+
+        val featuresToImport = listOf(
+            Feature(
+                uid = "existing",
+                enabled = true,
+                description = "Updated",
+            ),
+        )
+
+        // When
+        val job =
+            launch {
+                store.observeChanges()
+                    .drop(1) // Skip Created event from setup
+                    .take(1)
+                    .toList(events)
+            }
+        store += Feature(
+            uid = "existing",
+            enabled = false,
+            description = "Original",
+        )
+        store.importFeatures(featuresToImport)
+        job.join()
+
+        // Then - verify Updated event for existing feature
+        assertEquals(1, events.size)
+        assertTrue(events[0] is StoreEvent.Updated)
+        assertEquals("existing", events[0].featureId)
     }
 
     @Test
