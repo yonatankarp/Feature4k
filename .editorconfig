@@ -1,7 +1,0 @@
-root = true
-
-[*.kt]
-ktlint_standard_filename = enabled
-
-[**/exception/*.kt]
-ktlint_standard_filename = disabled
