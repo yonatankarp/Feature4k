@@ -3,10 +3,15 @@ package com.yonatankarp.feature4k.core
 import com.yonatankarp.feature4k.core.FeatureFixtures.basicFeature
 import com.yonatankarp.feature4k.core.FeatureFixtures.disabledFeature
 import com.yonatankarp.feature4k.core.FeatureFixtures.enabledFeature
+import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithCustomProperties
 import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithGroup
 import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithPermissions
 import com.yonatankarp.feature4k.core.FeatureFixtures.fullFeature
 import com.yonatankarp.feature4k.exception.InvalidFeatureIdentifierException
+import com.yonatankarp.feature4k.property.PropertyBoolean
+import com.yonatankarp.feature4k.property.PropertyInt
+import com.yonatankarp.feature4k.property.PropertyLong
+import com.yonatankarp.feature4k.property.PropertyString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -216,7 +221,8 @@ class FeatureTest {
         val newDescription = "Modified"
 
         // When
-        val modified = original.copy(enabled = true, description = newDescription)
+        val modified =
+            original.copy(enabled = true, description = newDescription)
 
         // Then
         assertEquals("feature1", modified.uid)
@@ -280,5 +286,111 @@ class FeatureTest {
 
         // Then
         assertEquals(permissions, feature.permissions)
+    }
+
+    @Test
+    fun `should create feature with empty custom properties by default`() {
+        // Given & When
+        val feature = basicFeature()
+
+        // Then
+        assertTrue(feature.customProperties.isEmpty())
+        assertFalse(feature.hasCustomProperties())
+    }
+
+    @Test
+    fun `should create feature with custom properties`() {
+        // Given
+        val uid = "feature1"
+        val properties = mapOf(
+            "maxRetries" to PropertyInt(name = "maxRetries", value = 3),
+            "timeout" to PropertyLong(name = "timeout", value = 5000L),
+        )
+
+        // When
+        val feature = Feature(uid = uid, customProperties = properties)
+
+        // Then
+        assertEquals(properties, feature.customProperties)
+        assertTrue(feature.hasCustomProperties())
+        assertEquals(2, feature.customProperties.size)
+    }
+
+    @Test
+    fun `hasCustomProperties should return true when properties exist`() {
+        // Given
+        val feature = Feature(
+            uid = "feature1",
+            customProperties = mapOf(
+                "enabled" to PropertyBoolean(name = "enabled", value = true),
+            ),
+        )
+
+        // When
+        val result = feature.hasCustomProperties()
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `hasCustomProperties should return false when no properties`() {
+        // Given
+        val feature = basicFeature()
+
+        // When
+        val result = feature.hasCustomProperties()
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should serialize and deserialize feature with custom properties`() {
+        // Given
+        val feature = featureWithCustomProperties()
+
+        // When
+        val json = Json.encodeToString(feature)
+        val deserialized = Json.decodeFromString<Feature>(json)
+
+        // Then
+        assertEquals(feature.uid, deserialized.uid)
+        assertEquals(feature.customProperties.size, deserialized.customProperties.size)
+        assertEquals(
+            (feature.customProperties["maxRetries"] as PropertyInt).value,
+            (deserialized.customProperties["maxRetries"] as PropertyInt).value,
+        )
+        assertEquals(
+            (feature.customProperties["message"] as PropertyString).value,
+            (deserialized.customProperties["message"] as PropertyString).value,
+        )
+    }
+
+    @Test
+    fun `should copy feature with modified custom properties`() {
+        // Given
+        val original = Feature(
+            uid = "feature1",
+            customProperties = mapOf(
+                "count" to PropertyInt(name = "count", value = 1),
+            ),
+        )
+        val newProperties = mapOf(
+            "count" to PropertyInt(name = "count", value = 2),
+        )
+
+        // When
+        val modified = original.copy(customProperties = newProperties)
+
+        // Then
+        assertEquals(
+            1,
+            (original.customProperties["count"] as PropertyInt).value,
+        )
+        assertEquals(
+            2,
+            (modified.customProperties["count"] as PropertyInt).value,
+        )
     }
 }
