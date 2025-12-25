@@ -9,6 +9,13 @@ import platform.posix.*
  */
 @OptIn(ExperimentalForeignApi::class)
 actual object Uid {
+    /**
+     * Generate an RFC 4122 version 4 UUID.
+     *
+     * Attempts to fill 16 bytes with cryptographically strong randomness from /dev/urandom and falls back to a time-seeded C RNG if unavailable or if the read fails. Sets the version and variant bits per RFC 4122, then formats the bytes as a lowercase hexadecimal UUID with hyphens at positions 8-4-4-4-12.
+     *
+     * @return The UUID string in the standard 8-4-4-4-12 lowercase hexadecimal format (e.g. `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`).
+     */
     actual fun generate(): String {
         // Simple UUID v4 implementation
         val uuid = ByteArray(16)

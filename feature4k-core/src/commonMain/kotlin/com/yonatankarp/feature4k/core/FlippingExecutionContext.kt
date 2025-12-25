@@ -21,49 +21,73 @@ data class FlippingExecutionContext(
     val customParams: Map<String, String> = emptyMap()
 ) {
     /**
-     * Returns a new context with the specified user.
-     */
+         * Create a new FlippingExecutionContext with the user field set to the provided identifier.
+         *
+         * @param user The user identifier to set on the new context.
+         * @return A new FlippingExecutionContext with `user` updated and all other properties preserved.
+         */
     fun withUser(user: String): FlippingExecutionContext =
         copy(user = user)
 
     /**
-     * Returns a new context with the specified client.
-     */
+         * Create a new context with the specified client identifier.
+         *
+         * @param client The client identifier to set on the returned context.
+         * @return A new FlippingExecutionContext with `client` set to the provided value.
+         */
     fun withClient(client: String): FlippingExecutionContext =
         copy(client = client)
 
     /**
-     * Returns a new context with the specified server.
-     */
+         * Create a copy of the execution context with the server field set to the given identifier.
+         *
+         * @param server The server identifier to set in the new context.
+         * @return A new FlippingExecutionContext with `server` set to the provided value.
+         */
     fun withServer(server: String): FlippingExecutionContext =
         copy(server = server)
 
     /**
-     * Returns a new context with an additional custom parameter.
-     */
+         * Create a copy of the context with the given custom parameter added.
+         *
+         * @param key The custom parameter name.
+         * @param value The custom parameter value.
+         * @return A new FlippingExecutionContext whose `customParams` contains the given key mapped to the given value (overwriting any existing value for that key).
+         */
     fun withParam(key: String, value: String): FlippingExecutionContext =
         copy(customParams = customParams + (key to value))
 
     /**
-     * Returns a new context with multiple additional custom parameters.
-     */
+         * Create a new context with additional custom parameters.
+         *
+         * @param params Map of parameters to merge into the context's customParams. Entries in `params` override existing keys.
+         * @return A FlippingExecutionContext whose `customParams` contains the original entries merged with `params`.
+         */
     fun withParams(params: Map<String, String>): FlippingExecutionContext =
         copy(customParams = customParams + params)
 
     /**
-     * Gets a custom parameter value by key.
-     */
+ * Retrieve the custom parameter value for the given key.
+ *
+ * @param key The parameter name to look up.
+ * @return The parameter value associated with `key`, or `null` if no such parameter exists.
+ */
     fun getParam(key: String): String? = customParams[key]
 
     /**
-     * Checks if a custom parameter exists.
-     */
+ * Determines whether a custom parameter with the given key is present in the context.
+ *
+ * @param key The name of the custom parameter to check.
+ * @return `true` if the parameter is present, `false` otherwise.
+ */
     fun hasParam(key: String): Boolean = customParams.containsKey(key)
 
     companion object {
         /**
-         * Creates an empty execution context.
-         */
+ * Create an empty FlippingExecutionContext with no user, client, server, or custom parameters.
+ *
+ * @return A FlippingExecutionContext whose `user`, `client`, and `server` are `null` and whose `customParams` is an empty map.
+ */
         fun empty(): FlippingExecutionContext = FlippingExecutionContext()
     }
 }
