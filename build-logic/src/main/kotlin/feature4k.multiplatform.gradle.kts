@@ -10,7 +10,9 @@ plugins {
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 kotlin {
-    jvmToolchain(libs.findVersion("jvm-toolchain").get().requiredVersion.toInt())
+    jvmToolchain(
+        libs.findVersion("jvm-toolchain").get().requiredVersion.toInt()
+    )
 
     // Android disabled for now
     /*
@@ -66,7 +68,11 @@ spotless {
     kotlin {
         target("**/*.kt")
         targetExclude("**/build/**/*.kt")
-        ktlint()
+        ktlint().editorConfigOverride(
+            mapOf(
+                "ktlint_standard_filename" to "disabled"
+            )
+        )
     }
 
     kotlinGradle {

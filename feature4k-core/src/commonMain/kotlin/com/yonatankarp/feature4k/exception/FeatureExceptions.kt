@@ -45,6 +45,6 @@ class FeatureAccessException(
     val requiredPermissions: Set<String>,
     cause: Throwable? = null,
 ) : FeatureException(
-        "Access denied to feature '$featureUid'. Required permissions: ${requiredPermissions.joinToString()}",
-        cause,
-    )
+    "Access denied to feature '$featureUid'. Required permissions: ${requiredPermissions.joinToString()}",
+    cause,
+)

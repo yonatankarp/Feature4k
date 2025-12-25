@@ -35,9 +35,9 @@ class InvalidPropertyTypeException(
     val actualType: String,
     cause: Throwable? = null,
 ) : PropertyException(
-        "Invalid type for property '$propertyName'. Expected: $expectedType, got: $actualType",
-        cause,
-    )
+    "Invalid type for property '$propertyName'. Expected: $expectedType, got: $actualType",
+    cause,
+)
 
 /**
  * Thrown when a property value is not within the allowed fixed values.
@@ -52,6 +52,6 @@ class InvalidPropertyValueException(
     val allowedValues: Set<String>,
     cause: Throwable? = null,
 ) : PropertyException(
-        "Invalid value '$value' for property '$propertyName'. Allowed values: ${allowedValues.joinToString()}",
-        cause,
-    )
+    "Invalid value '$value' for property '$propertyName'. Allowed values: ${allowedValues.joinToString()}",
+    cause,
+)

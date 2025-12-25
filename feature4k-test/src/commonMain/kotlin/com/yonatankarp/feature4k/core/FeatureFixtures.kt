@@ -11,24 +11,21 @@ object FeatureFixtures {
 
     fun disabledFeature() = Feature(uid = "feature1", enabled = false)
 
-    fun featureWithPermissions() =
-        Feature(
-            uid = "feature1",
-            permissions = setOf("ADMIN"),
-        )
+    fun featureWithPermissions() = Feature(
+        uid = "feature1",
+        permissions = setOf("ADMIN"),
+    )
 
-    fun featureWithGroup() =
-        Feature(
-            uid = "feature1",
-            group = "testGroup",
-        )
+    fun featureWithGroup() = Feature(
+        uid = "feature1",
+        group = "testGroup",
+    )
 
-    fun fullFeature() =
-        Feature(
-            uid = "feature1",
-            enabled = true,
-            description = "Test feature",
-            group = "testGroup",
-            permissions = setOf("ADMIN", "USER"),
-        )
+    fun fullFeature() = Feature(
+        uid = "feature1",
+        enabled = true,
+        description = "Test feature",
+        group = "testGroup",
+        permissions = setOf("ADMIN", "USER"),
+    )
 }
