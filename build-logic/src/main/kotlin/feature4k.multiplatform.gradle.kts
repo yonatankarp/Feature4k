@@ -2,6 +2,7 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
+    id("com.diffplug.spotless")
     // Android disabled for now
     // id("com.android.library")
 }
@@ -60,3 +61,17 @@ android {
     }
 }
 */
+
+spotless {
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/build/**/*.kt")
+        ktlint()
+    }
+
+    kotlinGradle {
+        target("**/*.gradle.kts")
+        targetExclude("**/build/**/*.gradle.kts")
+        ktlint()
+    }
+}

@@ -9,7 +9,7 @@ import com.yonatankarp.feature4k.exception.Feature4kException.PropertyException
  */
 class PropertyNotFoundException(
     val propertyName: String,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : PropertyException("Property not found: $propertyName", cause)
 
 /**
@@ -19,7 +19,7 @@ class PropertyNotFoundException(
  */
 class PropertyAlreadyExistException(
     val propertyName: String,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : PropertyException("Property already exists: $propertyName", cause)
 
 /**
@@ -33,11 +33,11 @@ class InvalidPropertyTypeException(
     val propertyName: String,
     val expectedType: String,
     val actualType: String,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : PropertyException(
-    "Invalid type for property '$propertyName'. Expected: $expectedType, got: $actualType",
-    cause
-)
+        "Invalid type for property '$propertyName'. Expected: $expectedType, got: $actualType",
+        cause,
+    )
 
 /**
  * Thrown when a property value is not within the allowed fixed values.
@@ -50,8 +50,8 @@ class InvalidPropertyValueException(
     val propertyName: String,
     val value: String,
     val allowedValues: Set<String>,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : PropertyException(
-    "Invalid value '$value' for property '$propertyName'. Allowed values: ${allowedValues.joinToString()}",
-    cause
-)
+        "Invalid value '$value' for property '$propertyName'. Allowed values: ${allowedValues.joinToString()}",
+        cause,
+    )

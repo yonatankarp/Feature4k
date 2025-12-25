@@ -10,7 +10,7 @@ import com.yonatankarp.feature4k.exception.Feature4kException.StoreException
 class StoreOperationException(
     val operation: String,
     message: String? = null,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : StoreException(message ?: "Store operation '$operation' failed", cause)
 
 /**
@@ -18,5 +18,5 @@ class StoreOperationException(
  */
 class StoreConnectionException(
     message: String = "Failed to connect to store",
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : StoreException(message, cause)

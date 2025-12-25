@@ -9,10 +9,14 @@ import com.yonatankarp.feature4k.core.FeatureFixtures.fullFeature
 import com.yonatankarp.feature4k.exception.InvalidFeatureIdentifierException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class FeatureTest {
-
     @Test
     fun `should create feature with minimal constructor`() {
         // Given
@@ -39,13 +43,14 @@ class FeatureTest {
         val permissions = setOf("ADMIN", "USER")
 
         // When
-        val feature = Feature(
-            uid = uid,
-            enabled = enabled,
-            description = description,
-            group = group,
-            permissions = permissions
-        )
+        val feature =
+            Feature(
+                uid = uid,
+                enabled = enabled,
+                description = description,
+                group = group,
+                permissions = permissions,
+            )
 
         // Then
         assertEquals(uid, feature.uid)
@@ -61,9 +66,10 @@ class FeatureTest {
         val blankUid = ""
 
         // When & Then
-        val exception = assertFailsWith<InvalidFeatureIdentifierException> {
-            Feature(uid = blankUid)
-        }
+        val exception =
+            assertFailsWith<InvalidFeatureIdentifierException> {
+                Feature(uid = blankUid)
+            }
         assertEquals(blankUid, exception.featureUid)
         assertEquals("UID cannot be blank", exception.reason)
     }
@@ -74,9 +80,10 @@ class FeatureTest {
         val whitespaceUid = "   "
 
         // When & Then
-        val exception = assertFailsWith<InvalidFeatureIdentifierException> {
-            Feature(uid = whitespaceUid)
-        }
+        val exception =
+            assertFailsWith<InvalidFeatureIdentifierException> {
+                Feature(uid = whitespaceUid)
+            }
         assertEquals(whitespaceUid, exception.featureUid)
         assertEquals("UID cannot be blank", exception.reason)
     }

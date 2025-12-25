@@ -7,7 +7,7 @@ import com.yonatankarp.feature4k.exception.Feature4kException.AuthorizationExcep
  */
 class AuthorizationsNotProvidedException(
     message: String = "Authorization manager is required but not provided",
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : AuthorizationException(message, cause)
 
 /**
@@ -19,9 +19,9 @@ class AuthorizationsNotProvidedException(
 class InsufficientPermissionsException(
     val requiredPermissions: Set<String>,
     val userPermissions: Set<String>,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : AuthorizationException(
-    "Insufficient permissions. Required: ${requiredPermissions.joinToString()}, " +
-        "User has: ${userPermissions.joinToString()}",
-    cause
-)
+        "Insufficient permissions. Required: ${requiredPermissions.joinToString()}, " +
+            "User has: ${userPermissions.joinToString()}",
+        cause,
+    )

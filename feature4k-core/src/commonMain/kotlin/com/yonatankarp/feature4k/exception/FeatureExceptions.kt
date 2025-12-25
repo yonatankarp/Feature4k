@@ -9,7 +9,7 @@ import com.yonatankarp.feature4k.exception.Feature4kException.FeatureException
  */
 class FeatureNotFoundException(
     val featureUid: String,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : FeatureException("Feature not found: $featureUid", cause)
 
 /**
@@ -19,7 +19,7 @@ class FeatureNotFoundException(
  */
 class FeatureAlreadyExistException(
     val featureUid: String,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : FeatureException("Feature already exists: $featureUid", cause)
 
 /**
@@ -31,7 +31,7 @@ class FeatureAlreadyExistException(
 class InvalidFeatureIdentifierException(
     val featureUid: String,
     val reason: String,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : FeatureException("Invalid feature identifier '$featureUid': $reason", cause)
 
 /**
@@ -43,8 +43,8 @@ class InvalidFeatureIdentifierException(
 class FeatureAccessException(
     val featureUid: String,
     val requiredPermissions: Set<String>,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : FeatureException(
-    "Access denied to feature '$featureUid'. Required permissions: ${requiredPermissions.joinToString()}",
-    cause
-)
+        "Access denied to feature '$featureUid'. Required permissions: ${requiredPermissions.joinToString()}",
+        cause,
+    )

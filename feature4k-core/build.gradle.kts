@@ -10,6 +10,10 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
         }
 
+        jvmMain.dependencies {
+            implementation(libs.slf4j.api)
+        }
+
         commonTest.dependencies {
             implementation(project(":feature4k-test"))
         }
