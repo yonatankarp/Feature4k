@@ -11,32 +11,36 @@ package com.yonatankarp.feature4k.utils
 expect interface Logger {
     /**
      * Logs a debug message.
+     * Suspend function to support async logging backends (file I/O, network sinks, etc.).
      *
      * @param message The message to log
      */
-    fun debug(message: String)
+    suspend fun debug(message: String)
 
     /**
      * Logs an info message.
+     * Suspend function to support async logging backends (file I/O, network sinks, etc.).
      *
      * @param message The message to log
      */
-    fun info(message: String)
+    suspend fun info(message: String)
 
     /**
      * Logs a warning message.
+     * Suspend function to support async logging backends (file I/O, network sinks, etc.).
      *
      * @param message The message to log
      */
-    fun warn(message: String)
+    suspend fun warn(message: String)
 
     /**
      * Logs an error message.
+     * Suspend function to support async logging backends (file I/O, network sinks, etc.).
      *
      * @param message The message to log
      * @param throwable Optional throwable/exception to log
      */
-    fun error(
+    suspend fun error(
         message: String,
         throwable: Throwable? = null,
     )
