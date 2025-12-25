@@ -42,7 +42,7 @@ sealed class StoreEvent {
     data class RoleUpdated(override val featureId: String) : StoreEvent()
 
     /**
-     * Event emitted when a feature role is removed
+     * Event emitted when a feature role is removed.
      */
     data class RoleDeleted(override val featureId: String) : StoreEvent()
 }
