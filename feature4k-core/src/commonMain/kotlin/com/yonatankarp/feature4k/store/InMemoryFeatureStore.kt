@@ -26,10 +26,12 @@ import kotlinx.coroutines.sync.withLock
  * store implementation.
  *
  * @property eventEmitter Event emitter for publishing store changes (defaults to [NoOpEventEmitter])
+ * @property eventFactory Factory for creating feature events with audit metadata
  * @author Yonatan Karp-Rudin
  */
 class InMemoryFeatureStore(
-    private val eventEmitter: StoreEventEmitter<StoreEvent> = NoOpEventEmitter(),
+    private val eventEmitter: StoreEventEmitter<FeatureStoreEvent> = NoOpEventEmitter(),
+    private val eventFactory: FeatureEventFactory = FeatureEventFactory.Default,
 ) : FeatureStore {
     private val features = mutableMapOf<String, Feature>()
     private val mutex = Mutex()
@@ -38,7 +40,7 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.enable()
-            eventEmitter.emit(StoreEvent.Enabled(featureId))
+            eventEmitter.emit(eventFactory.enabled(featureId))
         }
     }
 
@@ -46,7 +48,7 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.disable()
-            eventEmitter.emit(StoreEvent.Disabled(featureId))
+            eventEmitter.emit(eventFactory.disabled(featureId))
         }
     }
 
@@ -60,7 +62,7 @@ class InMemoryFeatureStore(
                 throw FeatureAlreadyExistException(feature.uid)
             }
             features[feature.uid] = feature
-            eventEmitter.emit(StoreEvent.Created(feature.uid))
+            eventEmitter.emit(eventFactory.created(feature.uid))
         }
     }
 
@@ -75,7 +77,7 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val isUpdate = featureId in features
             features[featureId] = feature
-            val event = if (isUpdate) StoreEvent.Updated(featureId) else StoreEvent.Created(featureId)
+            val event = if (isUpdate) eventFactory.updated(featureId) else eventFactory.created(featureId)
             eventEmitter.emit(event)
         }
     }
@@ -90,7 +92,7 @@ class InMemoryFeatureStore(
                 throw FeatureNotFoundException(featureId)
             }
             features.remove(featureId)
-            eventEmitter.emit(StoreEvent.Deleted(featureId))
+            eventEmitter.emit(eventFactory.deleted(featureId))
         }
     }
 
@@ -101,7 +103,7 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.copy(permissions = feature.permissions + roleName)
-            eventEmitter.emit(StoreEvent.RoleUpdated(featureId))
+            eventEmitter.emit(eventFactory.roleUpdated(featureId))
         }
     }
 
@@ -112,7 +114,7 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.copy(permissions = feature.permissions - roleName)
-            eventEmitter.emit(StoreEvent.RoleDeleted(featureId))
+            eventEmitter.emit(eventFactory.roleDeleted(featureId))
         }
     }
 
@@ -124,7 +126,7 @@ class InMemoryFeatureStore(
             }
             groupFeatures.forEach { feature ->
                 features[feature.uid] = feature.enable()
-                eventEmitter.emit(StoreEvent.Enabled(feature.uid))
+                eventEmitter.emit(eventFactory.enabled(feature.uid))
             }
         }
     }
@@ -137,7 +139,7 @@ class InMemoryFeatureStore(
             }
             groupFeatures.forEach { feature ->
                 features[feature.uid] = feature.disable()
-                eventEmitter.emit(StoreEvent.Disabled(feature.uid))
+                eventEmitter.emit(eventFactory.disabled(feature.uid))
             }
         }
     }
@@ -161,7 +163,7 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.copy(group = groupName)
-            eventEmitter.emit(StoreEvent.Updated(featureId))
+            eventEmitter.emit(eventFactory.updated(featureId))
         }
     }
 
@@ -175,7 +177,7 @@ class InMemoryFeatureStore(
                 throw GroupNotFoundException(groupName)
             }
             features[featureId] = feature.copy(group = null)
-            eventEmitter.emit(StoreEvent.Updated(featureId))
+            eventEmitter.emit(eventFactory.updated(featureId))
         }
     }
 
@@ -187,7 +189,7 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val featureIds = features.keys.toList()
             features.clear()
-            featureIds.forEach { eventEmitter.emit(StoreEvent.Deleted(it)) }
+            featureIds.forEach { eventEmitter.emit(eventFactory.deleted(it)) }
         }
     }
 
@@ -196,7 +198,7 @@ class InMemoryFeatureStore(
             features.forEach { feature ->
                 val isUpdate = this.features.containsKey(feature.uid)
                 this.features[feature.uid] = feature
-                val event = if (isUpdate) StoreEvent.Updated(feature.uid) else StoreEvent.Created(feature.uid)
+                val event = if (isUpdate) eventFactory.updated(feature.uid) else eventFactory.created(feature.uid)
                 eventEmitter.emit(event)
             }
         }
@@ -206,5 +208,5 @@ class InMemoryFeatureStore(
         // No-op for in-memory store
     }
 
-    override fun observeChanges(): Flow<StoreEvent> = eventEmitter.observe()
+    override fun observeChanges(): Flow<FeatureStoreEvent> = eventEmitter.observe()
 }

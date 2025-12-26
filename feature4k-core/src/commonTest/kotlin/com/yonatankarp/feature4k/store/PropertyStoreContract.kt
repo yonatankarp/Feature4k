@@ -261,7 +261,7 @@ abstract class PropertyStoreContract {
         // Then
         assertEquals(1, events.size)
         assertTrue(events[0] is PropertyStoreEvent.Created)
-        assertEquals("test", events[0].propertyName)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -284,7 +284,7 @@ abstract class PropertyStoreContract {
         // Then
         assertEquals(1, events.size)
         assertTrue(events[0] is PropertyStoreEvent.Updated)
-        assertEquals("test", events[0].propertyName)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -307,7 +307,7 @@ abstract class PropertyStoreContract {
         // Then
         assertEquals(1, events.size)
         assertTrue(events[0] is PropertyStoreEvent.Deleted)
-        assertEquals("test", events[0].propertyName)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -332,9 +332,9 @@ abstract class PropertyStoreContract {
         // Then
         assertEquals(3, events.size)
         assertTrue(events.all { it is PropertyStoreEvent.Deleted })
-        assertTrue(events.any { it.propertyName == "prop1" })
-        assertTrue(events.any { it.propertyName == "prop2" })
-        assertTrue(events.any { it.propertyName == "prop3" })
+        assertTrue(events.any { it.uid == "prop1" })
+        assertTrue(events.any { it.uid == "prop2" })
+        assertTrue(events.any { it.uid == "prop3" })
     }
 
     @Test
@@ -358,8 +358,8 @@ abstract class PropertyStoreContract {
         // Then
         assertEquals(2, events.size)
         assertTrue(events.all { it is PropertyStoreEvent.Created })
-        assertTrue(events.any { it.propertyName == "new1" })
-        assertTrue(events.any { it.propertyName == "new2" })
+        assertTrue(events.any { it.uid == "new1" })
+        assertTrue(events.any { it.uid == "new2" })
     }
 
     @Test
@@ -386,7 +386,7 @@ abstract class PropertyStoreContract {
         // Then
         assertEquals(1, events.size)
         assertTrue(events[0] is PropertyStoreEvent.Updated)
-        assertEquals("existing", events[0].propertyName)
+        assertEquals("existing", events[0].uid)
     }
 
     @Test

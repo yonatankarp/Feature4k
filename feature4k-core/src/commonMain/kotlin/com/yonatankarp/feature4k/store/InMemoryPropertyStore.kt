@@ -25,10 +25,12 @@ import kotlinx.coroutines.sync.withLock
  * store implementation.
  *
  * @property eventEmitter Event emitter for publishing store changes (defaults to [NoOpEventEmitter])
+ * @property eventFactory Factory for creating property events with audit metadata
  * @author Yonatan Karp-Rudin
  */
 class InMemoryPropertyStore(
     private val eventEmitter: StoreEventEmitter<PropertyStoreEvent> = NoOpEventEmitter(),
+    private val eventFactory: PropertyEventFactory = PropertyEventFactory.Default,
 ) : PropertyStore {
     private val properties = mutableMapOf<String, Property<*>>()
     private val mutex = Mutex()
@@ -43,7 +45,7 @@ class InMemoryPropertyStore(
                 throw PropertyAlreadyExistException(property.name)
             }
             properties[property.name] = property
-            eventEmitter.emit(PropertyStoreEvent.Created(property.name))
+            eventEmitter.emit(eventFactory.created(property.name))
         }
     }
 
@@ -58,7 +60,7 @@ class InMemoryPropertyStore(
         mutex.withLock {
             val isUpdate = propertyName in properties
             properties[propertyName] = property
-            val event = if (isUpdate) PropertyStoreEvent.Updated(propertyName) else PropertyStoreEvent.Created(propertyName)
+            val event = if (isUpdate) eventFactory.updated(propertyName) else eventFactory.created(propertyName)
             eventEmitter.emit(event)
         }
     }
@@ -73,7 +75,7 @@ class InMemoryPropertyStore(
                 throw PropertyNotFoundException(propertyName)
             }
             properties.remove(propertyName)
-            eventEmitter.emit(PropertyStoreEvent.Deleted(propertyName))
+            eventEmitter.emit(eventFactory.deleted(propertyName))
         }
     }
 
@@ -81,7 +83,7 @@ class InMemoryPropertyStore(
         mutex.withLock {
             val propertyNames = properties.keys.toList()
             properties.clear()
-            propertyNames.forEach { eventEmitter.emit(PropertyStoreEvent.Deleted(it)) }
+            propertyNames.forEach { eventEmitter.emit(eventFactory.deleted(it)) }
         }
     }
 
@@ -90,7 +92,7 @@ class InMemoryPropertyStore(
             properties.forEach { property ->
                 val isUpdate = this.properties.containsKey(property.name)
                 this.properties[property.name] = property
-                val event = if (isUpdate) PropertyStoreEvent.Updated(property.name) else PropertyStoreEvent.Created(property.name)
+                val event = if (isUpdate) eventFactory.updated(property.name) else eventFactory.created(property.name)
                 eventEmitter.emit(event)
             }
         }
