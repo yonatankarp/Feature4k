@@ -1,8 +1,8 @@
 package com.yonatankarp.feature4k.store
 
-import com.yonatankarp.feature4k.store.event.ChannelEventEmitter
-import com.yonatankarp.feature4k.store.event.NoOpEventEmitter
-import com.yonatankarp.feature4k.store.event.SharedFlowEventEmitter
+import com.yonatankarp.feature4k.audit.emission.ChannelEventEmitter
+import com.yonatankarp.feature4k.audit.emission.NoOpEventEmitter
+import com.yonatankarp.feature4k.audit.emission.SharedFlowEventEmitter
 
 /**
  * Test fixtures for Store objects.
