@@ -44,16 +44,16 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.enable()
+            changeEvents.emit(StoreEvent.Enabled(featureId))
         }
-        changeEvents.emit(StoreEvent.Enabled(featureId))
     }
 
     override suspend fun disable(featureId: String) {
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.disable()
+            changeEvents.emit(StoreEvent.Disabled(featureId))
         }
-        changeEvents.emit(StoreEvent.Disabled(featureId))
     }
 
     override suspend fun contains(featureId: String): Boolean = mutex.withLock {
@@ -66,8 +66,8 @@ class InMemoryFeatureStore(
                 throw FeatureAlreadyExistException(feature.uid)
             }
             features[feature.uid] = feature
+            changeEvents.emit(StoreEvent.Created(feature.uid))
         }
-        changeEvents.emit(StoreEvent.Created(feature.uid))
     }
 
     override suspend fun get(featureId: String): Feature? = mutex.withLock {
@@ -78,12 +78,12 @@ class InMemoryFeatureStore(
         featureId: String,
         feature: Feature,
     ) {
-        val event = mutex.withLock {
+        mutex.withLock {
             val isUpdate = featureId in features
             features[featureId] = feature
-            if (isUpdate) StoreEvent.Updated(featureId) else StoreEvent.Created(featureId)
+            val event = if (isUpdate) StoreEvent.Updated(featureId) else StoreEvent.Created(featureId)
+            changeEvents.emit(event)
         }
-        changeEvents.emit(event)
     }
 
     override suspend fun getAll(): Map<String, Feature> = mutex.withLock {
@@ -96,8 +96,8 @@ class InMemoryFeatureStore(
                 throw FeatureNotFoundException(featureId)
             }
             features.remove(featureId)
+            changeEvents.emit(StoreEvent.Deleted(featureId))
         }
-        changeEvents.emit(StoreEvent.Deleted(featureId))
     }
 
     override suspend fun grantRoleOnFeature(
@@ -107,8 +107,8 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.copy(permissions = feature.permissions + roleName)
+            changeEvents.emit(StoreEvent.RoleUpdated(featureId))
         }
-        changeEvents.emit(StoreEvent.RoleUpdated(featureId))
     }
 
     override suspend fun removeRoleFromFeature(
@@ -118,36 +118,34 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.copy(permissions = feature.permissions - roleName)
+            changeEvents.emit(StoreEvent.RoleDeleted(featureId))
         }
-        changeEvents.emit(StoreEvent.RoleDeleted(featureId))
     }
 
     override suspend fun enableGroup(groupName: String) {
-        val events = mutex.withLock {
+        mutex.withLock {
             val groupFeatures = features.values.filter { it.group == groupName }
             if (groupFeatures.isEmpty()) {
                 throw GroupNotFoundException(groupName)
             }
-            groupFeatures.map { feature ->
+            groupFeatures.forEach { feature ->
                 features[feature.uid] = feature.enable()
-                StoreEvent.Enabled(feature.uid)
+                changeEvents.emit(StoreEvent.Enabled(feature.uid))
             }
         }
-        events.forEach { changeEvents.emit(it) }
     }
 
     override suspend fun disableGroup(groupName: String) {
-        val events = mutex.withLock {
+        mutex.withLock {
             val groupFeatures = features.values.filter { it.group == groupName }
             if (groupFeatures.isEmpty()) {
                 throw GroupNotFoundException(groupName)
             }
-            groupFeatures.map { feature ->
+            groupFeatures.forEach { feature ->
                 features[feature.uid] = feature.disable()
-                StoreEvent.Disabled(feature.uid)
+                changeEvents.emit(StoreEvent.Disabled(feature.uid))
             }
         }
-        events.forEach { changeEvents.emit(it) }
     }
 
     override suspend fun existsGroup(groupName: String): Boolean = mutex.withLock {
@@ -169,8 +167,8 @@ class InMemoryFeatureStore(
         mutex.withLock {
             val feature = features[featureId] ?: throw FeatureNotFoundException(featureId)
             features[featureId] = feature.copy(group = groupName)
+            changeEvents.emit(StoreEvent.Updated(featureId))
         }
-        changeEvents.emit(StoreEvent.Updated(featureId))
     }
 
     override suspend fun removeFromGroup(
@@ -183,8 +181,8 @@ class InMemoryFeatureStore(
                 throw GroupNotFoundException(groupName)
             }
             features[featureId] = feature.copy(group = null)
+            changeEvents.emit(StoreEvent.Updated(featureId))
         }
-        changeEvents.emit(StoreEvent.Updated(featureId))
     }
 
     override suspend fun getAllGroups(): Set<String> = mutex.withLock {
@@ -192,23 +190,22 @@ class InMemoryFeatureStore(
     }
 
     override suspend fun clear() {
-        val events = mutex.withLock {
+        mutex.withLock {
             val featureIds = features.keys.toList()
             features.clear()
-            featureIds.map { StoreEvent.Deleted(it) }
+            featureIds.forEach { changeEvents.emit(StoreEvent.Deleted(it)) }
         }
-        events.forEach { changeEvents.emit(it) }
     }
 
     override suspend fun importFeatures(features: Collection<Feature>) {
-        val events = mutex.withLock {
-            features.map { feature ->
+        mutex.withLock {
+            features.forEach { feature ->
                 val isUpdate = this.features.containsKey(feature.uid)
                 this.features[feature.uid] = feature
-                if (isUpdate) StoreEvent.Updated(feature.uid) else StoreEvent.Created(feature.uid)
+                val event = if (isUpdate) StoreEvent.Updated(feature.uid) else StoreEvent.Created(feature.uid)
+                changeEvents.emit(event)
             }
         }
-        events.forEach { changeEvents.emit(it) }
     }
 
     override suspend fun createSchema() {
