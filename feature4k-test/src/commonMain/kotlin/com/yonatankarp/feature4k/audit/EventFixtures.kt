@@ -187,12 +187,17 @@ object EventFixtures {
 
     /**
      * Creates an event with a relative timestamp offset.
+     *
+     * @param uid The unique identifier for the feature
+     * @param offset Duration offset from the base time
+     * @param baseTime Base timestamp to apply offset from (defaults to Clock.System.now())
      */
     fun eventWithOffset(
         uid: String = "test-feature",
         offset: Duration,
+        baseTime: Instant = Clock.System.now(),
     ) = featureCreatedEvent(
         uid = uid,
-        timestamp = Clock.System.now() + offset,
+        timestamp = baseTime + offset,
     )
 }
