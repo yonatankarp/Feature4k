@@ -49,8 +49,8 @@ class InMemoryPropertyStore(
                 throw PropertyAlreadyExistException(property.name)
             }
             properties[property.name] = property
+            changeEvents.emit(PropertyStoreEvent.Created(property.name))
         }
-        changeEvents.emit(PropertyStoreEvent.Created(property.name))
     }
 
     override suspend fun get(propertyName: String): Property<*>? = mutex.withLock {
@@ -61,12 +61,12 @@ class InMemoryPropertyStore(
         propertyName: String,
         property: Property<*>,
     ) {
-        val event = mutex.withLock {
+        mutex.withLock {
             val isUpdate = propertyName in properties
             properties[propertyName] = property
-            if (isUpdate) PropertyStoreEvent.Updated(propertyName) else PropertyStoreEvent.Created(propertyName)
+            val event = if (isUpdate) PropertyStoreEvent.Updated(propertyName) else PropertyStoreEvent.Created(propertyName)
+            changeEvents.emit(event)
         }
-        changeEvents.emit(event)
     }
 
     override suspend fun getAll(): Map<String, Property<*>> = mutex.withLock {
@@ -79,28 +79,27 @@ class InMemoryPropertyStore(
                 throw PropertyNotFoundException(propertyName)
             }
             properties.remove(propertyName)
+            changeEvents.emit(PropertyStoreEvent.Deleted(propertyName))
         }
-        changeEvents.emit(PropertyStoreEvent.Deleted(propertyName))
     }
 
     override suspend fun clear() {
-        val events = mutex.withLock {
+        mutex.withLock {
             val propertyNames = properties.keys.toList()
             properties.clear()
-            propertyNames.map { PropertyStoreEvent.Deleted(it) }
+            propertyNames.forEach { changeEvents.emit(PropertyStoreEvent.Deleted(it)) }
         }
-        events.forEach { changeEvents.emit(it) }
     }
 
     override suspend fun importProperties(properties: Collection<Property<*>>) {
-        val events = mutex.withLock {
-            properties.map { property ->
+        mutex.withLock {
+            properties.forEach { property ->
                 val isUpdate = this.properties.containsKey(property.name)
                 this.properties[property.name] = property
-                if (isUpdate) PropertyStoreEvent.Updated(property.name) else PropertyStoreEvent.Created(property.name)
+                val event = if (isUpdate) PropertyStoreEvent.Updated(property.name) else PropertyStoreEvent.Created(property.name)
+                changeEvents.emit(event)
             }
         }
-        events.forEach { changeEvents.emit(it) }
     }
 
     override suspend fun createSchema() {
