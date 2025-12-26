@@ -1,5 +1,8 @@
 package com.yonatankarp.feature4k.core
 
+import com.yonatankarp.feature4k.property.PropertyInt
+import com.yonatankarp.feature4k.property.PropertyString
+
 /**
  * Test fixtures for Feature objects.
  * These can be reused across different test modules.
@@ -49,5 +52,18 @@ object FeatureFixtures {
         description = "Test feature",
         group = "testGroup",
         permissions = setOf("ADMIN", "USER"),
+    )
+
+    /**
+     * Creates a Feature with uid "feature1" and custom properties.
+     *
+     * @return A Feature with uid "feature1" and custom properties including "maxRetries" (Int) and "message" (String).
+     */
+    fun featureWithCustomProperties() = Feature(
+        uid = "feature1",
+        customProperties = mapOf(
+            "maxRetries" to PropertyInt(name = "maxRetries", value = 3),
+            "message" to PropertyString(name = "message", value = "test"),
+        ),
     )
 }
