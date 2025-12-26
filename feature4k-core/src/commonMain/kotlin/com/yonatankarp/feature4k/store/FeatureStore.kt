@@ -201,7 +201,7 @@ interface FeatureStore {
     /**
      * Observe changes to the feature store.
      *
-     * @return Flow of StoreEvent representing changes (create, update, delete, etc.)
+     * @return Flow of FeatureStoreEvent representing changes (create, update, delete, etc.)
      */
-    fun observeChanges(): Flow<StoreEvent>
+    fun observeChanges(): Flow<FeatureStoreEvent>
 }

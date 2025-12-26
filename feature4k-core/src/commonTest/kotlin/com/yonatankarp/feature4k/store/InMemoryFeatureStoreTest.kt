@@ -27,7 +27,7 @@ class InMemoryFeatureStoreTest : FeatureStoreContract() {
     fun `should emit events in correct order with concurrent plusAssign and minusAssign`() = runTest {
         // Given
         val store = inMemoryFeatureStoreWithSharedFlow()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job = launch {
@@ -47,10 +47,10 @@ class InMemoryFeatureStoreTest : FeatureStoreContract() {
         job.join()
 
         // Then
-        val groupedByFeature = events.groupBy { it.featureId }
+        val groupedByFeature = events.groupBy { it.uid }
         groupedByFeature.forEach { (featureId, featureEvents) ->
-            val createdIndex = featureEvents.indexOfFirst { it is StoreEvent.Created }
-            val deletedIndex = featureEvents.indexOfLast { it is StoreEvent.Deleted }
+            val createdIndex = featureEvents.indexOfFirst { it is FeatureStoreEvent.Created }
+            val deletedIndex = featureEvents.indexOfLast { it is FeatureStoreEvent.Deleted }
 
             if (createdIndex >= 0 && deletedIndex >= 0) {
                 assertTrue(
@@ -65,7 +65,7 @@ class InMemoryFeatureStoreTest : FeatureStoreContract() {
     fun `should maintain event-state consistency under concurrent operations`() = runTest {
         // Given
         val store = inMemoryFeatureStoreWithSharedFlow()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
         val featureCount = 50
         // Create + Update (enable/disable) + Delete (for even indices)
         val expectedEvents = featureCount * 2 + (featureCount / 2)
@@ -92,13 +92,14 @@ class InMemoryFeatureStoreTest : FeatureStoreContract() {
         val stateFromEvents = mutableMapOf<String, Boolean>()
         events.forEach { event ->
             when (event) {
-                is StoreEvent.Created -> stateFromEvents[event.featureId] = true
-                is StoreEvent.Updated -> stateFromEvents[event.featureId] = true
-                is StoreEvent.Enabled -> stateFromEvents[event.featureId] = true
-                is StoreEvent.Disabled -> stateFromEvents[event.featureId] = true
-                is StoreEvent.Deleted -> stateFromEvents.remove(event.featureId)
-                is StoreEvent.RoleUpdated -> stateFromEvents[event.featureId] = true
-                is StoreEvent.RoleDeleted -> stateFromEvents[event.featureId] = true
+                is FeatureStoreEvent.Created -> stateFromEvents[event.uid] = true
+                is FeatureStoreEvent.Updated -> stateFromEvents[event.uid] = true
+                is FeatureStoreEvent.Enabled -> stateFromEvents[event.uid] = true
+                is FeatureStoreEvent.Disabled -> stateFromEvents[event.uid] = true
+                is FeatureStoreEvent.Deleted -> stateFromEvents.remove(event.uid)
+                is FeatureStoreEvent.RoleUpdated -> stateFromEvents[event.uid] = true
+                is FeatureStoreEvent.RoleDeleted -> stateFromEvents[event.uid] = true
+                is FeatureStoreEvent.Checked -> stateFromEvents[event.uid] = true
             }
         }
 

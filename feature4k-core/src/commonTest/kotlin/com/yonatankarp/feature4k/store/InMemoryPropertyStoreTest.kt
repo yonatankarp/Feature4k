@@ -47,7 +47,7 @@ class InMemoryPropertyStoreTest : PropertyStoreContract() {
         job.join()
 
         // Then
-        val groupedByProperty = events.groupBy { it.propertyName }
+        val groupedByProperty = events.groupBy { it.uid }
         groupedByProperty.forEach { (propertyName, propertyEvents) ->
             val createdIndex = propertyEvents.indexOfFirst { it is PropertyStoreEvent.Created }
             val deletedIndex = propertyEvents.indexOfLast { it is PropertyStoreEvent.Deleted }
@@ -92,9 +92,9 @@ class InMemoryPropertyStoreTest : PropertyStoreContract() {
         val stateFromEvents = mutableMapOf<String, Boolean>()
         events.forEach { event ->
             when (event) {
-                is PropertyStoreEvent.Created -> stateFromEvents[event.propertyName] = true
-                is PropertyStoreEvent.Updated -> stateFromEvents[event.propertyName] = true
-                is PropertyStoreEvent.Deleted -> stateFromEvents.remove(event.propertyName)
+                is PropertyStoreEvent.Created -> stateFromEvents[event.uid] = true
+                is PropertyStoreEvent.Updated -> stateFromEvents[event.uid] = true
+                is PropertyStoreEvent.Deleted -> stateFromEvents.remove(event.uid)
             }
         }
 

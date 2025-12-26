@@ -587,8 +587,8 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        assertTrue(events[0] is StoreEvent.Created)
-        assertEquals("test", events[0].featureId)
+        assertTrue(events[0] is FeatureStoreEvent.Created)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -611,8 +611,8 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        assertTrue(events[0] is StoreEvent.Enabled)
-        assertEquals("test", events[0].featureId)
+        assertTrue(events[0] is FeatureStoreEvent.Enabled)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -635,8 +635,8 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        assertTrue(events[0] is StoreEvent.Disabled)
-        assertEquals("test", events[0].featureId)
+        assertTrue(events[0] is FeatureStoreEvent.Disabled)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -659,8 +659,8 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        assertTrue(events[0] is StoreEvent.Updated)
-        assertEquals("test", events[0].featureId)
+        assertTrue(events[0] is FeatureStoreEvent.Updated)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -683,8 +683,8 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        assertTrue(events[0] is StoreEvent.Deleted)
-        assertEquals("test", events[0].featureId)
+        assertTrue(events[0] is FeatureStoreEvent.Deleted)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -707,9 +707,9 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        val event = events[0] as? StoreEvent.RoleUpdated
+        val event = events[0] as? FeatureStoreEvent.RoleUpdated
         assertNotNull(event)
-        assertEquals("test", event.featureId)
+        assertEquals("test", event.uid)
     }
 
     @Test
@@ -740,9 +740,9 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        val event = events[0] as? StoreEvent.RoleDeleted
+        val event = events[0] as? FeatureStoreEvent.RoleDeleted
         assertNotNull(event)
-        assertEquals("test", event.featureId)
+        assertEquals("test", event.uid)
     }
 
     @Test
@@ -771,9 +771,9 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(2, events.size)
-        assertTrue(events.all { it is StoreEvent.Enabled })
-        assertTrue(events.any { it.featureId == "feature1" })
-        assertTrue(events.any { it.featureId == "feature2" })
+        assertTrue(events.all { it is FeatureStoreEvent.Enabled })
+        assertTrue(events.any { it.uid == "feature1" })
+        assertTrue(events.any { it.uid == "feature2" })
     }
 
     @Test
@@ -799,15 +799,15 @@ abstract class FeatureStoreContract {
         // Then
         assertEquals(2, events.size)
         assertTrue(
-            events.all { it is StoreEvent.Disabled },
+            events.all { it is FeatureStoreEvent.Disabled },
             "Not all events are Disabled",
         )
         assertTrue(
-            events.any { it.featureId == "feature1" },
+            events.any { it.uid == "feature1" },
             "Feature with id feature1 is missing",
         )
         assertTrue(
-            events.any { it.featureId == "feature2" },
+            events.any { it.uid == "feature2" },
             "Feature with id feature2 is missing",
         )
     }
@@ -832,8 +832,8 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        assertTrue(events[0] is StoreEvent.Updated)
-        assertEquals("test", events[0].featureId)
+        assertTrue(events[0] is FeatureStoreEvent.Updated)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -856,8 +856,8 @@ abstract class FeatureStoreContract {
 
         // Then
         assertEquals(1, events.size)
-        assertTrue(events[0] is StoreEvent.Updated)
-        assertEquals("test", events[0].featureId)
+        assertTrue(events[0] is FeatureStoreEvent.Updated)
+        assertEquals("test", events[0].uid)
     }
 
     @Test
@@ -883,19 +883,19 @@ abstract class FeatureStoreContract {
         // Then
         assertEquals(3, events.size)
         assertTrue(
-            events.all { it is StoreEvent.Deleted },
+            events.all { it is FeatureStoreEvent.Deleted },
             "Not all events are Deleted",
         )
         assertTrue(
-            events.any { it.featureId == "feature1" },
+            events.any { it.uid == "feature1" },
             "Feature with id feature1 is missing",
         )
         assertTrue(
-            events.any { it.featureId == "feature2" },
+            events.any { it.uid == "feature2" },
             "Feature with id feature2 is missing",
         )
         assertTrue(
-            events.any { it.featureId == "feature3" },
+            events.any { it.uid == "feature3" },
             "Feature with id feature3 is missing",
         )
     }
@@ -921,9 +921,9 @@ abstract class FeatureStoreContract {
 
         // Then - verify Created events for new features
         assertEquals(2, events.size)
-        assertTrue(events.all { it is StoreEvent.Created }, "Not all events are Created")
-        assertTrue(events.any { it.featureId == "new1" }, "Feature with id new1 is missing")
-        assertTrue(events.any { it.featureId == "new2" }, "Feature with id new2 is missing")
+        assertTrue(events.all { it is FeatureStoreEvent.Created }, "Not all events are Created")
+        assertTrue(events.any { it.uid == "new1" }, "Feature with id new1 is missing")
+        assertTrue(events.any { it.uid == "new2" }, "Feature with id new2 is missing")
     }
 
     @Test
@@ -958,8 +958,8 @@ abstract class FeatureStoreContract {
 
         // Then - verify Updated event for existing feature
         assertEquals(1, events.size)
-        assertTrue(events[0] is StoreEvent.Updated)
-        assertEquals("existing", events[0].featureId)
+        assertTrue(events[0] is FeatureStoreEvent.Updated)
+        assertEquals("existing", events[0].uid)
     }
 
     @Test

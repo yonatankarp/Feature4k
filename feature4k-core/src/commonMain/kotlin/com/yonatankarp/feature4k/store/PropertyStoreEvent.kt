@@ -1,25 +1,66 @@
 package com.yonatankarp.feature4k.store
 
+import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
+
 /**
- * Represents an event that occurred in the property store.
+ * Events emitted by property stores for auditing and observation.
  *
+ * These events capture the lifecycle of properties including creation, updates, and deletion.
+ *
+ * For property events, the [uid] field contains the property name identifier.
+ *
+ * @see StoreEvent
  * @author Yonatan Karp-Rudin
  */
-sealed class PropertyStoreEvent {
-    abstract val propertyName: String
+@Serializable
+sealed interface PropertyStoreEvent : StoreEvent {
 
     /**
-     * Event emitted when a property is created.
+     * Event emitted when a property is created in the store.
      */
-    data class Created(override val propertyName: String) : PropertyStoreEvent()
+    @Serializable
+    data class Created(
+        override val uid: String,
+        override val eventUid: String,
+        override val timestamp: Instant,
+        override val user: String?,
+        override val source: String?,
+        override val host: String?,
+        override val duration: Long?,
+        override val value: String?,
+        override val customProperties: Map<String, String>,
+    ) : PropertyStoreEvent
 
     /**
-     * Event emitted when a property is updated.
+     * Event emitted when a property is updated in the store.
      */
-    data class Updated(override val propertyName: String) : PropertyStoreEvent()
+    @Serializable
+    data class Updated(
+        override val uid: String,
+        override val eventUid: String,
+        override val timestamp: Instant,
+        override val user: String?,
+        override val source: String?,
+        override val host: String?,
+        override val duration: Long?,
+        override val value: String?,
+        override val customProperties: Map<String, String>,
+    ) : PropertyStoreEvent
 
     /**
-     * Event emitted when a property is deleted.
+     * Event emitted when a property is deleted from the store.
      */
-    data class Deleted(override val propertyName: String) : PropertyStoreEvent()
+    @Serializable
+    data class Deleted(
+        override val uid: String,
+        override val eventUid: String,
+        override val timestamp: Instant,
+        override val user: String?,
+        override val source: String?,
+        override val host: String?,
+        override val duration: Long?,
+        override val value: String?,
+        override val customProperties: Map<String, String>,
+    ) : PropertyStoreEvent
 }
