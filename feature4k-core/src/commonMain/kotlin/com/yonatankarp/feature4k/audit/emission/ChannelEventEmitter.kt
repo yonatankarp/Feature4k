@@ -1,4 +1,4 @@
-package com.yonatankarp.feature4k.store.event
+package com.yonatankarp.feature4k.audit.emission
 
 import com.yonatankarp.feature4k.utils.logger
 import kotlinx.coroutines.channels.Channel

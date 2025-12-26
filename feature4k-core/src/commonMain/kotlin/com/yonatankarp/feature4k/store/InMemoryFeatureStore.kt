@@ -1,11 +1,11 @@
 package com.yonatankarp.feature4k.store
 
+import com.yonatankarp.feature4k.audit.emission.NoOpEventEmitter
+import com.yonatankarp.feature4k.audit.emission.StoreEventEmitter
 import com.yonatankarp.feature4k.core.Feature
 import com.yonatankarp.feature4k.exception.FeatureAlreadyExistException
 import com.yonatankarp.feature4k.exception.FeatureNotFoundException
 import com.yonatankarp.feature4k.exception.GroupNotFoundException
-import com.yonatankarp.feature4k.store.event.NoOpEventEmitter
-import com.yonatankarp.feature4k.store.event.StoreEventEmitter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

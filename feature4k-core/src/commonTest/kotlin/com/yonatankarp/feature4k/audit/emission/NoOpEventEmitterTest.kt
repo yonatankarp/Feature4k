@@ -1,4 +1,4 @@
-package com.yonatankarp.feature4k.store.event
+package com.yonatankarp.feature4k.audit.emission
 
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
