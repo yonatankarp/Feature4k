@@ -71,16 +71,16 @@ abstract class EventRepositoryContract {
         // Given
         val repository = createRepository()
         val now = Clock.System.now()
-        val event1 = eventWithOffset("feature1", (-2).hours)
-        val event2 = eventWithOffset("feature2", (-1).hours)
-        val event3 = eventWithOffset("feature3", 0.hours)
+        val event1 = eventWithOffset("feature1", (-2).hours, baseTime = now)
+        val event2 = eventWithOffset("feature2", (-1).hours, baseTime = now)
+        val event3 = eventWithOffset("feature3", 0.hours, baseTime = now)
 
         repository.save(event1)
         repository.save(event2)
         repository.save(event3)
 
         // When
-        val result = repository.findByTimeRange(start = now - 30.hours, end = now - 3.hours)
+        val result = repository.findByTimeRange(start = now - 30.hours, end = now - 2.hours)
 
         // Then
         assertEquals(1, result.size)
