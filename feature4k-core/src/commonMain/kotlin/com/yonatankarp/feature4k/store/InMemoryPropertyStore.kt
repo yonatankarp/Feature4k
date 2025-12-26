@@ -3,9 +3,9 @@ package com.yonatankarp.feature4k.store
 import com.yonatankarp.feature4k.exception.PropertyAlreadyExistException
 import com.yonatankarp.feature4k.exception.PropertyNotFoundException
 import com.yonatankarp.feature4k.property.Property
+import com.yonatankarp.feature4k.store.event.NoOpEventEmitter
+import com.yonatankarp.feature4k.store.event.StoreEventEmitter
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -24,20 +24,14 @@ import kotlinx.coroutines.sync.withLock
  * For production use with persistence requirements, consider using a database-backed
  * store implementation.
  *
- * @property eventReplay Number of recent events to replay to new observers (default: 10)
- * @property eventBufferCapacity Extra buffer capacity for events beyond replay (default: 64)
+ * @property eventEmitter Event emitter for publishing store changes (defaults to [NoOpEventEmitter])
  * @author Yonatan Karp-Rudin
  */
 class InMemoryPropertyStore(
-    private val eventReplay: Int = 10,
-    private val eventBufferCapacity: Int = 64,
+    private val eventEmitter: StoreEventEmitter<PropertyStoreEvent> = NoOpEventEmitter(),
 ) : PropertyStore {
     private val properties = mutableMapOf<String, Property<*>>()
     private val mutex = Mutex()
-    private val changeEvents = MutableSharedFlow<PropertyStoreEvent>(
-        replay = eventReplay,
-        extraBufferCapacity = eventBufferCapacity,
-    )
 
     override suspend fun contains(propertyName: String): Boolean = mutex.withLock {
         propertyName in properties
@@ -49,7 +43,7 @@ class InMemoryPropertyStore(
                 throw PropertyAlreadyExistException(property.name)
             }
             properties[property.name] = property
-            changeEvents.emit(PropertyStoreEvent.Created(property.name))
+            eventEmitter.emit(PropertyStoreEvent.Created(property.name))
         }
     }
 
@@ -65,7 +59,7 @@ class InMemoryPropertyStore(
             val isUpdate = propertyName in properties
             properties[propertyName] = property
             val event = if (isUpdate) PropertyStoreEvent.Updated(propertyName) else PropertyStoreEvent.Created(propertyName)
-            changeEvents.emit(event)
+            eventEmitter.emit(event)
         }
     }
 
@@ -79,7 +73,7 @@ class InMemoryPropertyStore(
                 throw PropertyNotFoundException(propertyName)
             }
             properties.remove(propertyName)
-            changeEvents.emit(PropertyStoreEvent.Deleted(propertyName))
+            eventEmitter.emit(PropertyStoreEvent.Deleted(propertyName))
         }
     }
 
@@ -87,7 +81,7 @@ class InMemoryPropertyStore(
         mutex.withLock {
             val propertyNames = properties.keys.toList()
             properties.clear()
-            propertyNames.forEach { changeEvents.emit(PropertyStoreEvent.Deleted(it)) }
+            propertyNames.forEach { eventEmitter.emit(PropertyStoreEvent.Deleted(it)) }
         }
     }
 
@@ -97,7 +91,7 @@ class InMemoryPropertyStore(
                 val isUpdate = this.properties.containsKey(property.name)
                 this.properties[property.name] = property
                 val event = if (isUpdate) PropertyStoreEvent.Updated(property.name) else PropertyStoreEvent.Created(property.name)
-                changeEvents.emit(event)
+                eventEmitter.emit(event)
             }
         }
     }
@@ -106,5 +100,5 @@ class InMemoryPropertyStore(
         // No-op for in-memory store
     }
 
-    override fun observeChanges(): Flow<PropertyStoreEvent> = changeEvents.asSharedFlow()
+    override fun observeChanges(): Flow<PropertyStoreEvent> = eventEmitter.observe()
 }

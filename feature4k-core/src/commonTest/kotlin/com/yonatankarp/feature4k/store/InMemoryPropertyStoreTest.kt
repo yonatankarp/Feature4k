@@ -1,6 +1,7 @@
 package com.yonatankarp.feature4k.store
 
 import com.yonatankarp.feature4k.property.PropertyString
+import com.yonatankarp.feature4k.store.StoreFixtures.inMemoryPropertyStoreWithSharedFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -20,12 +21,12 @@ import kotlin.test.assertTrue
  * @author Yonatan Karp-Rudin
  */
 class InMemoryPropertyStoreTest : PropertyStoreContract() {
-    override suspend fun createStore(): PropertyStore = InMemoryPropertyStore()
+    override suspend fun createStore(): PropertyStore = inMemoryPropertyStoreWithSharedFlow()
 
     @Test
     fun `should emit events in correct order with concurrent plusAssign and minusAssign`() = runTest {
         // Given
-        val store = InMemoryPropertyStore()
+        val store = inMemoryPropertyStoreWithSharedFlow()
         val events = mutableListOf<PropertyStoreEvent>()
 
         // When
@@ -63,7 +64,7 @@ class InMemoryPropertyStoreTest : PropertyStoreContract() {
     @Test
     fun `should maintain event-state consistency under concurrent operations`() = runTest {
         // Given
-        val store = InMemoryPropertyStore()
+        val store = inMemoryPropertyStoreWithSharedFlow()
         val events = mutableListOf<PropertyStoreEvent>()
         val propertyCount = 50
         // Create + Update + Delete (for even indices)
