@@ -1,6 +1,7 @@
 package com.yonatankarp.feature4k.store
 
 import com.yonatankarp.feature4k.core.Feature
+import com.yonatankarp.feature4k.store.StoreFixtures.inMemoryFeatureStoreWithSharedFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -20,12 +21,12 @@ import kotlin.test.assertTrue
  * @author Yonatan Karp-Rudin
  */
 class InMemoryFeatureStoreTest : FeatureStoreContract() {
-    override suspend fun createStore(): FeatureStore = InMemoryFeatureStore()
+    override suspend fun createStore(): FeatureStore = inMemoryFeatureStoreWithSharedFlow()
 
     @Test
     fun `should emit events in correct order with concurrent plusAssign and minusAssign`() = runTest {
         // Given
-        val store = InMemoryFeatureStore()
+        val store = inMemoryFeatureStoreWithSharedFlow()
         val events = mutableListOf<StoreEvent>()
 
         // When
@@ -63,7 +64,7 @@ class InMemoryFeatureStoreTest : FeatureStoreContract() {
     @Test
     fun `should maintain event-state consistency under concurrent operations`() = runTest {
         // Given
-        val store = InMemoryFeatureStore()
+        val store = inMemoryFeatureStoreWithSharedFlow()
         val events = mutableListOf<StoreEvent>()
         val featureCount = 50
         // Create + Update (enable/disable) + Delete (for even indices)
