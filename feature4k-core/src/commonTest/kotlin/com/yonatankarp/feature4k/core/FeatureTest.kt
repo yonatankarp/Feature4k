@@ -12,6 +12,8 @@ import com.yonatankarp.feature4k.property.PropertyBoolean
 import com.yonatankarp.feature4k.property.PropertyInt
 import com.yonatankarp.feature4k.property.PropertyLong
 import com.yonatankarp.feature4k.property.PropertyString
+import com.yonatankarp.feature4k.strategy.AlwaysOffStrategy
+import com.yonatankarp.feature4k.strategy.AlwaysOnStrategy
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -392,5 +394,175 @@ class FeatureTest {
             2,
             (modified.customProperties["count"] as PropertyInt).value,
         )
+    }
+
+    @Test
+    fun `should create feature without flipping strategy by default`() {
+        // Given & When
+        val feature = basicFeature()
+
+        // Then
+        assertNull(feature.flippingStrategy)
+        assertFalse(feature.hasFlippingStrategy())
+    }
+
+    @Test
+    fun `should create feature with flipping strategy`() {
+        // Given
+        val uid = "feature1"
+        val strategy = AlwaysOnStrategy
+
+        // When
+        val feature = Feature(uid = uid, flippingStrategy = strategy)
+
+        // Then
+        assertEquals(strategy, feature.flippingStrategy)
+        assertTrue(feature.hasFlippingStrategy())
+    }
+
+    @Test
+    fun `should serialize and deserialize feature without flipping strategy`() {
+        // Given
+        val feature = Feature(
+            uid = "feature1",
+            enabled = true,
+            flippingStrategy = null,
+        )
+
+        // When
+        val json = Json.encodeToString(feature)
+        val deserialized = Json.decodeFromString<Feature>(json)
+
+        // Then
+        assertEquals(feature.uid, deserialized.uid)
+        assertEquals(feature.enabled, deserialized.enabled)
+        assertNull(deserialized.flippingStrategy)
+        assertFalse(json.contains("flippingStrategy"))
+    }
+
+    @Test
+    fun `should serialize and deserialize feature with AlwaysOnStrategy`() {
+        // Given
+        val feature = Feature(
+            uid = "feature1",
+            enabled = true,
+            flippingStrategy = AlwaysOnStrategy,
+        )
+
+        // When
+        val json = Json.encodeToString(feature)
+        val deserialized = Json.decodeFromString<Feature>(json)
+
+        // Then
+        assertEquals(feature.uid, deserialized.uid)
+        assertEquals(feature.enabled, deserialized.enabled)
+        assertEquals(feature.flippingStrategy, deserialized.flippingStrategy)
+        assertTrue(json.contains("always_on"))
+    }
+
+    @Test
+    fun `should serialize and deserialize feature with AlwaysOffStrategy`() {
+        // Given
+        val feature = Feature(
+            uid = "feature1",
+            enabled = false,
+            flippingStrategy = AlwaysOffStrategy,
+        )
+
+        // When
+        val json = Json.encodeToString(feature)
+        val deserialized = Json.decodeFromString<Feature>(json)
+
+        // Then
+        assertEquals(feature.uid, deserialized.uid)
+        assertEquals(feature.enabled, deserialized.enabled)
+        assertEquals(feature.flippingStrategy, deserialized.flippingStrategy)
+        assertTrue(json.contains("always_off"))
+    }
+
+    @Test
+    fun `should copy feature with modified flipping strategy`() {
+        // Given
+        val original = Feature(
+            uid = "feature1",
+            flippingStrategy = AlwaysOnStrategy,
+        )
+
+        // When
+        val modified = original.copy(flippingStrategy = AlwaysOffStrategy)
+
+        // Then
+        assertEquals(AlwaysOnStrategy, original.flippingStrategy)
+        assertEquals(AlwaysOffStrategy, modified.flippingStrategy)
+    }
+
+    @Test
+    fun `should copy feature to remove flipping strategy`() {
+        // Given
+        val original = Feature(
+            uid = "feature1",
+            enabled = true,
+            flippingStrategy = AlwaysOffStrategy,
+        )
+
+        // When
+        val modified = original.copy(flippingStrategy = null)
+        val context = FlippingExecutionContext.empty()
+
+        // Then
+        assertTrue(original.hasFlippingStrategy())
+        assertFalse(modified.hasFlippingStrategy())
+        assertNull(modified.flippingStrategy)
+        assertTrue(modified.evaluate(context)) // Falls back to enabled state
+    }
+
+    @Test
+    fun `evaluate should return true when AlwaysOnStrategy is used`() {
+        // Given
+        val feature = Feature(
+            uid = "feature1",
+            enabled = false,
+            flippingStrategy = AlwaysOnStrategy,
+        )
+        val context = FlippingExecutionContext.empty()
+
+        // When
+        val result = feature.evaluate(context)
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `evaluate should return false when AlwaysOffStrategy is used`() {
+        // Given
+        val feature = Feature(
+            uid = "feature1",
+            enabled = true,
+            flippingStrategy = AlwaysOffStrategy,
+        )
+        val context = FlippingExecutionContext.empty()
+
+        // When
+        val result = feature.evaluate(context)
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `evaluate should return enabled state when no strategy is defined`() {
+        // Given
+        val enabledFeature = Feature(uid = "feature1", enabled = true)
+        val disabledFeature = Feature(uid = "feature2", enabled = false)
+        val context = FlippingExecutionContext.empty()
+
+        // When
+        val enabledResult = enabledFeature.evaluate(context)
+        val disabledResult = disabledFeature.evaluate(context)
+
+        // Then
+        assertTrue(enabledResult)
+        assertFalse(disabledResult)
     }
 }
