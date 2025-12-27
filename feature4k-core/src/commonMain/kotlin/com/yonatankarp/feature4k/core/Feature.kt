@@ -2,6 +2,7 @@ package com.yonatankarp.feature4k.core
 
 import com.yonatankarp.feature4k.exception.InvalidFeatureIdentifierException
 import com.yonatankarp.feature4k.property.Property
+import com.yonatankarp.feature4k.strategy.FlippingStrategy
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -17,6 +18,7 @@ import kotlinx.serialization.Serializable
  * @property description Human-readable description of the feature
  * @property group Optional group name for organizing related features
  * @property permissions Set of permissions required to use this feature
+ * @property flippingStrategy Optional strategy for conditional feature activation
  * @property customProperties Map of custom properties associated with this feature
  * @author Yonatan Karp-Rudin
  */
@@ -28,6 +30,7 @@ data class Feature(
     val description: String? = null,
     val group: String? = null,
     val permissions: Set<String> = emptySet(),
+    val flippingStrategy: FlippingStrategy? = null,
     val customProperties: Map<String, Property<*>> = emptyMap(),
 ) {
     init {
@@ -60,4 +63,20 @@ data class Feature(
      * Checks if this feature has any custom properties defined
      */
     fun hasCustomProperties(): Boolean = customProperties.isNotEmpty()
+
+    /**
+     * Checks if this feature has a flipping strategy defined
+     */
+    fun hasFlippingStrategy(): Boolean = flippingStrategy != null
+
+    /**
+     * Evaluates whether this feature should be enabled for the given execution context.
+     *
+     * If a flipping strategy is defined, it will be used to determine if the feature
+     * should be enabled. If no strategy is defined, returns the current enabled state.
+     *
+     * @param context The execution context containing user, client, server, and custom parameters
+     * @return `true` if the feature should be enabled for the given context, `false` otherwise
+     */
+    fun evaluate(context: FlippingExecutionContext): Boolean = flippingStrategy?.evaluate(context) ?: enabled
 }
