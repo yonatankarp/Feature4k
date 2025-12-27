@@ -159,7 +159,7 @@ class PonderationStrategyTest {
         // When
         val evaluations = (1..100).map { strategy.evaluate(context) }
 
-        // The
+        // Then
         val hasTrue = evaluations.any { it }
         val hasFalse = evaluations.any { it.not() }
         assertTrue(hasTrue && hasFalse, "With null user, evaluation should be random")

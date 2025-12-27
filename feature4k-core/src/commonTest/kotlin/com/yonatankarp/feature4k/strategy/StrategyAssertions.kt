@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
  *
  * @param expected The expected percentage (0.0 to 1.0)
  * @param actual The actual percentage (0.0 to 1.0)
- * @param marginPercent The acceptable margin as a percentage (default 10%, meaning +/- 10% of expected)
+ * @param marginPercent The acceptable margin as a percentage (default 5%, meaning +/- 5% of expected)
  * @param message Optional custom message to display on failure
  *
  * @example
