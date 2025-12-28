@@ -1,13 +1,13 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FlippingExecutionContext
+import com.yonatankarp.feature4k.core.FeatureEvaluationContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
  * A flipping strategy that disables a feature for users in an explicit denylist.
  *
- * This strategy evaluates to `false` when the [FlippingExecutionContext.user] is present
+ * This strategy evaluates to `false` when the user from the execution context is present
  * in the configured [deniedUsers] set. If the context has no user, or the user is not in the
  * denylist, the strategy evaluates to `true`.
  *
@@ -23,17 +23,20 @@ import kotlinx.serialization.Serializable
  * ```kotlin
  * val strategy = DenyListStrategy(deniedUsers = setOf("spammer1", "abuser2"))
  *
- * // User in denylist
- * val spammerContext = FlippingExecutionContext(user = "spammer1")
- * strategy.evaluate(spammerContext) // returns false
+ * val evalContext = FeatureEvaluationContext(
+ *     featureName = "premium-feature",
+ *     store = store,
+ *     context = FlippingExecutionContext(user = "spammer1")
+ * )
+ * strategy.evaluate(evalContext) // returns false
  *
  * // User not in denylist
- * val aliceContext = FlippingExecutionContext(user = "alice")
+ * val aliceContext = FeatureEvaluationContext(
+ *     featureName = "premium-feature",
+ *     store = store,
+ *     context = FlippingExecutionContext(user = "alice")
+ * )
  * strategy.evaluate(aliceContext) // returns true
- *
- * // No user in context
- * val emptyContext = FlippingExecutionContext.empty()
- * strategy.evaluate(emptyContext) // returns true
  * ```
  *
  * ## Serialization
@@ -58,11 +61,11 @@ data class DenyListStrategy(
     /**
      * Evaluates whether the feature should be enabled based on the user in the context.
      *
-     * @param context The execution context containing the user identifier
+     * @param evalContext The evaluation context containing the execution context with user identifier
      * @return `false` if the context has a user and that user is in [deniedUsers], `true` otherwise
      */
-    override fun evaluate(context: FlippingExecutionContext): Boolean {
-        val user = context.user ?: return true
+    override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
+        val user = evalContext.context.user ?: return true
         return user !in deniedUsers
     }
 }

@@ -1,13 +1,13 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FlippingExecutionContext
+import com.yonatankarp.feature4k.core.FeatureEvaluationContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
  * A flipping strategy that enables a feature only for users in an explicit allowlist.
  *
- * This strategy evaluates to `true` only when the [FlippingExecutionContext.user] is present
+ * This strategy evaluates to `true` only when the user from the execution context is present
  * in the configured [allowedUsers] set. If the context has no user, or the user is not in the
  * allowlist, the strategy evaluates to `false`.
  *
@@ -23,17 +23,20 @@ import kotlinx.serialization.Serializable
  * ```kotlin
  * val strategy = AllowListStrategy(allowedUsers = setOf("alice", "bob", "charlie"))
  *
- * // User in allowlist
- * val aliceContext = FlippingExecutionContext(user = "alice")
- * strategy.evaluate(aliceContext) // returns true
+ * val evalContext = FeatureEvaluationContext(
+ *     featureName = "beta-feature",
+ *     store = store,
+ *     context = FlippingExecutionContext(user = "alice")
+ * )
+ * strategy.evaluate(evalContext) // returns true
  *
  * // User not in allowlist
- * val eveContext = FlippingExecutionContext(user = "eve")
+ * val eveContext = FeatureEvaluationContext(
+ *     featureName = "beta-feature",
+ *     store = store,
+ *     context = FlippingExecutionContext(user = "eve")
+ * )
  * strategy.evaluate(eveContext) // returns false
- *
- * // No user in context
- * val emptyContext = FlippingExecutionContext.empty()
- * strategy.evaluate(emptyContext) // returns false
  * ```
  *
  * ## Serialization
@@ -58,11 +61,11 @@ data class AllowListStrategy(
     /**
      * Evaluates whether the feature should be enabled based on the user in the context.
      *
-     * @param context The execution context containing the user identifier
+     * @param evalContext The evaluation context containing the execution context with user identifier
      * @return `true` if the context has a user and that user is in [allowedUsers], `false` otherwise
      */
-    override fun evaluate(context: FlippingExecutionContext): Boolean {
-        val user = context.user ?: return false
+    override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
+        val user = evalContext.context.user ?: return false
         return user in allowedUsers
     }
 }

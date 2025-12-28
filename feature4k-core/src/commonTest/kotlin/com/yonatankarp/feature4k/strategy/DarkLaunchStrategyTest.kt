@@ -1,7 +1,9 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FlippingExecutionContext
-import com.yonatankarp.feature4k.strategy.Weight
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.emptyExecutionContext
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.executionContextWithUser
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.featureEvaluationContext
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -17,15 +19,16 @@ import kotlin.test.assertTrue
  */
 class DarkLaunchStrategyTest {
     @Test
-    fun `should enable feature for approximately correct percentage of users`() {
+    fun `should enable feature for approximately correct percentage of users`() = runTest {
         // Given
         val strategy = DarkLaunchStrategy(weight = Weight.FIFTY_PERCENT)
         val users = (1..1000).map { "user$it" }
 
         // When
         val enabledCount = users.count { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -34,29 +37,31 @@ class DarkLaunchStrategyTest {
     }
 
     @Test
-    fun `should be deterministic for same user across evaluations`() {
+    fun `should be deterministic for same user across evaluations`() = runTest {
         // Given
         val strategy = DarkLaunchStrategy(weight = Weight.FIFTY_PERCENT)
-        val context = FlippingExecutionContext(user = "alice")
+        val execContext = executionContextWithUser(user = "alice")
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val firstEvaluation = strategy.evaluate(context)
-        val evaluations = (1..100).map { strategy.evaluate(context) }
+        val firstEvaluation = strategy.evaluate(evalContext)
+        val evaluations = (1..100).map { strategy.evaluate(evalContext) }
 
         // Then
         assertTrue(evaluations.all { it == firstEvaluation }, "Same user should always get same result")
     }
 
     @Test
-    fun `should enable all users for full rollout`() {
+    fun `should enable all users for full rollout`() = runTest {
         // Given
         val strategy = DarkLaunchStrategy(weight = Weight.FULL)
         val users = (1..100).map { "user$it" }
 
         // When
         val results = users.map { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -64,15 +69,16 @@ class DarkLaunchStrategyTest {
     }
 
     @Test
-    fun `should disable all users for zero weight`() {
+    fun `should disable all users for zero weight`() = runTest {
         // Given
         val strategy = DarkLaunchStrategy(weight = Weight.ZERO)
         val users = (1..100).map { "user$it" }
 
         // When
         val results = users.map { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -80,15 +86,16 @@ class DarkLaunchStrategyTest {
     }
 
     @Test
-    fun `should support canary deployment with 1 percent rollout`() {
+    fun `should support canary deployment with 1 percent rollout`() = runTest {
         // Given
         val strategy = DarkLaunchStrategy(weight = Weight.ONE_PERCENT)
         val users = (1..1000).map { "user$it" }
 
         // When
         val enabledCount = users.count { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -97,15 +104,16 @@ class DarkLaunchStrategyTest {
     }
 
     @Test
-    fun `should support typical dark launch rollout of 10 percent`() {
+    fun `should support typical dark launch rollout of 10 percent`() = runTest {
         // Given
         val strategy = DarkLaunchStrategy(weight = Weight.TEN_PERCENT)
         val users = (1..1000).map { "user$it" }
 
         // When
         val enabledCount = users.count { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -181,20 +189,24 @@ class DarkLaunchStrategyTest {
     }
 
     @Test
-    fun `should maintain user cohorts across weight increases for dark launch expansion`() {
+    fun `should maintain user cohorts across weight increases for dark launch expansion`() = runTest {
         // Given - Simulate progressive dark launch rollout
         val users = (1..1000).map { "user$it" }
 
         // Phase 1: Dark launch to 10% of users
         val phase1 = DarkLaunchStrategy(weight = Weight.TEN_PERCENT)
         val phase1Enabled = users.filter { user ->
-            phase1.evaluate(FlippingExecutionContext(user = user))
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            phase1.evaluate(evalContext)
         }.toSet()
 
         // Phase 2: Expand dark launch to 50% after monitoring phase 1
         val phase2 = DarkLaunchStrategy(weight = Weight.FIFTY_PERCENT)
         val phase2Enabled = users.filter { user ->
-            phase2.evaluate(FlippingExecutionContext(user = user))
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            phase2.evaluate(evalContext)
         }.toSet()
 
         // Then - Users from phase 1 should still be in phase 2 (stable cohorts)
@@ -208,13 +220,14 @@ class DarkLaunchStrategyTest {
     }
 
     @Test
-    fun `should use random evaluation for anonymous traffic without user context`() {
+    fun `should use random evaluation for anonymous traffic without user context`() = runTest {
         // Given
         val strategy = DarkLaunchStrategy(weight = Weight.FIFTY_PERCENT)
-        val context = FlippingExecutionContext.empty()
+        val execContext = emptyExecutionContext()
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val evaluations = (1..100).map { strategy.evaluate(context) }
+        val evaluations = (1..100).map { strategy.evaluate(evalContext) }
 
         // Then - Should have variation (not all same)
         val hasEnabled = evaluations.any { it }

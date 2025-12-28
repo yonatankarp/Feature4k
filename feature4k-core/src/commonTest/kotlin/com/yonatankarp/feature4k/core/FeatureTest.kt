@@ -507,62 +507,10 @@ class FeatureTest {
 
         // When
         val modified = original.copy(flippingStrategy = null)
-        val context = FlippingExecutionContext.empty()
 
         // Then
         assertTrue(original.hasFlippingStrategy())
         assertFalse(modified.hasFlippingStrategy())
         assertNull(modified.flippingStrategy)
-        assertTrue(modified.evaluate(context)) // Falls back to enabled state
-    }
-
-    @Test
-    fun `evaluate should return true when AlwaysOnStrategy is used`() {
-        // Given
-        val feature = Feature(
-            uid = "feature1",
-            enabled = false,
-            flippingStrategy = AlwaysOnStrategy,
-        )
-        val context = FlippingExecutionContext.empty()
-
-        // When
-        val result = feature.evaluate(context)
-
-        // Then
-        assertTrue(result)
-    }
-
-    @Test
-    fun `evaluate should return false when AlwaysOffStrategy is used`() {
-        // Given
-        val feature = Feature(
-            uid = "feature1",
-            enabled = true,
-            flippingStrategy = AlwaysOffStrategy,
-        )
-        val context = FlippingExecutionContext.empty()
-
-        // When
-        val result = feature.evaluate(context)
-
-        // Then
-        assertFalse(result)
-    }
-
-    @Test
-    fun `evaluate should return enabled state when no strategy is defined`() {
-        // Given
-        val enabledFeature = Feature(uid = "feature1", enabled = true)
-        val disabledFeature = Feature(uid = "feature2", enabled = false)
-        val context = FlippingExecutionContext.empty()
-
-        // When
-        val enabledResult = enabledFeature.evaluate(context)
-        val disabledResult = disabledFeature.evaluate(context)
-
-        // Then
-        assertTrue(enabledResult)
-        assertFalse(disabledResult)
     }
 }

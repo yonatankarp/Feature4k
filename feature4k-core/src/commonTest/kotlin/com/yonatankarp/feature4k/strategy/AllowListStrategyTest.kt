@@ -1,6 +1,10 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FlippingExecutionContext
+import com.yonatankarp.feature4k.store.InMemoryFeatureStore
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.emptyExecutionContext
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.executionContextWithUser
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.featureEvaluationContext
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -16,105 +20,119 @@ import kotlin.test.assertTrue
  */
 class AllowListStrategyTest {
     @Test
-    fun `should return true when user is in allowlist`() {
+    fun `should return true when user is in allowlist`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = setOf("alice", "bob", "charlie"))
-        val context = FlippingExecutionContext(user = "alice")
+        val execContext = executionContextWithUser(user = "alice")
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val result = strategy.evaluate(context)
+        val result = strategy.evaluate(evalContext)
 
         // Then
         assertTrue(result, "Strategy should return true for allowed user")
     }
 
     @Test
-    fun `should return false when user is not in allowlist`() {
+    fun `should return false when user is not in allowlist`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = setOf("alice", "bob", "charlie"))
-        val context = FlippingExecutionContext(user = "eve")
+        val execContext = executionContextWithUser(user = "eve")
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val result = strategy.evaluate(context)
+        val result = strategy.evaluate(evalContext)
 
         // Then
         assertFalse(result, "Strategy should return false for non-allowed user")
     }
 
     @Test
-    fun `should return false when context has no user`() {
+    fun `should return false when context has no user`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = setOf("alice", "bob"))
-        val context = FlippingExecutionContext.empty()
+        val execContext = emptyExecutionContext()
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val result = strategy.evaluate(context)
+        val result = strategy.evaluate(evalContext)
 
         // Then
         assertFalse(result, "Strategy should return false when context has no user")
     }
 
     @Test
-    fun `should return false when context has null user`() {
+    fun `should return false when context has null user`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = setOf("alice", "bob"))
-        val context = FlippingExecutionContext(user = null, client = "web-app")
+        val execContext = executionContextWithUser(user = null, client = "web-app")
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val result = strategy.evaluate(context)
+        val result = strategy.evaluate(evalContext)
 
         // Then
         assertFalse(result, "Strategy should return false when user is null")
     }
 
     @Test
-    fun `should return false when allowlist is empty`() {
+    fun `should return false when allowlist is empty`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = emptySet())
-        val context = FlippingExecutionContext(user = "alice")
+        val execContext = executionContextWithUser(user = "alice")
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val result = strategy.evaluate(context)
+        val result = strategy.evaluate(evalContext)
 
         // Then
         assertFalse(result, "Strategy should return false when allowlist is empty")
     }
 
     @Test
-    fun `should handle single user in allowlist`() {
+    fun `should handle single user in allowlist`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = setOf("alice"))
-        val aliceContext = FlippingExecutionContext(user = "alice")
-        val bobContext = FlippingExecutionContext(user = "bob")
+        val aliceExecContext = executionContextWithUser(user = "alice")
+        val bobExecContext = executionContextWithUser(user = "bob")
+        val store = InMemoryFeatureStore()
+        val aliceEvalContext = featureEvaluationContext(context = aliceExecContext, store = store)
+        val bobEvalContext = featureEvaluationContext(context = bobExecContext, store = store)
 
         // When & Then
-        assertTrue(strategy.evaluate(aliceContext), "Should allow alice")
-        assertFalse(strategy.evaluate(bobContext), "Should not allow bob")
+        assertTrue(strategy.evaluate(aliceEvalContext), "Should allow alice")
+        assertFalse(strategy.evaluate(bobEvalContext), "Should not allow bob")
     }
 
     @Test
-    fun `should be case-sensitive for user matching`() {
+    fun `should be case-sensitive for user matching`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = setOf("Alice"))
-        val upperCaseContext = FlippingExecutionContext(user = "Alice")
-        val lowerCaseContext = FlippingExecutionContext(user = "alice")
+        val upperCaseExecContext = executionContextWithUser(user = "Alice")
+        val lowerCaseExecContext = executionContextWithUser(user = "alice")
+        val store = InMemoryFeatureStore()
+        val upperCaseEvalContext = featureEvaluationContext(context = upperCaseExecContext, store = store)
+        val lowerCaseEvalContext = featureEvaluationContext(context = lowerCaseExecContext, store = store)
 
         // When & Then
-        assertTrue(strategy.evaluate(upperCaseContext), "Should match exact case 'Alice'")
-        assertFalse(strategy.evaluate(lowerCaseContext), "Should not match different case 'alice'")
+        assertTrue(strategy.evaluate(upperCaseEvalContext), "Should match exact case 'Alice'")
+        assertFalse(strategy.evaluate(lowerCaseEvalContext), "Should not match different case 'alice'")
     }
 
     @Test
-    fun `should handle allowlist with many users`() {
+    fun `should handle allowlist with many users`() = runTest {
         // Given
         val manyUsers = (1..100).map { "user$it" }.toSet()
         val strategy = AllowListStrategy(allowedUsers = manyUsers)
-        val user50Context = FlippingExecutionContext(user = "user50")
-        val user101Context = FlippingExecutionContext(user = "user101")
+        val user50ExecContext = executionContextWithUser(user = "user50")
+        val user101ExecContext = executionContextWithUser(user = "user101")
+        val store = InMemoryFeatureStore()
+        val user50EvalContext = featureEvaluationContext(context = user50ExecContext, store = store)
+        val user101EvalContext = featureEvaluationContext(context = user101ExecContext, store = store)
 
         // When & Then
-        assertTrue(strategy.evaluate(user50Context), "Should allow user50")
-        assertFalse(strategy.evaluate(user101Context), "Should not allow user101")
+        assertTrue(strategy.evaluate(user50EvalContext), "Should allow user50")
+        assertFalse(strategy.evaluate(user101EvalContext), "Should not allow user101")
     }
 
     @Test
@@ -137,6 +155,7 @@ class AllowListStrategyTest {
     @Test
     fun `should deserialize from JSON correctly`() {
         // Given
+        // language=json
         val jsonString = """
             {
                 "type": "allowlist",
@@ -169,13 +188,15 @@ class AllowListStrategyTest {
     }
 
     @Test
-    fun `should use default empty set when not specified`() {
+    fun `should use default empty set when not specified`() = runTest {
         // Given
         val strategy = AllowListStrategy()
+        val execContext = executionContextWithUser(user = "anyone")
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When & Then
         assertTrue(strategy.allowedUsers.isEmpty(), "Default allowedUsers should be empty set")
-        assertFalse(strategy.evaluate(FlippingExecutionContext(user = "anyone")))
+        assertFalse(strategy.evaluate(evalContext))
     }
 
     @Test
@@ -191,18 +212,19 @@ class AllowListStrategyTest {
     }
 
     @Test
-    fun `should ignore other context fields`() {
+    fun `should ignore other context fields`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = setOf("alice"))
-        val contextWithExtras = FlippingExecutionContext(
+        val execContext = executionContextWithUser(
             user = "alice",
             client = "mobile-app",
             server = "prod-server",
             customParams = mapOf("region" to "us-east"),
         )
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val result = strategy.evaluate(contextWithExtras)
+        val result = strategy.evaluate(evalContext)
 
         // Then
         assertTrue(result, "Should only care about user field, ignoring other context fields")
