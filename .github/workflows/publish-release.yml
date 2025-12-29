@@ -47,8 +47,11 @@ jobs:
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Test and publish ${{ matrix.target }}
-        run: ./gradlew -Pversion=${{ steps.version.outputs.VERSION }} ${{ matrix.test }} ${{ matrix.task }} --no-daemon
+      - name: Test ${{ matrix.target }}
+        run: ./gradlew ${{ matrix.test }} --no-daemon
+
+      - name: Publish ${{ matrix.target }}
+        run: ./gradlew "-Pversion=${{ steps.version.outputs.VERSION }}" ${{ matrix.task }} --no-daemon
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -87,8 +90,11 @@ jobs:
         shell: bash
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Test and publish ${{ matrix.target }}
-        run: ./gradlew -Pversion=${{ steps.version.outputs.VERSION }} ${{ matrix.test }} ${{ matrix.task }} --no-daemon
+      - name: Test ${{ matrix.target }}
+        run: ./gradlew ${{ matrix.test }} --no-daemon
+
+      - name: Publish ${{ matrix.target }}
+        run: ./gradlew "-Pversion=${{ steps.version.outputs.VERSION }}" ${{ matrix.task }} --no-daemon
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -104,7 +110,7 @@ jobs:
       matrix:
         include:
           - target: iosArm64
-            test: iosArm64Test
+            test: linkDebugTestIosArm64
             task: publishIosArm64PublicationToGitHubPackagesRepository
           - target: iosSimulatorArm64
             test: iosSimulatorArm64Test
@@ -138,8 +144,11 @@ jobs:
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Test and publish ${{ matrix.target }}
-        run: ./gradlew -Pversion=${{ steps.version.outputs.VERSION }} ${{ matrix.test }} ${{ matrix.task }} --no-daemon
+      - name: Test ${{ matrix.target }}
+        run: ./gradlew ${{ matrix.test }} --no-daemon
+
+      - name: Publish ${{ matrix.target }}
+        run: ./gradlew "-Pversion=${{ steps.version.outputs.VERSION }}" ${{ matrix.task }} --no-daemon
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
