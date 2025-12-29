@@ -1,8 +1,8 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.strategy.StrategyFixtures.emptyExecutionContext
-import com.yonatankarp.feature4k.strategy.StrategyFixtures.executionContextWithUser
-import com.yonatankarp.feature4k.strategy.StrategyFixtures.featureEvaluationContext
+import com.yonatankarp.feature4k.strategy.FeatureEvaluationContextFixture.featureEvaluationContext
+import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.emptyExecutionContext
+import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.executionContextWithUser
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
