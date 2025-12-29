@@ -2,19 +2,15 @@ package com.yonatankarp.feature4k.utils
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.MemScope
-import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.refTo
 import kotlinx.cinterop.set
-import platform.posix.fclose
-import platform.posix.fopen
-import platform.posix.fread
 import platform.posix.rand
 import platform.posix.srand
 import platform.posix.time
 
 /**
- * Linux/Native implementation of UUID generation.
+ * Windows/MinGW implementation of UUID generation.
  * Uses a combination of timestamp and random bytes for UUID generation.
  *
  * @author Yonatan Karp-Rudin
@@ -28,7 +24,7 @@ actual object Uid {
     /**
      * Generate an RFC 4122 version 4 UUID.
      *
-     * Attempts to fill 16 bytes with cryptographically strong randomness from /dev/urandom and falls back to a time-seeded C RNG if unavailable or if the read fails. Sets the version and variant bits per RFC 4122, then formats the bytes as a lowercase hexadecimal UUID in the standard 8-4-4-4-12 layout (segments of characters separated by hyphens).
+     * Uses the C standard library random number generator seeded with the current time to fill 16 bytes, sets the version and variant bits per RFC 4122, then formats the bytes as a lowercase hexadecimal UUID in the standard 8-4-4-4-12 layout (segments of characters separated by hyphens).
      *
      * @return The UUID string in the standard 8-4-4-4-12 lowercase hexadecimal format (e.g. `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`).
      */
@@ -36,21 +32,9 @@ actual object Uid {
         // Simple UUID v4 implementation
         val uuid = ByteArray(16)
 
-        // Fill with random bytes
+        // Fill with random bytes using time-seeded PRNG
         memScoped {
-            val ptr = uuid.refTo(0).getPointer(this)
-
-            // Try to read from /dev/urandom for high-quality randomness
-            fopen("/dev/urandom", "rb")
-                ?.let { file ->
-                    val bytesToRead = uuid.size.toULong()
-                    val bytesRead = fread(ptr, 1.convert(), bytesToRead, file)
-                    fclose(file)
-
-                    if (bytesRead != bytesToRead) {
-                        inMemoryRandomSeed(uuid)
-                    }
-                } ?: inMemoryRandomSeed(uuid)
+            inMemoryRandomSeed(uuid)
         }
 
         // Set version (4) and variant bits according to RFC 4122

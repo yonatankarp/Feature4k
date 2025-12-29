@@ -1,10 +1,10 @@
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("com.diffplug.spotless")
-    // Android disabled for now
-    // id("com.android.library")
+    id("com.android.library")
 }
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
@@ -14,28 +14,24 @@ kotlin {
         libs.findVersion("jvm-toolchain").get().requiredVersion.toInt()
     )
 
-    // Android disabled for now
-    /*
     androidTarget {
         publishLibraryVariants("release")
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    */
 
     jvm()
 
-    /*
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-    */
+
+    macosX64()
+    macosArm64()
 
     linuxX64()
-    // macosX64()
-    // macosArm64()
-    // mingwX64()
+    mingwX64()
 
     applyDefaultHierarchyTemplate()
 
@@ -49,11 +45,9 @@ kotlin {
     }
 }
 
-// Android disabled for now
-/*
 android {
     namespace = "org.feature4k.${project.name.replace("-", ".")}"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         minSdk = 24
     }
@@ -61,8 +55,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+    }
 }
-*/
 
 spotless {
     kotlin {
