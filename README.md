@@ -52,7 +52,9 @@ Feature4k is built with modularity in mind. You only include what you use.
 - **JVM** (Server, Desktop)
 - **Android** (Native)
 - **iOS** (Arm64, X64, Simulator)
-- **Native** (Linux, Windows, macOS)
+- **macOS** (Arm64, X64)
+- **Linux** (X64)
+- **Windows** (X64 via MinGW)
 
 ## 🔨 Getting Started
 
