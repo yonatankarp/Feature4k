@@ -21,3 +21,7 @@ kotlin {
         }
     }
 }
+
+dependencies {
+    add("androidUnitTestImplementation", libs.robolectric)
+}
