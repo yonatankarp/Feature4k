@@ -1,6 +1,6 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FlippingExecutionContext
+import com.yonatankarp.feature4k.core.FeatureEvaluationContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -60,5 +60,5 @@ data class DarkLaunchStrategy(
     @Transient
     private val delegate = PonderationStrategy(weight)
 
-    override fun evaluate(context: FlippingExecutionContext): Boolean = delegate.evaluate(context)
+    override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean = delegate.evaluate(evalContext)
 }

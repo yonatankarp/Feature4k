@@ -1,6 +1,9 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FlippingExecutionContext
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.emptyExecutionContext
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.executionContextWithUser
+import com.yonatankarp.feature4k.strategy.StrategyFixtures.featureEvaluationContext
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -16,15 +19,17 @@ import kotlin.test.assertTrue
  */
 class PonderationStrategyTest {
     @Test
-    fun `should enable feature for approximately correct percentage of users`() {
+    fun `should enable feature for approximately correct percentage of users`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val users = (1..1000).map { "user$it" }
 
         // When
         val enabledCount = users.count { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext =
+                featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -33,61 +38,76 @@ class PonderationStrategyTest {
     }
 
     @Test
-    fun `should be deterministic for same user`() {
+    fun `should be deterministic for same user`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
-        val context = FlippingExecutionContext(user = "alice")
+        val execContext = executionContextWithUser(user = "alice")
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val firstEvaluation = strategy.evaluate(context)
-        val evaluations = (1..100).map { strategy.evaluate(context) }
+        val firstEvaluation = strategy.evaluate(evalContext)
+        val evaluations = (1..100).map { strategy.evaluate(evalContext) }
 
         // Then
-        assertTrue(evaluations.all { it == firstEvaluation }, "Same user should always get same result")
+        assertTrue(
+            evaluations.all { it == firstEvaluation },
+            "Same user should always get same result",
+        )
     }
 
     @Test
-    fun `should enable all users when weight is 1_0`() {
+    fun `should enable all users when weight is 1_0`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FULL)
         val users = (1..100).map { "user$it" }
 
         // When
         val results = users.map { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
-        assertTrue(results.all { it }, "All users should be enabled when weight is 1.0")
+        assertTrue(
+            results.all { it },
+            "All users should be enabled when weight is 1.0",
+        )
     }
 
     @Test
-    fun `should disable all users when weight is 0_0`() {
+    fun `should disable all users when weight is 0_0`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.ZERO)
         val users = (1..100).map { "user$it" }
 
         // When
         val results = users.map { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
-        assertTrue(results.all { it.not() }, "All users should be disabled when weight is 0.0")
+        assertTrue(
+            results.all { it.not() },
+            "All users should be disabled when weight is 0.0",
+        )
     }
 
     @Test
-    fun `should enable approximately 25 percent of users when weight is 0_25`() {
+    fun `should enable approximately 25 percent of users when weight is 0_25`() = runTest {
         // Given
-        val strategy = PonderationStrategy(weight = Weight.TWENTY_FIVE_PERCENT)
+        val strategy =
+            PonderationStrategy(weight = Weight.TWENTY_FIVE_PERCENT)
         val users = (1..1000).map { "user$it" }
 
         // When
         val enabledCount = users.count { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext =
+                featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -96,15 +116,18 @@ class PonderationStrategyTest {
     }
 
     @Test
-    fun `should enable approximately 75 percent of users when weight is 0_75`() {
+    fun `should enable approximately 75 percent of users when weight is 0_75`() = runTest {
         // Given
-        val strategy = PonderationStrategy(weight = Weight.SEVENTY_FIVE_PERCENT)
+        val strategy =
+            PonderationStrategy(weight = Weight.SEVENTY_FIVE_PERCENT)
         val users = (1..1000).map { "user$it" }
 
         // When
         val enabledCount = users.count { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext =
+                featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -113,15 +136,16 @@ class PonderationStrategyTest {
     }
 
     @Test
-    fun `should distribute users evenly across hash space`() {
+    fun `should distribute users evenly across hash space`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val users = (1..1000).map { "user$it" }
 
         // When
         val grouped = users.groupBy { user ->
-            val context = FlippingExecutionContext(user = user)
-            strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            strategy.evaluate(evalContext)
         }
 
         // Then
@@ -136,33 +160,42 @@ class PonderationStrategyTest {
     }
 
     @Test
-    fun `should use random evaluation when context has no user`() {
+    fun `should use random evaluation when context has no user`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
-        val context = FlippingExecutionContext.empty()
+        val execContext = emptyExecutionContext()
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val evaluations = (1..100).map { strategy.evaluate(context) }
+        val evaluations = (1..100).map { strategy.evaluate(evalContext) }
 
         // Then
         val hasTrue = evaluations.any { it }
         val hasFalse = evaluations.any { it.not() }
-        assertTrue(hasTrue && hasFalse, "Without user, evaluation should be random and produce both true and false")
+        assertTrue(
+            hasTrue && hasFalse,
+            "Without user, evaluation should be random and produce both true and false",
+        )
     }
 
     @Test
-    fun `should use random evaluation when user is null`() {
+    fun `should use random evaluation when user is null`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
-        val context = FlippingExecutionContext(user = null, client = "web-app")
+        val execContext =
+            executionContextWithUser(user = null, client = "web-app")
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val evaluations = (1..100).map { strategy.evaluate(context) }
+        val evaluations = (1..100).map { strategy.evaluate(evalContext) }
 
         // Then
         val hasTrue = evaluations.any { it }
         val hasFalse = evaluations.any { it.not() }
-        assertTrue(hasTrue && hasFalse, "With null user, evaluation should be random")
+        assertTrue(
+            hasTrue && hasFalse,
+            "With null user, evaluation should be random",
+        )
     }
 
     @Test
@@ -193,20 +226,26 @@ class PonderationStrategyTest {
     }
 
     @Test
-    fun `should handle edge case users with same hash`() {
+    fun `should handle edge case users with same hash`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val user1 = "user123"
         val user2 = "user123" // Same user
+        val execContext1 = executionContextWithUser(user = user1)
+        val execContext2 = executionContextWithUser(user = user2)
+        val evalContext1 = featureEvaluationContext(context = execContext1)
+        val evalContext2 = featureEvaluationContext(context = execContext2)
 
         // When
-        val context1 = FlippingExecutionContext(user = user1)
-        val context2 = FlippingExecutionContext(user = user2)
-        val result1 = strategy.evaluate(context1)
-        val result2 = strategy.evaluate(context2)
+        val result1 = strategy.evaluate(evalContext1)
+        val result2 = strategy.evaluate(evalContext2)
 
         // Then
-        assertEquals(result1, result2, "Same user should always get same result")
+        assertEquals(
+            result1,
+            result2,
+            "Same user should always get same result",
+        )
     }
 
     @Test
@@ -219,8 +258,14 @@ class PonderationStrategyTest {
         val serialized = json.encodeToString<FlippingStrategy>(strategy)
 
         // Then
-        assertTrue(serialized.contains("\"type\": \"ponderation\""), "Should contain type")
-        assertTrue(serialized.contains("\"weight\": ${Weight.SEVENTY_FIVE_PERCENT}"), "Should contain weight field")
+        assertTrue(
+            serialized.contains("\"type\": \"ponderation\""),
+            "Should contain type",
+        )
+        assertTrue(
+            serialized.contains("\"weight\": ${Weight.SEVENTY_FIVE_PERCENT}"),
+            "Should contain weight field",
+        )
     }
 
     @Test
@@ -239,7 +284,10 @@ class PonderationStrategyTest {
         val strategy = json.decodeFromString<FlippingStrategy>(jsonString)
 
         // Then
-        assertTrue(strategy is PonderationStrategy, "Should deserialize to PonderationStrategy")
+        assertTrue(
+            strategy is PonderationStrategy,
+            "Should deserialize to PonderationStrategy",
+        )
         assertEquals(0.25, strategy.weight)
     }
 
@@ -263,36 +311,51 @@ class PonderationStrategyTest {
         // Given
         val strategy1 = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val strategy2 = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
-        val strategy3 = PonderationStrategy(weight = Weight.SEVENTY_FIVE_PERCENT)
+        val strategy3 =
+            PonderationStrategy(weight = Weight.SEVENTY_FIVE_PERCENT)
 
         // When & Then
-        assertEquals(strategy1, strategy2, "Strategies with same weight should be equal")
-        assertNotEquals(strategy1, strategy3, "Strategies with different weight should not be equal")
+        assertEquals(
+            strategy1,
+            strategy2,
+            "Strategies with same weight should be equal",
+        )
+        assertNotEquals(
+            strategy1,
+            strategy3,
+            "Strategies with different weight should not be equal",
+        )
     }
 
     @Test
-    fun `should ignore other context fields`() {
+    fun `should ignore other context fields`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val user = "alice"
-        val context1 = FlippingExecutionContext(user = user)
-        val context2 = FlippingExecutionContext(
+        val execContext1 = executionContextWithUser(user = user)
+        val execContext2 = executionContextWithUser(
             user = user,
             client = "mobile-app",
             server = "prod-server",
             customParams = mapOf("region" to "us-east"),
         )
+        val evalContext1 = featureEvaluationContext(context = execContext1)
+        val evalContext2 = featureEvaluationContext(context = execContext2)
 
         // When
-        val result1 = strategy.evaluate(context1)
-        val result2 = strategy.evaluate(context2)
+        val result1 = strategy.evaluate(evalContext1)
+        val result2 = strategy.evaluate(evalContext2)
 
         // Then
-        assertEquals(result1, result2, "Should only care about user field, ignoring other context fields")
+        assertEquals(
+            result1,
+            result2,
+            "Should only care about user field, ignoring other context fields",
+        )
     }
 
     @Test
-    fun `should handle special characters in user identifier`() {
+    fun `should handle special characters in user identifier`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val specialUsers = listOf(
@@ -306,51 +369,66 @@ class PonderationStrategyTest {
 
         // When & Then
         specialUsers.forEach { user ->
-            val context = FlippingExecutionContext(user = user)
-            val firstResult = strategy.evaluate(context)
-            val secondResult = strategy.evaluate(context)
-            assertEquals(firstResult, secondResult, "User '$user' should have deterministic result")
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+
+            val firstResult = strategy.evaluate(evalContext)
+            val secondResult = strategy.evaluate(evalContext)
+            assertEquals(
+                firstResult,
+                secondResult,
+                "User '$user' should have deterministic result",
+            )
         }
     }
 
     @Test
-    fun `should handle very long user identifiers`() {
+    fun `should handle very long user identifiers`() = runTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val longUser = "user" + "x".repeat(10000)
-        val context = FlippingExecutionContext(user = longUser)
+        val execContext = executionContextWithUser(user = longUser)
+        val evalContext = featureEvaluationContext(context = execContext)
 
         // When
-        val firstResult = strategy.evaluate(context)
-        val secondResult = strategy.evaluate(context)
+        val firstResult = strategy.evaluate(evalContext)
+        val secondResult = strategy.evaluate(evalContext)
 
         // Then
-        assertEquals(firstResult, secondResult, "Long user identifier should have deterministic result")
+        assertEquals(
+            firstResult,
+            secondResult,
+            "Long user identifier should have deterministic result",
+        )
     }
 
     @Test
-    fun `should maintain stability across weight changes for incremental rollouts`() {
+    fun `should maintain stability across weight changes for incremental rollouts`() = runTest {
         // Given
         val users = (1..1000).map { "user$it" }
 
         // Phase 1: 25% rollout
-        val phase1Strategy = PonderationStrategy(weight = Weight.TWENTY_FIVE_PERCENT)
+        val phase1Strategy =
+            PonderationStrategy(weight = Weight.TWENTY_FIVE_PERCENT)
         val phase1Enabled = users.filter { user ->
-            val context = FlippingExecutionContext(user = user)
-            phase1Strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            phase1Strategy.evaluate(evalContext)
         }.toSet()
 
         // Phase 2: 50% rollout
         val phase2Strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val phase2Enabled = users.filter { user ->
-            val context = FlippingExecutionContext(user = user)
-            phase2Strategy.evaluate(context)
+            val execContext = executionContextWithUser(user = user)
+            val evalContext = featureEvaluationContext(context = execContext)
+            phase2Strategy.evaluate(evalContext)
         }.toSet()
 
         // Then - Users enabled in phase 1 should still be enabled in phase 2
         // (This verifies stable hashing allows for graceful rollout expansion)
         val phase1StillEnabled = phase1Enabled.filter { it in phase2Enabled }
-        val percentageRetained = phase1StillEnabled.size.toDouble() / phase1Enabled.size
+        val percentageRetained =
+            phase1StillEnabled.size.toDouble() / phase1Enabled.size
 
         // With stable hashing, most users from phase1 should still be enabled in phase2
         assertTrue(

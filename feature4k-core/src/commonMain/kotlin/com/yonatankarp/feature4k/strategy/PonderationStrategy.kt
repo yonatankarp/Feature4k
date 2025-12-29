@@ -1,6 +1,6 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FlippingExecutionContext
+import com.yonatankarp.feature4k.core.FeatureEvaluationContext
 import com.yonatankarp.feature4k.utils.UniformHash
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -101,10 +101,10 @@ data class PonderationStrategy(
      * user will always get the same result. If no user is present, evaluation falls back to
      * random behavior.
      *
-     * @param context The execution context, optionally containing a user identifier
+     * @param evalContext The evaluation context containing the execution context with optional user identifier
      * @return `true` if the feature should be enabled based on weight threshold, `false` otherwise
      */
-    override fun evaluate(context: FlippingExecutionContext): Boolean = context.user?.let { user ->
+    override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean = evalContext.context.user?.let { user ->
         UniformHash(user) < weight
     } ?: (nextDouble() < weight)
 }

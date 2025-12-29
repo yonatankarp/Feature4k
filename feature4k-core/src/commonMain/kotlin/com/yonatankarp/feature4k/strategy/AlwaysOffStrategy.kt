@@ -1,6 +1,6 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FlippingExecutionContext
+import com.yonatankarp.feature4k.core.FeatureEvaluationContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,7 +23,12 @@ import kotlinx.serialization.Serializable
  *     flippingStrategy = AlwaysOffStrategy
  * )
  *
- * val result = feature.evaluate(FlippingExecutionContext.empty()) // returns false (overrides enabled)
+ * val evalContext = FeatureEvaluationContext(
+ *     featureName = "test-feature",
+ *     store = store,
+ *     context = FlippingExecutionContext.empty()
+ * )
+ * val result = AlwaysOffStrategy.evaluate(evalContext) // returns false (overrides enabled)
  * ```
  *
  * @author Yonatan Karp-Rudin
@@ -31,5 +36,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("always_off")
 data object AlwaysOffStrategy : FlippingStrategy {
-    override fun evaluate(context: FlippingExecutionContext): Boolean = false
+    override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean = false
 }

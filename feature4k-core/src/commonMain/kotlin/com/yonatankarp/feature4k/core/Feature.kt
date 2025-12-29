@@ -68,15 +68,4 @@ data class Feature(
      * Checks if this feature has a flipping strategy defined
      */
     fun hasFlippingStrategy(): Boolean = flippingStrategy != null
-
-    /**
-     * Evaluates whether this feature should be enabled for the given execution context.
-     *
-     * If a flipping strategy is defined, it will be used to determine if the feature
-     * should be enabled. If no strategy is defined, returns the current enabled state.
-     *
-     * @param context The execution context containing user, client, server, and custom parameters
-     * @return `true` if the feature should be enabled for the given context, `false` otherwise
-     */
-    fun evaluate(context: FlippingExecutionContext): Boolean = flippingStrategy?.evaluate(context) ?: enabled
 }
