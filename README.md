@@ -1,103 +1,68 @@
-# ✨✨✨ Feature4k - Feature Flipping for Kotlin Multiplatform ✨✨✨
+# Feature4k
 
-**Feature4k** is a Kotlin Multiplatform port of the popular [FF4J](https://ff4j.org/) library. It brings the power of feature toggling and property management to the entire Kotlin ecosystem, enabling consistent feature management across Server (JVM), Mobile (Android, iOS), and Desktop/Native applications.
+![CI](https://github.com/yonatankarp/Feature4k/actions/workflows/ci.yml/badge.svg)
 
-## 🚀 Vision
+A Kotlin Multiplatform library for feature toggling and A/B testing, inspired by [FF4J](https://ff4j.org/).
 
-Feature4k aims to provide the same comprehensive feature set as FF4J but redesigned for the modern, multiplatform Kotlin world.
+Feature4k brings comprehensive feature management to the Kotlin ecosystem, working seamlessly across JVM, Android, iOS, Desktop, and Native platforms.
 
-## 🤘 Key Features (Planned & In Progress)
+## What is Feature Toggle?
 
-### 🚦 Feature Toggling
-Enable and disable features at runtime without deployments. Implement multiple code paths protected by dynamic predicates.
-*Status: 🚧 Skeleton Ready*
+Feature toggles (also known as feature flags) let you enable or disable features at runtime without redeploying your application. This allows you to:
 
-### 👮 Role-based Toggling
-Control feature access not just by flags but by user roles and groups (e.g., Canary Releases, Beta Testers).
-*Status: 📅 Planned*
+- Deploy code to production with features turned off
+- Test features in production with specific users
+- Perform gradual rollouts and A/B testing
+- Quickly disable problematic features without rollback
 
-### 🧠 Strategy-based Toggling
-Implement custom predicates (Strategy Pattern) to evaluate if a feature is enabled (e.g., Time-based, Release Date, Expression-based).
-*Status: 📅 Planned*
+## Core Capabilities
 
-### 📊 Features Monitoring
-Collect and record events and metrics to compute dashboards and analyze feature usage over time.
-*Status: 📅 Planned*
+- **Feature Toggling**: Toggle features on and off at runtime. Support for multiple code paths protected by dynamic predicates.
 
-### 📝 Audit Trail
-Trace every action (create, update, delete, toggle) for troubleshooting and security auditing.
-*Status: 📅 Planned*
+- **Role-based Access**: Control feature access based on user roles and groups. Perfect for canary releases, beta testing, and gradual rollouts.
 
-### 🖥️ Web Console (KMP Ready)
-Administrate Feature4k (features, properties, monitoring) via a web UI.
-* **Server-side**: Ktor-based HTML console (Planned)
-* **Client-side**: Compose Web / Kotlin/JS (Potential future)
+- **Strategy-based Activation**: Use custom predicates to determine feature availability. Built-in support for time-based releases, date ranges, percentage rollouts, and custom expressions.
 
-### 💾 Wide Choice of Stores
-Just like FF4J, Feature4k is designed to support multiple storage backends. The architecture allows you to pick only what you need.
-* **In-Memory**: Default implementation
-* **Databases**: SQL, NoSQL (Redis, Mongo, Neo4j, etc.) - *Coming soon*
+- **Monitoring & Metrics**: Track feature usage, measure adoption rates, and analyze user behavior over time.
 
-## 📦 Modular Architecture
+- **Audit Trail**: Every feature change is logged—who toggled what, when, and why. Essential for compliance and troubleshooting.
 
-Feature4k is built with modularity in mind. You only include what you use.
+- **Web Console**: Manage features, properties, and monitoring through a web interface. Built with Ktor for the server side, with potential Compose Web support in the future.
 
-- **`feature4k-core`**: The core API.
-- **`feature4k-dsl`**: Kotlin idiomatic DSL for configuration.
-- **`feature4k-web`**: Server-side Web Console.
-- **`feature4k-test`**: Shared test fixtures.
+- **Flexible Storage**: Choose your backend: in-memory (default), SQL databases, Redis, MongoDB, Neo4j, or build your own adapter.
 
-## 🛠 Supported Platforms
+## Architecture
 
-- **JVM** (Server, Desktop)
-- **Android** (Native)
-- **iOS** (Arm64, X64, Simulator)
-- **macOS** (Arm64, X64)
-- **Linux** (X64)
-- **Windows** (X64 via MinGW)
+The library is modular—use only what you need:
 
-## 🔨 Getting Started
+- **feature4k-core** — Core feature toggling API and abstractions
+- **feature4k-dsl** — Kotlin DSL for idiomatic configuration
+- **feature4k-web** — Web console for feature management
 
-### Building the Project
+## Platform Support
+
+Feature4k runs everywhere Kotlin does:
+
+- JVM (server-side applications, desktop)
+- Android
+- iOS (arm64, x64, simulator)
+- macOS (Apple Silicon and Intel)
+- Linux (x64)
+- Windows (MinGW x64)
+
+## Getting Started
+
+Build the project:
+
 ```bash
 ./gradlew assemble
 ```
 
-## 🚀 CI/CD
-
-### Continuous Integration
-
-![CI](https://github.com/yonatankarp/Feature4k/actions/workflows/ci.yml/badge.svg)
-
-Every pull request and push to the `main` branch automatically triggers:
-- Build for all supported platforms (JVM, linuxX64)
-- Test execution for all platforms
-- Gradle dependency caching for faster builds
-
-### Publishing Releases
-
-Releases are automatically published to GitHub Packages when you push a version tag:
+Run tests:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+./gradlew allTests
 ```
-
-The release workflow will:
-- Extract version from the tag (e.g., `v1.0.0` → `1.0.0`)
-- Build all platform artifacts
-- Sign artifacts with GPG (if configured)
-- Publish to GitHub Packages
-- Create a GitHub Release with auto-generated release notes
-
-### Required Secrets
-
-To enable release publishing with GPG signing, configure these repository secrets:
-
-- `GPG_PRIVATE_KEY`: GPG private key for artifact signing (optional)
-- `GPG_PASSPHRASE`: GPG key passphrase (optional)
-
-The `GITHUB_TOKEN` is automatically provided by GitHub Actions.
 
 ---
 *Inspired by [FF4J](https://github.com/ff4j/ff4j).*
