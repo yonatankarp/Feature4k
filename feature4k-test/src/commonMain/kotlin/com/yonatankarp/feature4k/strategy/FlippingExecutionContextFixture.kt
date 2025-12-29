@@ -1,9 +1,6 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FeatureEvaluationContext
 import com.yonatankarp.feature4k.core.FlippingExecutionContext
-import com.yonatankarp.feature4k.store.FeatureStore
-import com.yonatankarp.feature4k.store.InMemoryFeatureStore
 
 /**
  * Test fixtures for FlippingStrategy evaluation.
@@ -11,7 +8,7 @@ import com.yonatankarp.feature4k.store.InMemoryFeatureStore
  *
  * @author Yonatan Karp-Rudin
  */
-object StrategyFixtures {
+object FlippingExecutionContextFixture {
     /**
      * Creates an empty FlippingExecutionContext for testing.
      *
@@ -41,23 +38,29 @@ object StrategyFixtures {
     )
 
     /**
-     * Creates a FeatureEvaluationContext for testing strategy evaluation.
+     * Creates a FlippingExecutionContext with an overridden instant for testing time-based strategies.
      *
-     * This fixture provides a convenient way to create evaluation contexts with
-     * sensible defaults for testing. Each parameter can be customized as needed.
-     *
-     * @param featureName The name of the feature being evaluated (default: "test-feature")
-     * @param store The feature store to use (default: new InMemoryFeatureStore instance)
-     * @param context The flipping execution context (default: empty context)
-     * @return A FeatureEvaluationContext configured for testing
+     * @param instant The instant to use as the current time (ISO-8601 format)
+     * @return A FlippingExecutionContext with the instant override
      */
-    fun featureEvaluationContext(
-        featureName: String = "test-feature",
-        store: FeatureStore = InMemoryFeatureStore(),
-        context: FlippingExecutionContext = emptyExecutionContext(),
-    ) = FeatureEvaluationContext(
-        featureName = featureName,
-        store = store,
-        context = context,
+    fun contextWithInstant(instant: String) = FlippingExecutionContext(
+        customParams = mapOf("overrideInstant" to instant),
+    )
+
+    /**
+     * Creates a FlippingExecutionContext with an overridden datetime for testing time-based strategies.
+     *
+     * @param dateTime The datetime to use as the current time (ISO-8601 format)
+     * @param timezone Optional timezone ID (e.g., "America/New_York", "UTC")
+     * @return A FlippingExecutionContext with the datetime and timezone overrides
+     */
+    fun contextWithDateTime(
+        dateTime: String,
+        timezone: String? = null,
+    ) = FlippingExecutionContext(
+        customParams = buildMap {
+            put("overrideDateTime", dateTime)
+            timezone?.let { put("overrideTimezone", it) }
+        },
     )
 }
