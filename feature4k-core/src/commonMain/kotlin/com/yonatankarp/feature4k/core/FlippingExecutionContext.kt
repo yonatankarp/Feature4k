@@ -71,7 +71,7 @@ data class FlippingExecutionContext(
      * @param key The parameter name to look up.
      * @return The parameter value associated with `key`, or `null` if no such parameter exists.
      */
-    fun getParam(key: String): String? = customParams[key]
+    operator fun get(key: String): String? = customParams[key]
 
     /**
      * Determines whether a custom parameter with the given key is present in the context.

@@ -111,10 +111,10 @@ data class OfficeHourStrategy(
      * @return `true` if feature should be enabled based on schedule, `false` otherwise
      */
     override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
-        val timezone = evalContext.context.getParam(OVERRIDE_TIMEZONE_KEY)?.let { TimeZone.of(it) }
+        val timezone = evalContext.context[OVERRIDE_TIMEZONE_KEY]?.let { TimeZone.of(it) }
             ?: TimeZone.of(this@OfficeHourStrategy.timezone)
 
-        val now = evalContext.context.getParam(OVERRIDE_DATETIME_KEY)?.let {
+        val now = evalContext.context[OVERRIDE_DATETIME_KEY]?.let {
             LocalDateTime.parse(it)
         } ?: Clock.System.now().toLocalDateTime(timezone)
 

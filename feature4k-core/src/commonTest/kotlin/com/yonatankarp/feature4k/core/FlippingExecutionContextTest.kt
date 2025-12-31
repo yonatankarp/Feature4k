@@ -64,22 +64,22 @@ class FlippingExecutionContextTest {
     @Test
     fun `withParam adds custom parameter`() {
         val context = FlippingExecutionContext().withParam("region", REGION_US_EAST)
-        assertEquals(REGION_US_EAST, context.getParam("region"))
+        assertEquals(REGION_US_EAST, context["region"])
     }
 
     @Test
     fun `withParams adds multiple custom parameters`() {
         val params = mapOf("region" to REGION_US_EAST, "env" to "prod")
         with(FlippingExecutionContext().withParams(params)) {
-            assertEquals(REGION_US_EAST, getParam("region"))
-            assertEquals("prod", getParam("env"))
+            assertEquals(REGION_US_EAST, get("region"))
+            assertEquals("prod", get("env"))
         }
     }
 
     @Test
     fun `getParam returns null for non-existent key`() {
         val context = FlippingExecutionContext()
-        assertNull(context.getParam("nonexistent"))
+        assertNull(context["nonexistent"])
     }
 
     @Test
@@ -107,8 +107,8 @@ class FlippingExecutionContextTest {
             assertEquals("alice", user)
             assertEquals("web-app", client)
             assertEquals("server-02", server)
-            assertEquals("admin", getParam("role"))
-            assertEquals("engineering", getParam("team"))
+            assertEquals("admin", get("role"))
+            assertEquals("engineering", get("team"))
         }
     }
 
@@ -135,8 +135,8 @@ class FlippingExecutionContextTest {
                 .withParam("key1", "value1")
                 .withParam("key2", "value2"),
         ) {
-            assertEquals("value1", getParam("key1"))
-            assertEquals("value2", getParam("key2"))
+            assertEquals("value1", get("key1"))
+            assertEquals("value2", get("key2"))
         }
     }
 
@@ -147,9 +147,9 @@ class FlippingExecutionContextTest {
                 .withParam("key1", "value1")
                 .withParams(mapOf("key2" to "value2", "key3" to "value3")),
         ) {
-            assertEquals("value1", getParam("key1"))
-            assertEquals("value2", getParam("key2"))
-            assertEquals("value3", getParam("key3"))
+            assertEquals("value1", get("key1"))
+            assertEquals("value2", get("key2"))
+            assertEquals("value3", get("key3"))
         }
     }
 }
