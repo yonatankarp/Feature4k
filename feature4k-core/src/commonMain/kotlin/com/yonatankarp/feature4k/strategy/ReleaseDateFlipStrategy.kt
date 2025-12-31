@@ -98,7 +98,7 @@ data class ReleaseDateFlipStrategy(
      * @return `true` if current time >= releaseDate, `false` otherwise
      */
     override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
-        val now = evalContext.context.getParam(OVERRIDE_INSTANT_KEY)?.let { Instant.parse(it) }
+        val now = evalContext.context[OVERRIDE_INSTANT_KEY]?.let { Instant.parse(it) }
             ?: Clock.System.now()
         return now >= releaseDate
     }
