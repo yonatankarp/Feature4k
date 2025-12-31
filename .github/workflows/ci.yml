@@ -66,6 +66,13 @@ jobs:
       - name: Build and test ${{ matrix.target }}
         run: ./gradlew ${{ matrix.task }} --no-daemon
 
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v6
+        with:
+          name: kover-data-linux-${{ matrix.target }}
+          path: '**/build/kover/binaries/'
+          retention-days: 1
+
   build-windows:
     needs: code-quality
     runs-on: windows-latest
@@ -92,6 +99,13 @@ jobs:
 
       - name: Build and test ${{ matrix.target }}
         run: ./gradlew ${{ matrix.task }} --no-daemon
+
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v6
+        with:
+          name: kover-data-windows-${{ matrix.target }}
+          path: '**/build/kover/binaries/'
+          retention-days: 1
 
   build-apple:
     needs: code-quality
@@ -126,8 +140,15 @@ jobs:
       - name: Build and test ${{ matrix.target }}
         run: ./gradlew ${{ matrix.task }} --no-daemon
 
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v6
+        with:
+          name: kover-data-apple-${{ matrix.target }}
+          path: '**/build/kover/binaries/'
+          retention-days: 1
+
   sonarcloud:
-    needs: code-quality
+    needs: [build-linux, build-windows, build-apple]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -146,8 +167,15 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
-      - name: Run tests and generate coverage
-        run: ./gradlew jvmTest koverXmlReport --no-daemon
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v6
+        with:
+          pattern: kover-data-*
+          path: .
+          merge-multiple: true
+
+      - name: Generate merged coverage report
+        run: ./gradlew koverXmlReport --no-daemon
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v7
