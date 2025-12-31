@@ -1,9 +1,7 @@
 package com.yonatankarp.feature4k.strategy
 
-import com.yonatankarp.feature4k.core.FeatureEvaluationContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 /**
  * A dark launch strategy for safely testing new features with a percentage of production traffic.
