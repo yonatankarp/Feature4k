@@ -1,14 +1,14 @@
 package com.yonatankarp.feature4k.strategy
 
+import com.yonatankarp.feature4k.core.DateTimeFixtures.CHRISTMAS_2024_MIDNIGHT
+import com.yonatankarp.feature4k.core.DateTimeFixtures.CHRISTMAS_2024_MORNING
+import com.yonatankarp.feature4k.core.DateTimeFixtures.FUTURE_DATE
+import com.yonatankarp.feature4k.core.DateTimeFixtures.PAST_DATE
 import com.yonatankarp.feature4k.strategy.FeatureEvaluationContextFixture.featureEvaluationContext
 import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.contextWithInstant
 import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.executionContextWithUser
-import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.CHRISTMAS_2024_MORNING
-import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.FUTURE_DATE
-import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.PAST_DATE
 import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.releaseDateStrategy
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -27,7 +27,7 @@ class ReleaseDateFlipStrategyTest {
     fun `should return true when current time is after release date`() = runTest {
         // Given
         val strategy = releaseDateStrategy("2024-01-01T00:00:00Z")
-        val context = contextWithInstant("2024-12-25T10:00:00Z")
+        val context = contextWithInstant(CHRISTMAS_2024_MORNING.toString())
         val evalContext = featureEvaluationContext(context = context)
 
         // When
@@ -41,7 +41,7 @@ class ReleaseDateFlipStrategyTest {
     fun `should return true when current time equals release date`() = runTest {
         // Given
         val strategy = releaseDateStrategy(CHRISTMAS_2024_MORNING)
-        val context = contextWithInstant("2024-12-25T10:00:00Z")
+        val context = contextWithInstant(CHRISTMAS_2024_MORNING.toString())
         val evalContext = featureEvaluationContext(context = context)
 
         // When
@@ -69,7 +69,7 @@ class ReleaseDateFlipStrategyTest {
     fun `should handle far future release dates`() = runTest {
         // Given
         val strategy = releaseDateStrategy(FUTURE_DATE)
-        val context = contextWithInstant("2024-12-25T00:00:00Z")
+        val context = contextWithInstant(CHRISTMAS_2024_MIDNIGHT.toString())
         val evalContext = featureEvaluationContext(context = context)
 
         // When
@@ -83,7 +83,7 @@ class ReleaseDateFlipStrategyTest {
     fun `should handle past release dates`() = runTest {
         // Given
         val strategy = releaseDateStrategy(PAST_DATE)
-        val context = contextWithInstant("2024-12-25T00:00:00Z")
+        val context = contextWithInstant(CHRISTMAS_2024_MIDNIGHT.toString())
         val evalContext = featureEvaluationContext(context = context)
 
         // When
@@ -110,7 +110,7 @@ class ReleaseDateFlipStrategyTest {
     @Test
     fun `should ignore user context and only check time`() = runTest {
         // Given
-        val strategy = releaseDateStrategy("2024-12-25T00:00:00Z")
+        val strategy = releaseDateStrategy(CHRISTMAS_2024_MIDNIGHT)
         val currentTime = "2024-12-26T00:00:00Z"
 
         val user1Context = contextWithInstant(currentTime)
@@ -135,7 +135,7 @@ class ReleaseDateFlipStrategyTest {
         // Then
         assertTrue(serialized.contains("\"type\": \"release-date\""), "Should contain type")
         assertTrue(serialized.contains("\"releaseDate\""), "Should contain releaseDate field")
-        assertTrue(serialized.contains("2024-12-25T10:00:00Z"), "Should contain the ISO-8601 timestamp")
+        assertTrue(serialized.contains(CHRISTMAS_2024_MORNING.toString()), "Should contain the ISO-8601 timestamp")
     }
 
     @Test
@@ -145,7 +145,7 @@ class ReleaseDateFlipStrategyTest {
         val jsonString = """
             {
                 "type": "release-date",
-                "releaseDate": "2024-12-25T10:00:00Z"
+                "releaseDate": "${CHRISTMAS_2024_MORNING}"
             }
         """.trimIndent()
         val json = Json { ignoreUnknownKeys = true }
@@ -161,8 +161,8 @@ class ReleaseDateFlipStrategyTest {
     @Test
     fun `should support data class equality`() {
         // Given
-        val strategy1 = releaseDateStrategy("2024-12-25T00:00:00Z")
-        val strategy2 = releaseDateStrategy("2024-12-25T00:00:00Z")
+        val strategy1 = releaseDateStrategy(CHRISTMAS_2024_MIDNIGHT)
+        val strategy2 = releaseDateStrategy(CHRISTMAS_2024_MIDNIGHT)
         val strategy3 = releaseDateStrategy("2024-12-26T00:00:00Z")
 
         // When & Then

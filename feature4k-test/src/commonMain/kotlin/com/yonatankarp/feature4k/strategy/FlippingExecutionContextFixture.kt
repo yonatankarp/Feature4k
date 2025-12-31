@@ -1,6 +1,9 @@
 package com.yonatankarp.feature4k.strategy
 
 import com.yonatankarp.feature4k.core.FlippingExecutionContext
+import com.yonatankarp.feature4k.strategy.OfficeHourStrategy.Companion.OVERRIDE_DATETIME_KEY
+import com.yonatankarp.feature4k.strategy.OfficeHourStrategy.Companion.OVERRIDE_TIMEZONE_KEY
+import com.yonatankarp.feature4k.strategy.ReleaseDateFlipStrategy.Companion.OVERRIDE_INSTANT_KEY
 
 /**
  * Test fixtures for FlippingStrategy evaluation.
@@ -9,6 +12,9 @@ import com.yonatankarp.feature4k.core.FlippingExecutionContext
  * @author Yonatan Karp-Rudin
  */
 object FlippingExecutionContextFixture {
+    /** Common test region value used across strategy tests */
+    const val REGION_US_EAST = "us-east"
+
     /**
      * Creates an empty FlippingExecutionContext for testing.
      *
@@ -44,7 +50,7 @@ object FlippingExecutionContextFixture {
      * @return A FlippingExecutionContext with the instant override
      */
     fun contextWithInstant(instant: String) = FlippingExecutionContext(
-        customParams = mapOf("overrideInstant" to instant),
+        customParams = mapOf(OVERRIDE_INSTANT_KEY to instant),
     )
 
     /**
@@ -59,8 +65,8 @@ object FlippingExecutionContextFixture {
         timezone: String? = null,
     ) = FlippingExecutionContext(
         customParams = buildMap {
-            put("overrideDateTime", dateTime)
-            timezone?.let { put("overrideTimezone", it) }
+            put(OVERRIDE_DATETIME_KEY, dateTime)
+            timezone?.let { put(OVERRIDE_TIMEZONE_KEY, it) }
         },
     )
 }

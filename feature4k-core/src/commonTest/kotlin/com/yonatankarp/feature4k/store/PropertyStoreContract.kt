@@ -1,5 +1,6 @@
 package com.yonatankarp.feature4k.store
 
+import com.yonatankarp.feature4k.core.IdentifierFixtures.NON_EXISTENT
 import com.yonatankarp.feature4k.exception.PropertyAlreadyExistException
 import com.yonatankarp.feature4k.exception.PropertyNotFoundException
 import com.yonatankarp.feature4k.property.PropertyBoolean
@@ -39,7 +40,7 @@ abstract class PropertyStoreContract {
         val store = createStore()
 
         // When & Then
-        assertFalse("non-existent" in store)
+        assertFalse(NON_EXISTENT in store)
     }
 
     @Test
@@ -75,7 +76,7 @@ abstract class PropertyStoreContract {
         val store = createStore()
 
         // When
-        val result = store["non-existent"]
+        val result = store[NON_EXISTENT]
 
         // Then
         assertNull(result)
@@ -154,7 +155,7 @@ abstract class PropertyStoreContract {
 
         // When & Then
         assertFailsWith<PropertyNotFoundException> {
-            store -= "non-existent"
+            store -= NON_EXISTENT
         }
     }
 

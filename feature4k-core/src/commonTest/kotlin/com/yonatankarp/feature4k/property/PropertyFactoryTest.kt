@@ -1,5 +1,8 @@
 package com.yonatankarp.feature4k.property
 
+import com.yonatankarp.feature4k.core.DateTimeFixtures.TIMESTAMP_ISO
+import com.yonatankarp.feature4k.core.DateTimeFixtures.TIMESTAMP_LOCAL
+import com.yonatankarp.feature4k.property.PropertyFixtures.HIGH_PRECISION_DECIMAL
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlin.test.Test
@@ -153,7 +156,7 @@ class PropertyFactoryTest {
     fun `creates bigDecimal property`() {
         // Given
         val name = "preciseValue"
-        val value = "123.456789012345"
+        val value = HIGH_PRECISION_DECIMAL
 
         // When
         val property = PropertyFactory.bigDecimal(name, value)
@@ -168,7 +171,7 @@ class PropertyFactoryTest {
     fun `creates instant property`() {
         // Given
         val name = "createdAt"
-        val value = Instant.parse("2024-01-15T10:30:00Z")
+        val value = Instant.parse(TIMESTAMP_ISO)
 
         // When
         val property = PropertyFactory.instant(name, value)
@@ -183,7 +186,7 @@ class PropertyFactoryTest {
     fun `creates localDateTime property`() {
         // Given
         val name = "scheduledAt"
-        val value = LocalDateTime.parse("2024-01-15T10:30:00")
+        val value = LocalDateTime.parse(TIMESTAMP_LOCAL)
 
         // When
         val property = PropertyFactory.localDateTime(name, value)
@@ -395,7 +398,7 @@ class PropertyFactoryTest {
     fun `creates bigDecimal property with readOnly true`() {
         // Given
         val name = "preciseValue"
-        val value = "123.456789012345"
+        val value = HIGH_PRECISION_DECIMAL
         val readOnly = true
 
         // When
@@ -409,7 +412,7 @@ class PropertyFactoryTest {
     fun `creates instant property with readOnly true`() {
         // Given
         val name = "createdAt"
-        val value = Instant.parse("2024-01-15T10:30:00Z")
+        val value = Instant.parse(TIMESTAMP_ISO)
         val readOnly = true
 
         // When
@@ -423,7 +426,7 @@ class PropertyFactoryTest {
     fun `creates localDateTime property with readOnly true`() {
         // Given
         val name = "scheduledAt"
-        val value = LocalDateTime.parse("2024-01-15T10:30:00")
+        val value = LocalDateTime.parse(TIMESTAMP_LOCAL)
         val readOnly = true
 
         // When

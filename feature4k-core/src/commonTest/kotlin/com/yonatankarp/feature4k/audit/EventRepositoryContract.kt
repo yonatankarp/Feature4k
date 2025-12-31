@@ -1,11 +1,17 @@
 package com.yonatankarp.feature4k.audit
 
+import com.yonatankarp.feature4k.audit.AuditFixtures.ADMIN_USER
+import com.yonatankarp.feature4k.audit.AuditFixtures.LOCALHOST
+import com.yonatankarp.feature4k.audit.AuditFixtures.REGULAR_USER
+import com.yonatankarp.feature4k.audit.AuditFixtures.WEB_API_SOURCE
 import com.yonatankarp.feature4k.audit.EventFixtures.eventWithCustomProperties
 import com.yonatankarp.feature4k.audit.EventFixtures.eventWithOffset
 import com.yonatankarp.feature4k.audit.EventFixtures.featureCreatedEvent
 import com.yonatankarp.feature4k.audit.EventFixtures.featureUpdatedEvent
 import com.yonatankarp.feature4k.audit.EventFixtures.fullAuditEvent
 import com.yonatankarp.feature4k.audit.EventFixtures.propertyCreatedEvent
+import com.yonatankarp.feature4k.core.IdentifierFixtures.FEATURE_UID
+import com.yonatankarp.feature4k.core.IdentifierFixtures.NON_EXISTENT
 import com.yonatankarp.feature4k.store.FeatureStoreEvent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
@@ -42,7 +48,7 @@ abstract class EventRepositoryContract {
     fun `should save and retrieve event`() = runTest {
         // Given
         val repository = createRepository()
-        val event = featureCreatedEvent(uid = "test-feature", user = "testuser")
+        val event = featureCreatedEvent(uid = FEATURE_UID, user = "testuser")
 
         // When
         repository.save(event)
@@ -91,8 +97,8 @@ abstract class EventRepositoryContract {
     fun `should find events by uid`() = runTest {
         // Given
         val repository = createRepository()
-        val event1 = featureCreatedEvent(uid = "target-feature")
-        val event2 = featureUpdatedEvent(uid = "target-feature")
+        val event1 = featureCreatedEvent(uid = FEATURE_UID)
+        val event2 = featureUpdatedEvent(uid = FEATURE_UID)
         val event3 = featureCreatedEvent(uid = "other-feature")
 
         repository.save(event1)
@@ -100,19 +106,19 @@ abstract class EventRepositoryContract {
         repository.save(event3)
 
         // When
-        val result = repository.findByUid("target-feature")
+        val result = repository.findByUid(FEATURE_UID)
 
         // Then
         assertEquals(2, result.size)
-        assertTrue(result.all { it.uid == "target-feature" })
+        assertTrue(result.all { it.uid == FEATURE_UID })
     }
 
     @Test
     fun `should find events by custom filter`() = runTest {
         // Given
         val repository = createRepository()
-        val event1 = featureCreatedEvent(user = "admin", source = "WEB_API")
-        val event2 = featureUpdatedEvent(user = "user1")
+        val event1 = featureCreatedEvent(user = ADMIN_USER, source = WEB_API_SOURCE)
+        val event2 = featureUpdatedEvent(user = REGULAR_USER)
         val event3 = propertyCreatedEvent()
 
         repository.save(event1)
@@ -120,11 +126,11 @@ abstract class EventRepositoryContract {
         repository.save(event3)
 
         // When
-        val result = repository.findBy { it.user == "admin" }
+        val result = repository.findBy { it.user == ADMIN_USER }
 
         // Then
         assertEquals(1, result.size)
-        assertEquals("admin", result[0].user)
+        assertEquals(ADMIN_USER, result[0].user)
     }
 
     @Test
@@ -172,7 +178,7 @@ abstract class EventRepositoryContract {
         repository.save(event)
 
         // When
-        val result = repository.findByUid("non-existent")
+        val result = repository.findByUid(NON_EXISTENT)
 
         // Then
         assertTrue(result.isEmpty())
@@ -182,7 +188,7 @@ abstract class EventRepositoryContract {
     fun `should handle filter with no matching events`() = runTest {
         // Given
         val repository = createRepository()
-        val event = featureCreatedEvent(user = "admin")
+        val event = featureCreatedEvent(user = ADMIN_USER)
         repository.save(event)
 
         // When
@@ -216,9 +222,9 @@ abstract class EventRepositoryContract {
     fun `should support filtering by multiple criteria`() = runTest {
         // Given
         val repository = createRepository()
-        val event1 = featureCreatedEvent(user = "admin", source = "WEB_API")
-        val event2 = featureCreatedEvent(user = "admin", source = "JAVA_API")
-        val event3 = featureUpdatedEvent(user = "user1")
+        val event1 = featureCreatedEvent(user = ADMIN_USER, source = WEB_API_SOURCE)
+        val event2 = featureCreatedEvent(user = ADMIN_USER, source = "JAVA_API")
+        val event3 = featureUpdatedEvent(user = REGULAR_USER)
 
         repository.save(event1)
         repository.save(event2)
@@ -227,12 +233,12 @@ abstract class EventRepositoryContract {
         // When - Find all Created events by admin
         val result =
             repository.findBy {
-                it is FeatureStoreEvent.Created && it.user == "admin"
+                it is FeatureStoreEvent.Created && it.user == ADMIN_USER
             }
 
         // Then
         assertEquals(2, result.size)
-        assertTrue(result.all { it is FeatureStoreEvent.Created && it.user == "admin" })
+        assertTrue(result.all { it is FeatureStoreEvent.Created && it.user == ADMIN_USER })
     }
 
     @Test
@@ -265,9 +271,9 @@ abstract class EventRepositoryContract {
         // Then
         assertEquals(1, result.size)
         val saved = result[0]
-        assertEquals("admin", saved.user)
-        assertEquals("WEB_API", saved.source)
-        assertEquals("localhost", saved.host)
+        assertEquals(ADMIN_USER, saved.user)
+        assertEquals(WEB_API_SOURCE, saved.source)
+        assertEquals(LOCALHOST, saved.host)
         assertEquals(100L, saved.duration)
     }
 }

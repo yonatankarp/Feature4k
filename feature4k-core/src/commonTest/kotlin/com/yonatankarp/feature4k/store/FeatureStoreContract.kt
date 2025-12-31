@@ -1,6 +1,7 @@
 package com.yonatankarp.feature4k.store
 
 import com.yonatankarp.feature4k.core.Feature
+import com.yonatankarp.feature4k.core.IdentifierFixtures.NON_EXISTENT
 import com.yonatankarp.feature4k.exception.FeatureAlreadyExistException
 import com.yonatankarp.feature4k.exception.FeatureNotFoundException
 import com.yonatankarp.feature4k.exception.GroupNotFoundException
@@ -38,7 +39,7 @@ abstract class FeatureStoreContract {
         val store = createStore()
 
         // When & Then
-        assertFalse("non-existent" in store)
+        assertFalse(NON_EXISTENT in store)
     }
 
     @Test
@@ -74,7 +75,7 @@ abstract class FeatureStoreContract {
         val store = createStore()
 
         // When
-        val result = store["non-existent"]
+        val result = store[NON_EXISTENT]
 
         // Then
         assertNull(result)
@@ -153,7 +154,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<FeatureNotFoundException> {
-            store -= "non-existent"
+            store -= NON_EXISTENT
         }
     }
 
@@ -227,7 +228,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<FeatureNotFoundException> {
-            store.enable("non-existent")
+            store.enable(NON_EXISTENT)
         }
     }
 
@@ -254,7 +255,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<FeatureNotFoundException> {
-            store.disable("non-existent")
+            store.disable(NON_EXISTENT)
         }
     }
 
@@ -264,7 +265,7 @@ abstract class FeatureStoreContract {
         val store = createStore()
 
         // When
-        val result = store.existsGroup("non-existent")
+        val result = store.existsGroup(NON_EXISTENT)
 
         // Then
         assertFalse(result)
@@ -291,7 +292,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<GroupNotFoundException> {
-            store.getGroup("non-existent")
+            store.getGroup(NON_EXISTENT)
         }
     }
 
@@ -335,7 +336,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<FeatureNotFoundException> {
-            store.addToGroup("non-existent", "mygroup")
+            store.addToGroup(NON_EXISTENT, "mygroup")
         }
     }
 
@@ -373,7 +374,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<FeatureNotFoundException> {
-            store.removeFromGroup("non-existent", "mygroup")
+            store.removeFromGroup(NON_EXISTENT, "mygroup")
         }
     }
 
@@ -401,7 +402,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<GroupNotFoundException> {
-            store.enableGroup("non-existent")
+            store.enableGroup(NON_EXISTENT)
         }
     }
 
@@ -429,7 +430,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<GroupNotFoundException> {
-            store.disableGroup("non-existent")
+            store.disableGroup(NON_EXISTENT)
         }
     }
 
@@ -485,7 +486,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<FeatureNotFoundException> {
-            store.grantRoleOnFeature("non-existent", "ROLE_ADMIN")
+            store.grantRoleOnFeature(NON_EXISTENT, "ROLE_ADMIN")
         }
     }
 
@@ -516,7 +517,7 @@ abstract class FeatureStoreContract {
 
         // When & Then
         assertFailsWith<FeatureNotFoundException> {
-            store.removeRoleFromFeature("non-existent", "ROLE_ADMIN")
+            store.removeRoleFromFeature(NON_EXISTENT, "ROLE_ADMIN")
         }
     }
 

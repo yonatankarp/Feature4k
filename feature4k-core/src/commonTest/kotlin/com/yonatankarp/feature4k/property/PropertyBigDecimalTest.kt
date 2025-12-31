@@ -1,5 +1,8 @@
 package com.yonatankarp.feature4k.property
 
+import com.yonatankarp.feature4k.property.PropertyFixtures.HIGH_PRECISION_DECIMAL
+import com.yonatankarp.feature4k.property.PropertyFixtures.PRICE_TIERS
+import com.yonatankarp.feature4k.property.PropertyFixtures.PRICE_TIER_MEDIUM
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,7 +20,7 @@ class PropertyBigDecimalTest {
     fun `stores name and value`() {
         // Given
         val name = "preciseValue"
-        val value = "123.456789012345"
+        val value = HIGH_PRECISION_DECIMAL
 
         // When
         val property = PropertyBigDecimal(name = name, value = value)
@@ -69,7 +72,7 @@ class PropertyBigDecimalTest {
     fun `hasFixedValues returns false when no fixed values`() {
         // Given
         val name = "preciseValue"
-        val value = "123.456789012345"
+        val value = HIGH_PRECISION_DECIMAL
 
         // When
         val property = PropertyBigDecimal(name = name, value = value)
@@ -82,8 +85,8 @@ class PropertyBigDecimalTest {
     fun `hasFixedValues returns true when fixed values defined`() {
         // Given
         val name = "price"
-        val value = "99.99"
-        val fixedValues = setOf("19.99", "99.99", "199.99")
+        val value = PRICE_TIER_MEDIUM
+        val fixedValues = PRICE_TIERS
 
         // When
         val property = PropertyBigDecimal(name = name, value = value, fixedValues = fixedValues)
@@ -96,7 +99,7 @@ class PropertyBigDecimalTest {
     fun `isValid returns true when no fixed values`() {
         // Given
         val name = "preciseValue"
-        val value = "123.456789012345"
+        val value = HIGH_PRECISION_DECIMAL
 
         // When
         val property = PropertyBigDecimal(name = name, value = value)
@@ -109,8 +112,8 @@ class PropertyBigDecimalTest {
     fun `isValid returns true when value in fixed values`() {
         // Given
         val name = "price"
-        val value = "99.99"
-        val fixedValues = setOf("19.99", "99.99", "199.99")
+        val value = PRICE_TIER_MEDIUM
+        val fixedValues = PRICE_TIERS
 
         // When
         val property = PropertyBigDecimal(name = name, value = value, fixedValues = fixedValues)
@@ -124,7 +127,7 @@ class PropertyBigDecimalTest {
         // Given
         val name = "price"
         val value = "49.99"
-        val fixedValues = setOf("19.99", "99.99", "199.99")
+        val fixedValues = PRICE_TIERS
 
         // When
         val property = PropertyBigDecimal(name = name, value = value, fixedValues = fixedValues)
