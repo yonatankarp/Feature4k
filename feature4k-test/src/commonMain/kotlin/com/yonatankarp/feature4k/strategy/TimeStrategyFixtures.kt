@@ -12,15 +12,11 @@ import kotlinx.datetime.LocalTime
  * @author Yonatan Karp-Rudin
  */
 object TimeStrategyFixtures {
-    val CHRISTMAS_2024_MORNING = Instant.parse("2024-12-25T10:00:00Z")
-    val NEW_YEAR_2025 = Instant.parse("2025-01-01T00:00:00Z")
-    val PAST_DATE = Instant.parse("2000-01-01T00:00:00Z")
-    val FUTURE_DATE = Instant.parse("2099-12-31T23:59:59Z")
-
-    val CHRISTMAS_2024 = LocalDate(2024, 12, 25)
-    val MONDAY_DEC_23_2024 = LocalDate(2024, 12, 23)
-    val TUESDAY_DEC_24_2024 = LocalDate(2024, 12, 24)
-    val SATURDAY_DEC_28_2024 = LocalDate(2024, 12, 28)
+    /**
+     * Standard business hours interval expression (09:00-17:00).
+     * Commonly used in tests for office hour strategies.
+     */
+    const val STANDARD_BUSINESS_HOURS = "09:00-17:00"
 
     /**
      * Creates a ReleaseDateFlipStrategy with a specified release date.

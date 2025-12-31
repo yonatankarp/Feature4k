@@ -1,8 +1,10 @@
 package com.yonatankarp.feature4k.strategy
 
+import com.yonatankarp.feature4k.core.DateTimeFixtures.CHRISTMAS_2024
+import com.yonatankarp.feature4k.core.DateTimeFixtures.CHRISTMAS_MORNING_SLOT
+import com.yonatankarp.feature4k.core.DateTimeFixtures.MONDAY_MORNING_DEC_23
 import com.yonatankarp.feature4k.strategy.FeatureEvaluationContextFixture.featureEvaluationContext
 import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.contextWithDateTime
-import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.CHRISTMAS_2024
 import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.hoursWithHolidays
 import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.hoursWithSpecialOpenings
 import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.splitShiftHours
@@ -28,7 +30,7 @@ class OfficeHourStrategyTest {
     fun `should return true during office hours on weekday`() = runTest {
         // Given
         val strategy = standardWeekdayHours()
-        val context = contextWithDateTime("2024-12-23T10:00:00")
+        val context = contextWithDateTime(MONDAY_MORNING_DEC_23)
         val evalContext = featureEvaluationContext(context = context)
 
         // When
@@ -115,7 +117,7 @@ class OfficeHourStrategyTest {
             DayOfWeek.WEDNESDAY to listOf(HourInterval(LocalTime(9, 0), LocalTime(17, 0))),
         )
         val strategy = hoursWithHolidays(weeklySchedule, setOf(CHRISTMAS_2024))
-        val context = contextWithDateTime("2024-12-25T10:00:00")
+        val context = contextWithDateTime(CHRISTMAS_MORNING_SLOT.toString())
         val evalContext = featureEvaluationContext(context = context)
 
         // When
@@ -181,7 +183,7 @@ class OfficeHourStrategyTest {
             ),
             timezone = "America/New_York",
         )
-        val context = contextWithDateTime("2024-12-23T10:00:00", "America/New_York")
+        val context = contextWithDateTime(MONDAY_MORNING_DEC_23, "America/New_York")
         val evalContext = featureEvaluationContext(context = context)
 
         // When
@@ -271,7 +273,7 @@ class OfficeHourStrategyTest {
                 DayOfWeek.MONDAY to emptyList(),
             ),
         )
-        val context = contextWithDateTime("2024-12-23T10:00:00")
+        val context = contextWithDateTime(MONDAY_MORNING_DEC_23)
         val evalContext = featureEvaluationContext(context = context)
 
         // When

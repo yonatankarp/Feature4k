@@ -1,5 +1,9 @@
 package com.yonatankarp.feature4k.store
 
+import com.yonatankarp.feature4k.audit.AuditFixtures.ADMIN_USER
+import com.yonatankarp.feature4k.audit.AuditFixtures.LOCALHOST
+import com.yonatankarp.feature4k.audit.AuditFixtures.WEB_API_SOURCE
+import com.yonatankarp.feature4k.core.IdentifierFixtures.FEATURE_UID
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -21,10 +25,10 @@ class FeatureEventFactoryTest {
         val factory = FeatureEventFactory.Default
 
         // When
-        val event = factory.created("my-feature")
+        val event = factory.created(FEATURE_UID)
 
         // Then
-        assertEquals("my-feature", event.uid)
+        assertEquals(FEATURE_UID, event.uid)
         assertNull(event.source)
         assertNull(event.user)
         assertNull(event.host)
@@ -36,19 +40,19 @@ class FeatureEventFactoryTest {
     fun `factory with metadata propagates audit fields to created events`() {
         // Given
         val factory = FeatureEventFactory(
-            source = "WEB_API",
-            user = "admin",
-            host = "localhost",
+            source = WEB_API_SOURCE,
+            user = ADMIN_USER,
+            host = LOCALHOST,
         )
 
         // When
-        val event = factory.created("my-feature")
+        val event = factory.created(FEATURE_UID)
 
         // Then
-        assertEquals("my-feature", event.uid)
-        assertEquals("WEB_API", event.source)
-        assertEquals("admin", event.user)
-        assertEquals("localhost", event.host)
+        assertEquals(FEATURE_UID, event.uid)
+        assertEquals(WEB_API_SOURCE, event.source)
+        assertEquals(ADMIN_USER, event.user)
+        assertEquals(LOCALHOST, event.host)
     }
 
     @Test
@@ -170,7 +174,7 @@ class FeatureEventFactoryTest {
     fun `events are serializable to JSON`() {
         // Given
         val factory = FeatureEventFactory(source = "TEST", user = "testUser")
-        val event = factory.created("test-feature", value = "test")
+        val event = factory.created(FEATURE_UID, value = "test")
 
         // When
         val json = Json.encodeToString<FeatureStoreEvent>(event)

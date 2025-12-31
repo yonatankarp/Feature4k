@@ -1,5 +1,6 @@
 package com.yonatankarp.feature4k.core
 
+import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.REGION_US_EAST
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -62,15 +63,15 @@ class FlippingExecutionContextTest {
 
     @Test
     fun `withParam adds custom parameter`() {
-        val context = FlippingExecutionContext().withParam("region", "us-east")
-        assertEquals("us-east", context.getParam("region"))
+        val context = FlippingExecutionContext().withParam("region", REGION_US_EAST)
+        assertEquals(REGION_US_EAST, context.getParam("region"))
     }
 
     @Test
     fun `withParams adds multiple custom parameters`() {
-        val params = mapOf("region" to "us-east", "env" to "prod")
+        val params = mapOf("region" to REGION_US_EAST, "env" to "prod")
         with(FlippingExecutionContext().withParams(params)) {
-            assertEquals("us-east", getParam("region"))
+            assertEquals(REGION_US_EAST, getParam("region"))
             assertEquals("prod", getParam("env"))
         }
     }

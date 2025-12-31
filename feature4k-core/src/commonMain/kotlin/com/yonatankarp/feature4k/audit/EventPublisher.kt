@@ -14,7 +14,7 @@ import com.yonatankarp.feature4k.store.StoreEvent
  *
  * @author Yonatan Karp-Rudin
  */
-interface EventPublisher {
+fun interface EventPublisher {
     /**
      * Publishes an event for audit trail persistence.
      *

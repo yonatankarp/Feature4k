@@ -1,5 +1,6 @@
 package com.yonatankarp.feature4k.strategy
 
+import com.yonatankarp.feature4k.strategy.TimeStrategyFixtures.STANDARD_BUSINESS_HOURS
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -18,7 +19,7 @@ class HourIntervalTest {
     @Test
     fun `should parse valid hour interval expression`() {
         // Given
-        val expression = "09:00-17:00"
+        val expression = STANDARD_BUSINESS_HOURS
 
         // When
         val interval = HourInterval(expression)
@@ -57,7 +58,7 @@ class HourIntervalTest {
     @Test
     fun `should match time within interval`() {
         // Given
-        val interval = HourInterval("09:00-17:00")
+        val interval = HourInterval(STANDARD_BUSINESS_HOURS)
 
         // When & Then
         assertTrue(interval.matches(LocalTime(9, 0)), "Should match start time (inclusive)")
@@ -68,7 +69,7 @@ class HourIntervalTest {
     @Test
     fun `should not match time at end boundary`() {
         // Given
-        val interval = HourInterval("09:00-17:00")
+        val interval = HourInterval(STANDARD_BUSINESS_HOURS)
 
         // When & Then
         assertFalse(interval.matches(LocalTime(17, 0)), "Should not match end time (exclusive)")
@@ -77,7 +78,7 @@ class HourIntervalTest {
     @Test
     fun `should not match time before interval`() {
         // Given
-        val interval = HourInterval("09:00-17:00")
+        val interval = HourInterval(STANDARD_BUSINESS_HOURS)
 
         // When & Then
         assertFalse(interval.matches(LocalTime(8, 59)), "Should not match before start")
@@ -87,7 +88,7 @@ class HourIntervalTest {
     @Test
     fun `should not match time after interval`() {
         // Given
-        val interval = HourInterval("09:00-17:00")
+        val interval = HourInterval(STANDARD_BUSINESS_HOURS)
 
         // When & Then
         assertFalse(interval.matches(LocalTime(17, 1)), "Should not match after end")
@@ -186,7 +187,7 @@ class HourIntervalTest {
     @Test
     fun `should serialize to JSON correctly`() {
         // Given
-        val interval = HourInterval("09:00-17:00")
+        val interval = HourInterval(STANDARD_BUSINESS_HOURS)
 
         // When
         val serialized = Json.encodeToString(interval)
@@ -220,7 +221,7 @@ class HourIntervalTest {
     @Test
     fun `should support data class equality`() {
         // Given
-        val interval1 = HourInterval("09:00-17:00")
+        val interval1 = HourInterval(STANDARD_BUSINESS_HOURS)
         val interval2 = HourInterval(LocalTime(9, 0), LocalTime(17, 0))
         val interval3 = HourInterval("10:00-18:00")
 

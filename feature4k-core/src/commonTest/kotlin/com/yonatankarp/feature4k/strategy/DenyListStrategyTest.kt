@@ -2,6 +2,7 @@ package com.yonatankarp.feature4k.strategy
 
 import com.yonatankarp.feature4k.store.InMemoryFeatureStore
 import com.yonatankarp.feature4k.strategy.FeatureEvaluationContextFixture.featureEvaluationContext
+import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.REGION_US_EAST
 import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.emptyExecutionContext
 import com.yonatankarp.feature4k.strategy.FlippingExecutionContextFixture.executionContextWithUser
 import kotlinx.coroutines.test.runTest
@@ -219,7 +220,7 @@ class DenyListStrategyTest {
             user = "alice",
             client = "mobile-app",
             server = "prod-server",
-            customParams = mapOf("region" to "us-east"),
+            customParams = mapOf("region" to REGION_US_EAST),
         )
         val evalContext = featureEvaluationContext(context = execContext)
 

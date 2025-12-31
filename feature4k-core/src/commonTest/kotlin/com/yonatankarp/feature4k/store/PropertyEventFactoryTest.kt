@@ -1,5 +1,9 @@
 package com.yonatankarp.feature4k.store
 
+import com.yonatankarp.feature4k.audit.AuditFixtures.ADMIN_USER
+import com.yonatankarp.feature4k.audit.AuditFixtures.LOCALHOST
+import com.yonatankarp.feature4k.audit.AuditFixtures.WEB_API_SOURCE
+import com.yonatankarp.feature4k.core.IdentifierFixtures.PROPERTY_UID
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -21,10 +25,10 @@ class PropertyEventFactoryTest {
         val factory = PropertyEventFactory.Default
 
         // When
-        val event = factory.created("my-property")
+        val event = factory.created(PROPERTY_UID)
 
         // Then
-        assertEquals("my-property", event.uid)
+        assertEquals(PROPERTY_UID, event.uid)
         assertNull(event.source)
         assertNull(event.user)
         assertNull(event.host)
@@ -36,19 +40,19 @@ class PropertyEventFactoryTest {
     fun `factory with metadata propagates audit fields to created events`() {
         // Given
         val factory = PropertyEventFactory(
-            source = "WEB_API",
-            user = "admin",
-            host = "localhost",
+            source = WEB_API_SOURCE,
+            user = ADMIN_USER,
+            host = LOCALHOST,
         )
 
         // When
-        val event = factory.created("my-property")
+        val event = factory.created(PROPERTY_UID)
 
         // Then
-        assertEquals("my-property", event.uid)
-        assertEquals("WEB_API", event.source)
-        assertEquals("admin", event.user)
-        assertEquals("localhost", event.host)
+        assertEquals(PROPERTY_UID, event.uid)
+        assertEquals(WEB_API_SOURCE, event.source)
+        assertEquals(ADMIN_USER, event.user)
+        assertEquals(LOCALHOST, event.host)
     }
 
     @Test
@@ -114,7 +118,7 @@ class PropertyEventFactoryTest {
     fun `events are serializable to JSON`() {
         // Given
         val factory = PropertyEventFactory(source = "TEST", user = "testUser")
-        val event = factory.created("test-property", value = "test")
+        val event = factory.created(PROPERTY_UID, value = "test")
 
         // When
         val json = Json.encodeToString<PropertyStoreEvent>(event)
@@ -148,9 +152,9 @@ class PropertyEventFactoryTest {
     fun `multiple events from same factory share audit metadata`() {
         // Given
         val factory = PropertyEventFactory(
-            source = "BATCH_JOB",
-            user = "system",
-            host = "worker-1",
+            source = BATCH_SOURCE,
+            user = SYSTEM_USER,
+            host = WORKER_HOST,
         )
 
         // When
@@ -159,16 +163,22 @@ class PropertyEventFactoryTest {
         val event3 = factory.deleted("prop3")
 
         // Then
-        assertEquals("BATCH_JOB", event1.source)
-        assertEquals("BATCH_JOB", event2.source)
-        assertEquals("BATCH_JOB", event3.source)
+        assertEquals(BATCH_SOURCE, event1.source)
+        assertEquals(BATCH_SOURCE, event2.source)
+        assertEquals(BATCH_SOURCE, event3.source)
 
-        assertEquals("system", event1.user)
-        assertEquals("system", event2.user)
-        assertEquals("system", event3.user)
+        assertEquals(SYSTEM_USER, event1.user)
+        assertEquals(SYSTEM_USER, event2.user)
+        assertEquals(SYSTEM_USER, event3.user)
 
-        assertEquals("worker-1", event1.host)
-        assertEquals("worker-1", event2.host)
-        assertEquals("worker-1", event3.host)
+        assertEquals(WORKER_HOST, event1.host)
+        assertEquals(WORKER_HOST, event2.host)
+        assertEquals(WORKER_HOST, event3.host)
+    }
+
+    companion object {
+        private const val BATCH_SOURCE = "BATCH_JOB"
+        private const val SYSTEM_USER = "system"
+        private const val WORKER_HOST = "worker-1"
     }
 }

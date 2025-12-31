@@ -1,5 +1,9 @@
 package com.yonatankarp.feature4k.property
 
+import com.yonatankarp.feature4k.core.DateTimeFixtures.CHRISTMAS_AFTERNOON_SLOT
+import com.yonatankarp.feature4k.core.DateTimeFixtures.CHRISTMAS_APPOINTMENT_SLOTS
+import com.yonatankarp.feature4k.core.DateTimeFixtures.CHRISTMAS_NOON_SLOT
+import com.yonatankarp.feature4k.core.DateTimeFixtures.TIMESTAMP_LOCAL
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -17,7 +21,7 @@ class PropertyLocalDateTimeTest {
     fun `stores name and value`() {
         // Given
         val name = "scheduledAt"
-        val value = LocalDateTime.parse("2024-01-15T10:30:00")
+        val value = LocalDateTime.parse(TIMESTAMP_LOCAL)
 
         // When
         val property = PropertyLocalDateTime(name = name, value = value)
@@ -46,7 +50,7 @@ class PropertyLocalDateTimeTest {
         val original =
             PropertyLocalDateTime(
                 name = "meetingTime",
-                value = LocalDateTime.parse("2024-12-25T14:00:00"),
+                value = CHRISTMAS_AFTERNOON_SLOT,
                 description = "Meeting scheduled time",
             )
 
@@ -62,7 +66,7 @@ class PropertyLocalDateTimeTest {
     fun `hasFixedValues returns false when no fixed values`() {
         // Given
         val name = "scheduledAt"
-        val value = LocalDateTime.parse("2024-01-15T10:30:00")
+        val value = LocalDateTime.parse(TIMESTAMP_LOCAL)
 
         // When
         val property = PropertyLocalDateTime(name = name, value = value)
@@ -75,15 +79,10 @@ class PropertyLocalDateTimeTest {
     fun `hasFixedValues returns true when fixed values defined`() {
         // Given
         val name = "appointmentSlot"
-        val value = LocalDateTime.parse("2024-12-25T14:00:00")
-        val fixedValues = setOf(
-            LocalDateTime.parse("2024-12-25T10:00:00"),
-            LocalDateTime.parse("2024-12-25T14:00:00"),
-            LocalDateTime.parse("2024-12-25T18:00:00"),
-        )
+        val value = CHRISTMAS_AFTERNOON_SLOT
 
         // When
-        val property = PropertyLocalDateTime(name = name, value = value, fixedValues = fixedValues)
+        val property = PropertyLocalDateTime(name = name, value = value, fixedValues = CHRISTMAS_APPOINTMENT_SLOTS)
 
         // Then
         assertTrue(property.hasFixedValues)
@@ -93,7 +92,7 @@ class PropertyLocalDateTimeTest {
     fun `isValid returns true when no fixed values`() {
         // Given
         val name = "scheduledAt"
-        val value = LocalDateTime.parse("2024-01-15T10:30:00")
+        val value = LocalDateTime.parse(TIMESTAMP_LOCAL)
 
         // When
         val property = PropertyLocalDateTime(name = name, value = value)
@@ -106,15 +105,10 @@ class PropertyLocalDateTimeTest {
     fun `isValid returns true when value in fixed values`() {
         // Given
         val name = "appointmentSlot"
-        val value = LocalDateTime.parse("2024-12-25T14:00:00")
-        val fixedValues = setOf(
-            LocalDateTime.parse("2024-12-25T10:00:00"),
-            LocalDateTime.parse("2024-12-25T14:00:00"),
-            LocalDateTime.parse("2024-12-25T18:00:00"),
-        )
+        val value = CHRISTMAS_AFTERNOON_SLOT
 
         // When
-        val property = PropertyLocalDateTime(name = name, value = value, fixedValues = fixedValues)
+        val property = PropertyLocalDateTime(name = name, value = value, fixedValues = CHRISTMAS_APPOINTMENT_SLOTS)
 
         // Then
         assertTrue(property.isValid)
@@ -124,15 +118,10 @@ class PropertyLocalDateTimeTest {
     fun `isValid returns false when value not in fixed values`() {
         // Given
         val name = "appointmentSlot"
-        val value = LocalDateTime.parse("2024-12-25T12:00:00")
-        val fixedValues = setOf(
-            LocalDateTime.parse("2024-12-25T10:00:00"),
-            LocalDateTime.parse("2024-12-25T14:00:00"),
-            LocalDateTime.parse("2024-12-25T18:00:00"),
-        )
+        val value = CHRISTMAS_NOON_SLOT
 
         // When
-        val property = PropertyLocalDateTime(name = name, value = value, fixedValues = fixedValues)
+        val property = PropertyLocalDateTime(name = name, value = value, fixedValues = CHRISTMAS_APPOINTMENT_SLOTS)
 
         // Then
         assertFalse(property.isValid)

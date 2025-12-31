@@ -1,5 +1,8 @@
 package com.yonatankarp.feature4k.property
 
+import com.yonatankarp.feature4k.core.DateTimeFixtures.CHRISTMAS_2024_MIDNIGHT
+import com.yonatankarp.feature4k.core.DateTimeFixtures.RELEASE_MILESTONES
+import com.yonatankarp.feature4k.core.DateTimeFixtures.TIMESTAMP_ISO
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -17,7 +20,7 @@ class PropertyInstantTest {
     fun `stores name and value`() {
         // Given
         val name = "createdAt"
-        val value = Instant.parse("2024-01-15T10:30:00Z")
+        val value = Instant.parse(TIMESTAMP_ISO)
 
         // When
         val property = PropertyInstant(name = name, value = value)
@@ -46,7 +49,7 @@ class PropertyInstantTest {
         val original =
             PropertyInstant(
                 name = "eventTime",
-                value = Instant.parse("2024-12-25T00:00:00Z"),
+                value = CHRISTMAS_2024_MIDNIGHT,
                 description = "Event occurrence time",
             )
 
@@ -62,7 +65,7 @@ class PropertyInstantTest {
     fun `hasFixedValues returns false when no fixed values`() {
         // Given
         val name = "createdAt"
-        val value = Instant.parse("2024-01-15T10:30:00Z")
+        val value = Instant.parse(TIMESTAMP_ISO)
 
         // When
         val property = PropertyInstant(name = name, value = value)
@@ -75,15 +78,10 @@ class PropertyInstantTest {
     fun `hasFixedValues returns true when fixed values defined`() {
         // Given
         val name = "releaseDate"
-        val value = Instant.parse("2024-12-25T00:00:00Z")
-        val fixedValues = setOf(
-            Instant.parse("2024-06-15T00:00:00Z"),
-            Instant.parse("2024-12-25T00:00:00Z"),
-            Instant.parse("2025-06-15T00:00:00Z"),
-        )
+        val value = CHRISTMAS_2024_MIDNIGHT
 
         // When
-        val property = PropertyInstant(name = name, value = value, fixedValues = fixedValues)
+        val property = PropertyInstant(name = name, value = value, fixedValues = RELEASE_MILESTONES)
 
         // Then
         assertTrue(property.hasFixedValues)
@@ -93,7 +91,7 @@ class PropertyInstantTest {
     fun `isValid returns true when no fixed values`() {
         // Given
         val name = "createdAt"
-        val value = Instant.parse("2024-01-15T10:30:00Z")
+        val value = Instant.parse(TIMESTAMP_ISO)
 
         // When
         val property = PropertyInstant(name = name, value = value)
@@ -106,15 +104,10 @@ class PropertyInstantTest {
     fun `isValid returns true when value in fixed values`() {
         // Given
         val name = "releaseDate"
-        val value = Instant.parse("2024-12-25T00:00:00Z")
-        val fixedValues = setOf(
-            Instant.parse("2024-06-15T00:00:00Z"),
-            Instant.parse("2024-12-25T00:00:00Z"),
-            Instant.parse("2025-06-15T00:00:00Z"),
-        )
+        val value = CHRISTMAS_2024_MIDNIGHT
 
         // When
-        val property = PropertyInstant(name = name, value = value, fixedValues = fixedValues)
+        val property = PropertyInstant(name = name, value = value, fixedValues = RELEASE_MILESTONES)
 
         // Then
         assertTrue(property.isValid)
@@ -125,14 +118,9 @@ class PropertyInstantTest {
         // Given
         val name = "releaseDate"
         val value = Instant.parse("2024-10-01T00:00:00Z")
-        val fixedValues = setOf(
-            Instant.parse("2024-06-15T00:00:00Z"),
-            Instant.parse("2024-12-25T00:00:00Z"),
-            Instant.parse("2025-06-15T00:00:00Z"),
-        )
 
         // When
-        val property = PropertyInstant(name = name, value = value, fixedValues = fixedValues)
+        val property = PropertyInstant(name = name, value = value, fixedValues = RELEASE_MILESTONES)
 
         // Then
         assertFalse(property.isValid)

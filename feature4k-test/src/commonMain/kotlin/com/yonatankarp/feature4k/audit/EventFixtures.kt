@@ -1,5 +1,10 @@
 package com.yonatankarp.feature4k.audit
 
+import com.yonatankarp.feature4k.audit.AuditFixtures.ADMIN_USER
+import com.yonatankarp.feature4k.audit.AuditFixtures.LOCALHOST
+import com.yonatankarp.feature4k.audit.AuditFixtures.WEB_API_SOURCE
+import com.yonatankarp.feature4k.core.IdentifierFixtures.FEATURE_UID
+import com.yonatankarp.feature4k.core.IdentifierFixtures.PROPERTY_UID
 import com.yonatankarp.feature4k.store.FeatureStoreEvent
 import com.yonatankarp.feature4k.store.PropertyStoreEvent
 import com.yonatankarp.feature4k.utils.Uid
@@ -14,11 +19,12 @@ import kotlin.time.Duration
  * @author Yonatan Karp-Rudin
  */
 object EventFixtures {
+
     /**
      * Creates a basic FeatureStoreEvent.Created with minimal fields.
      */
     fun featureCreatedEvent(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         timestamp: Instant = Clock.System.now(),
         user: String? = null,
         source: String? = null,
@@ -39,7 +45,7 @@ object EventFixtures {
      * Creates a FeatureStoreEvent.Updated event.
      */
     fun featureUpdatedEvent(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         timestamp: Instant = Clock.System.now(),
         user: String? = null,
     ) = FeatureStoreEvent.Updated(
@@ -58,7 +64,7 @@ object EventFixtures {
      * Creates a FeatureStoreEvent.Deleted event.
      */
     fun featureDeletedEvent(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         timestamp: Instant = Clock.System.now(),
     ) = FeatureStoreEvent.Deleted(
         uid = uid,
@@ -76,7 +82,7 @@ object EventFixtures {
      * Creates a FeatureStoreEvent.Enabled event.
      */
     fun featureEnabledEvent(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         timestamp: Instant = Clock.System.now(),
     ) = FeatureStoreEvent.Enabled(
         uid = uid,
@@ -94,7 +100,7 @@ object EventFixtures {
      * Creates a FeatureStoreEvent.Disabled event.
      */
     fun featureDisabledEvent(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         timestamp: Instant = Clock.System.now(),
     ) = FeatureStoreEvent.Disabled(
         uid = uid,
@@ -112,7 +118,7 @@ object EventFixtures {
      * Creates a FeatureStoreEvent.Checked event.
      */
     fun featureCheckedEvent(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         timestamp: Instant = Clock.System.now(),
         value: String? = "true",
     ) = FeatureStoreEvent.Checked(
@@ -131,7 +137,7 @@ object EventFixtures {
      * Creates a PropertyStoreEvent.Created event.
      */
     fun propertyCreatedEvent(
-        uid: String = "test-property",
+        uid: String = PROPERTY_UID,
         timestamp: Instant = Clock.System.now(),
     ) = PropertyStoreEvent.Created(
         uid = uid,
@@ -149,7 +155,7 @@ object EventFixtures {
      * Creates an event with custom properties for testing metadata.
      */
     fun eventWithCustomProperties(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         customProperties: Map<String, String> = mapOf("key1" to "value1", "key2" to "value2"),
     ) = FeatureStoreEvent.Created(
         uid = uid,
@@ -167,11 +173,11 @@ object EventFixtures {
      * Creates an event with full audit metadata.
      */
     fun fullAuditEvent(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         timestamp: Instant = Clock.System.now(),
-        user: String = "admin",
-        source: String = "WEB_API",
-        host: String = "localhost",
+        user: String = ADMIN_USER,
+        source: String = WEB_API_SOURCE,
+        host: String = LOCALHOST,
         duration: Long = 100L,
     ) = FeatureStoreEvent.Created(
         uid = uid,
@@ -193,7 +199,7 @@ object EventFixtures {
      * @param baseTime Base timestamp to apply offset from (defaults to Clock.System.now())
      */
     fun eventWithOffset(
-        uid: String = "test-feature",
+        uid: String = FEATURE_UID,
         offset: Duration,
         baseTime: Instant = Clock.System.now(),
     ) = featureCreatedEvent(

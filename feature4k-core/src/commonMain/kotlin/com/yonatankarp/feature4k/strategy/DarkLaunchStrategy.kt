@@ -56,9 +56,4 @@ import kotlinx.serialization.Transient
 @SerialName("dark-launch")
 data class DarkLaunchStrategy(
     val weight: Double = 0.5,
-) : FlippingStrategy {
-    @Transient
-    private val delegate = PonderationStrategy(weight)
-
-    override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean = delegate.evaluate(evalContext)
-}
+) : FlippingStrategy by PonderationStrategy(weight)
