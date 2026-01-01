@@ -26,11 +26,11 @@ package com.yonatankarp.feature4k.strategy.expression
  */
 sealed class ExpressionNode {
     /**
-     * Evaluates this node and its subtree against the provided feature states.
-     *
-     * @param featureStates Map of feature names to their boolean evaluation results
-     * @return The boolean result of evaluating this node and its subtree
-     */
+ * Evaluate this node and its subtree using the provided feature states.
+ *
+ * @param featureStates A map from feature name to its boolean value; implementations resolve feature references using this map.
+ * @return `true` if the expression represented by this node and its subtree evaluates to true given `featureStates`, `false` otherwise.
+ */
     abstract fun evaluate(featureStates: Map<String, Boolean>): Boolean
 
     /**
@@ -42,9 +42,20 @@ sealed class ExpressionNode {
      * @property featureName The identifier of the feature being referenced
      */
     data class FeatureReference(val featureName: String) : ExpressionNode() {
-        override fun evaluate(featureStates: Map<String, Boolean>): Boolean = featureStates[featureName] ?: false
+        /**
+ * Evaluates this feature reference using the provided feature states map.
+ *
+ * @param featureStates Map of feature names to their enabled (`true`) or disabled (`false`) states.
+ * @return `true` if `featureName` maps to `true` in `featureStates`, `false` otherwise.
+ */
+override fun evaluate(featureStates: Map<String, Boolean>): Boolean = featureStates[featureName] ?: false
 
-        override fun toString(): String = featureName
+        /**
+ * The feature reference's name as its textual representation.
+ *
+ * @return The feature name.
+ */
+override fun toString(): String = featureName
     }
 
     /**
@@ -62,12 +73,32 @@ sealed class ExpressionNode {
         val operator: ExpressionOperator,
         internal val children: MutableList<ExpressionNode> = mutableListOf(),
     ) : ExpressionNode() {
+        /**
+         * Evaluates this operation node against the provided feature states.
+         *
+         * The result depends on the operator:
+         * - NOT: negates the evaluation of the single child.
+         * - AND: `true` only if all children evaluate to `true`.
+         * - OR: `true` if any child evaluates to `true`.
+         *
+         * @param featureStates Map of feature names to their boolean states used for resolving feature references.
+         * @return `true` if the operation evaluates to true for the given feature states, `false` otherwise.
+         */
         override fun evaluate(featureStates: Map<String, Boolean>): Boolean = when (operator) {
             ExpressionOperator.NOT -> children.first().evaluate(featureStates).not()
             ExpressionOperator.AND -> children.all { it.evaluate(featureStates) }
             ExpressionOperator.OR -> children.any { it.evaluate(featureStates) }
         }
 
+        /**
+         * Produces a human-readable textual representation of this operation node.
+         *
+         * The output prefixes the expression with "!" when the operator is `NOT`, inserts the operator between children
+         * (e.g., "A AND B"), renders `FeatureReference` children as their feature name, and encloses nested `Operation`
+         * children in parentheses.
+         *
+         * @return The formatted string representation of this operation subtree.
+         */
         override fun toString(): String = buildString {
             // NOT is a prefix operator
             if (operator == ExpressionOperator.NOT) {

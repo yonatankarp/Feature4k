@@ -12,21 +12,45 @@ import com.yonatankarp.feature4k.core.IdentifierFixtures.NEW_UI
  * @author Yonatan Karp-Rudin
  */
 object ExpressionStrategyFixtures {
-    /** Simple OR expression: dark-mode | new-ui */
+    /**
+ * Creates an ExpressionFlipStrategy representing the logical OR of dark mode and new UI.
+ *
+ * @return An ExpressionFlipStrategy with the expression "$DARK_MODE|$NEW_UI".
+ */
     fun darkModeOrNewUi() = ExpressionFlipStrategy(expression = "$DARK_MODE|$NEW_UI")
 
-    /** Simple AND expression: dark-mode & new-ui */
+    /**
+ * Expression that requires both dark-mode and new-ui to be enabled.
+ *
+ * @return An ExpressionFlipStrategy configured with the expression "$DARK_MODE&$NEW_UI".
+ */
     fun darkModeAndNewUi() = ExpressionFlipStrategy(expression = "$DARK_MODE&$NEW_UI")
 
-    /** NOT expression: !analytics */
+    /**
+ * Expression strategy that matches when the `ANALYTICS` feature is disabled.
+ *
+ * @return An ExpressionFlipStrategy with expression `!$ANALYTICS`.
+ */
     fun notAnalytics() = ExpressionFlipStrategy(expression = "!$ANALYTICS")
 
-    /** Complex expression: basic-dashboard & (beta-access | analytics) */
+    /**
+ * Builds an ExpressionFlipStrategy that requires the basic dashboard and either beta access or analytics.
+ *
+ * @return An ExpressionFlipStrategy configured with the expression `BASIC_DASHBOARD & (BETA_ACCESS | ANALYTICS)`.
+ */
     fun premiumRequiresBasicAndBeta() = ExpressionFlipStrategy(expression = "$BASIC_DASHBOARD&($BETA_ACCESS|$ANALYTICS)")
 
-    /** Expression with NOT and parentheses: (dark-mode | new-ui) & !analytics */
+    /**
+ * Builds a feature expression that enables dark-mode or new-ui while excluding analytics.
+ *
+ * @return An ExpressionFlipStrategy configured with the expression "($DARK_MODE|$NEW_UI)&!$ANALYTICS".
+ */
     fun newFeaturesWithoutAnalytics() = ExpressionFlipStrategy(expression = "($DARK_MODE|$NEW_UI)&!$ANALYTICS")
 
-    /** Single feature reference */
+    /**
+ * Creates an ExpressionFlipStrategy that references the dark mode feature.
+ *
+ * @return An ExpressionFlipStrategy whose expression is `DARK_MODE`.
+ */
     fun darkModeOnly() = ExpressionFlipStrategy(expression = DARK_MODE)
 }

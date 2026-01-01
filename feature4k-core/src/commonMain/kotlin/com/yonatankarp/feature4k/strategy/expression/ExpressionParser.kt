@@ -44,10 +44,10 @@ class ExpressionParser {
     )
 
     /**
-     * Parses a boolean expression string into an expression tree.
+     * Parse a boolean feature-flag expression into an ExpressionNode tree.
      *
-     * @param expression The expression string to parse
-     * @return The root node of the parsed expression tree
+     * @param expression The expression to parse; may contain feature identifiers, `|` (OR), `&` (AND), `!` (NOT), parentheses, and whitespace.
+     * @return The root `ExpressionNode` representing the parsed expression tree.
      */
     fun parse(expression: String): ExpressionNode {
         val normalized = normalizeExpression(expression)
@@ -59,10 +59,20 @@ class ExpressionParser {
         }
     }
 
-    /* Removes all whitespace from the expression. */
+    /**
+ * Produce the expression with all space characters removed.
+ *
+ * @param expression The input expression.
+ * @return The expression with all space characters (' ') removed.
+ */
     private fun normalizeExpression(expression: String): String = expression.replace(" ", "")
 
-    /* Parses an expression containing parentheses by extracting, parsing, and substituting sub-expressions. */
+    /**
+     * Parse a parenthesized boolean expression into an ExpressionNode tree, resolving and substituting all nested sub-expressions.
+     *
+     * @param expression The boolean expression to parse; may include parentheses, `|`, `&`, `!`, and whitespace.
+     * @return An ExpressionNode representing the fully parsed expression with parenthesized sub-expressions substituted.
+     */
     private fun parseWithParentheses(expression: String): ExpressionNode {
         val subExpressions = extractAllSubExpressions(expression)
         val withPlaceholders = buildPlaceholderExpression(expression, subExpressions.placeholderMap)
@@ -71,7 +81,18 @@ class ExpressionParser {
         return substituteNode(parsedWithPlaceholders, subExpressions.nodeMap)
     }
 
-    /* Extracts all parenthesized sub-expressions and recursively parses them into nodes. */
+    /**
+     * Extracts each parenthesized sub-expression, assigns it a placeholder, and parses it into nodes.
+     *
+     * Iteratively finds parenthesized segments (respecting nested parentheses), produces placeholders
+     * named "P0", "P1", ... for each segment, stores the raw sub-expression with `|` and `&` replaced
+     * by the words "OR" and "AND" in the placeholders map, and parses each raw sub-expression into an
+     * ExpressionNode stored in the nodes map.
+     *
+     * @return A SubExpressions instance containing:
+     * - placeholder -> raw sub-expression string (with `|`/`&` converted to "OR"/"AND")
+     * - placeholder -> parsed ExpressionNode for that sub-expression
+     */
     private fun extractAllSubExpressions(expression: String): SubExpressions {
         val placeholders = mutableMapOf<String, String>()
         val nodes = mutableMapOf<String, ExpressionNode>()
@@ -100,7 +121,16 @@ class ExpressionParser {
         return SubExpressions(placeholders, nodes)
     }
 
-    /* Extracts the first parenthesized sub-expression, handling nested parentheses correctly. */
+    /**
+     * Extracts the first parenthesized sub-expression from the input string while correctly handling nested parentheses.
+     *
+     * Finds the first `(` in `expression` and locates its matching `)`. The returned `ParenthesizedExpression`
+     * contains the inner content (excluding the surrounding parentheses) and the offset immediately after the
+     * closing `)` in the original string.
+     *
+     * @return A [ParenthesizedExpression] whose `content` is the substring between the matched parentheses and whose
+     * `endOffset` is the index in `expression` immediately following the closing parenthesis.
+     */
     private fun extractParenthesizedExpression(expression: String): ParenthesizedExpression {
         val chars = expression.toCharArray()
         val openIndex = expression.indexOf(OPEN_PAREN)
@@ -122,7 +152,13 @@ class ExpressionParser {
         }
     }
 
-    /* Builds an expression with sub-expressions replaced by placeholder names. */
+    /**
+     * Produce an expression where parenthesized sub-expressions are replaced by placeholders and all whitespace is removed.
+     *
+     * @param expression The original expression string that may contain parenthesized sub-expressions.
+     * @param subExpressions Map of placeholder name to the raw inner sub-expression (without surrounding parentheses) to substitute.
+     * @return The transformed expression string with each matching parenthesized sub-expression replaced by its placeholder, using `&` and `|` operators and no spaces.
+     */
     private fun buildPlaceholderExpression(
         expression: String,
         subExpressions: Map<String, String>,
@@ -144,7 +180,13 @@ class ExpressionParser {
             .replace(" ", "")
     }
 
-    /* Recursively substitutes placeholder feature references with their actual parsed sub-expression nodes. */
+    /**
+     * Replace placeholder feature references in an ExpressionNode tree with their corresponding parsed sub-expression nodes.
+     *
+     * @param node The root ExpressionNode to process.
+     * @param substitutions Map from placeholder feature names (e.g., "P0") to their replacement ExpressionNode.
+     * @return A new ExpressionNode with all matching FeatureReference placeholders replaced by the mapped nodes; non-matching nodes are left unchanged.
+     */
     private fun substituteNode(
         node: ExpressionNode,
         substitutions: Map<String, ExpressionNode>,
@@ -158,7 +200,12 @@ class ExpressionParser {
         }
     }
 
-    /* Parses an expression without parentheses, respecting operator precedence (OR < AND < NOT). */
+    /**
+     * Parse an expression that contains no parentheses into an ExpressionNode, applying operator precedence where OR has lowest precedence, then AND, then NOT.
+     *
+     * @param expression The expression string without parentheses (whitespace removed).
+     * @return The root ExpressionNode representing the parsed expression.
+     */
     private fun parseWithoutParentheses(expression: String): ExpressionNode {
         if (OR_CHAR !in expression && AND_CHAR !in expression && NOT_CHAR !in expression) {
             return ExpressionNode.FeatureReference(expression)
@@ -172,7 +219,14 @@ class ExpressionParser {
         }
     }
 
-    /* Builds an OR operation node from multiple expression parts. */
+    /**
+     * Constructs an OR operation node from the given subexpression strings.
+     *
+     * Each string in `parts` is parsed (respecting AND/NOT precedence) and added as a child of the returned OR node.
+     *
+     * @param parts Subexpression strings to combine with a logical OR.
+     * @return An `ExpressionNode.Operation` representing the logical OR of the parsed parts.
+     */
     private fun buildOrNode(parts: List<String>): ExpressionNode {
         val orNode = ExpressionNode.Operation(ExpressionOperator.OR)
         parts.forEach { part ->
@@ -181,7 +235,12 @@ class ExpressionParser {
         return orNode
     }
 
-    /* Parses expressions containing AND and NOT operators. */
+    /**
+     * Parse an expression into an AND operation if it contains the AND operator, otherwise parse it as a NOT or feature reference.
+     *
+     * @param expression The expression segment to parse (whitespace removed).
+     * @return An ExpressionNode representing either an AND operation over the expression's parts or the parsed NOT/feature node.
+     */
     private fun parseAndNot(expression: String): ExpressionNode {
         val andParts = expression.split(AND_CHAR)
         return if (andParts.size > 1) {
@@ -191,7 +250,12 @@ class ExpressionParser {
         }
     }
 
-    /* Builds an AND operation node from multiple expression parts. */
+    /**
+     * Constructs an AND operation node from the given expression parts.
+     *
+     * @param parts Sub-expressions that should be combined with a logical AND; each part is parsed as an operand.
+     * @return An ExpressionNode.Operation representing a logical AND with each parsed part as a child.
+     */
     private fun buildAndNode(parts: List<String>): ExpressionNode {
         val andNode = ExpressionNode.Operation(ExpressionOperator.AND)
         parts.forEach { part ->
@@ -200,14 +264,24 @@ class ExpressionParser {
         return andNode
     }
 
-    /* Parses expressions that may start with a NOT operator. */
+    /**
+     * Parse an expression that may represent a logical negation into an ExpressionNode.
+     *
+     * @param expression The expression text, possibly starting with the NOT operator character.
+     * @return An `Operation` node representing logical NOT applied to the remainder if the expression starts with the NOT operator; otherwise a `FeatureReference` node for the expression.
+     */
     private fun parseNot(expression: String): ExpressionNode = if (expression.startsWith(NOT_CHAR)) {
         buildNotNode(expression.substring(1))
     } else {
         ExpressionNode.FeatureReference(expression)
     }
 
-    /* Builds a NOT operation node. */
+    /**
+     * Create a NOT operation node for the given feature.
+     *
+     * @param featureName The feature name (or placeholder) to negate.
+     * @return An ExpressionNode representing a NOT operation whose single child is a FeatureReference for `featureName`.
+     */
     private fun buildNotNode(featureName: String): ExpressionNode {
         val notNode = ExpressionNode.Operation(ExpressionOperator.NOT)
         notNode.children.add(ExpressionNode.FeatureReference(featureName))
