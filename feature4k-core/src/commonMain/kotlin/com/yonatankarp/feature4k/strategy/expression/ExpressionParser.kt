@@ -49,6 +49,7 @@ class ExpressionParser {
      * @param expression The expression to parse; may contain feature identifiers, `|` (OR), `&` (AND), `!` (NOT), parentheses, and whitespace.
      * @return The root `ExpressionNode` representing the parsed expression tree.
      * @throws IllegalArgumentException if the expression contains empty or invalid feature names
+     * @throws IllegalStateException if the expression contains unmatched opening parentheses
      */
     fun parse(expression: String): ExpressionNode {
         val normalized = normalizeExpression(expression)
@@ -74,13 +75,11 @@ class ExpressionParser {
         val featureNames = node.featureNames()
         val emptyNames = featureNames.filter { it.isEmpty() }
 
-        if (emptyNames.isNotEmpty()) {
-            throw IllegalArgumentException(
-                "Invalid expression: '$originalExpression' contains empty feature name(s). " +
-                    "This can happen when operators appear consecutively (e.g., 'a||b'), " +
-                    "at the start (e.g., '|a'), at the end (e.g., 'a|'), " +
-                    "or when the expression consists only of operators (e.g., '&|!').",
-            )
+        require(emptyNames.isEmpty()) {
+            "Invalid expression: '$originalExpression' contains empty feature name(s). " +
+                "This can happen when operators appear consecutively (e.g., 'a||b'), " +
+                "at the start (e.g., '|a'), at the end (e.g., 'a|'), " +
+                "or when the expression consists only of operators (e.g., '&|!')."
         }
     }
 

@@ -69,4 +69,19 @@ object FlippingExecutionContextFixture {
             timezone?.let { put(OVERRIDE_TIMEZONE_KEY, it) }
         },
     )
+
+    /**
+     * Creates a FlippingExecutionContext with authorities for testing authorization-based strategies.
+     *
+     * @param authorities Comma-separated string of authority identifiers
+     * @param user Optional user identifier (default: "test-user")
+     * @return A FlippingExecutionContext with authorities in custom params
+     */
+    fun contextWithAuthorities(
+        authorities: String,
+        user: String? = "test-user",
+    ) = FlippingExecutionContext(
+        user = user,
+        customParams = mapOf("authorities" to authorities),
+    )
 }
