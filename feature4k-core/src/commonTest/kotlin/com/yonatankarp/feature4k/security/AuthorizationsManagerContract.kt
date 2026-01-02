@@ -10,15 +10,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-abstract class AuthorizationManagerContract {
+abstract class AuthorizationsManagerContract {
 
     /**
-     * Create a fresh AuthorizationManager instance for each test.
+     * Create a fresh AuthorizationsManager instance for each test.
      */
     abstract fun createManager(
         userName: String = ALICE,
         permissions: Set<String> = READ_WRITE_PERMISSIONS,
-    ): AuthorizationManager
+    ): AuthorizationsManager
 
     @Test
     fun `isAllowedAny returns false when no permissions match`() {

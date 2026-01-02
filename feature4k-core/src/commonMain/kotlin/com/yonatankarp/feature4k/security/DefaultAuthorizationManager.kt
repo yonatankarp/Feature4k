@@ -1,7 +1,7 @@
 package com.yonatankarp.feature4k.security
 
 /**
- * Default immutable implementation of [AuthorizationManager].
+ * Default immutable implementation of [AuthorizationsManager].
  *
  * This implementation represents a *snapshot* of the current user's
  * authorization state, consisting of the user's identity and the set of
@@ -23,7 +23,7 @@ data class DefaultAuthorizationManager(
     override val currentUserName: String,
     /** @inheritDoc */
     override val currentUserPermissions: Set<String>,
-) : AuthorizationManager {
+) : AuthorizationsManager {
 
     /**
      * Returns a new [DefaultAuthorizationManager] with the given permissions.
