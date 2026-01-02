@@ -7,6 +7,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":feature4k-core"))
+            implementation(libs.kotlinx.datetime)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
