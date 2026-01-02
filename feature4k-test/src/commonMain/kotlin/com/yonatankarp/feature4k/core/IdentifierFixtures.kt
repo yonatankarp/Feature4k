@@ -41,4 +41,24 @@ object IdentifierFixtures {
 
     /** Feature representing beta access program. */
     const val BETA_ACCESS = "beta-access"
+
+    // User identifiers
+
+    /** Common test user - alice. */
+    const val ALICE = "alice"
+
+    /** Common test user - bob. */
+    const val BOB = "bob"
+
+    /** Common test user - charlie. */
+    const val CHARLIE = "charlie"
+
+    /** Admin user identifier. */
+    const val ADMIN = "admin"
+
+    /** Regular user identifier. */
+    const val USER_REGULAR = "user"
+
+    /** Superuser identifier. */
+    const val USER_SUPERUSER = "superuser"
 }

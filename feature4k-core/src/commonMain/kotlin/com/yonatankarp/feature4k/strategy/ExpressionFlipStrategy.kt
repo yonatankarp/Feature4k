@@ -78,6 +78,7 @@ data class ExpressionFlipStrategy(
      *
      * @param evalContext Context containing the feature store and current feature information used to resolve dependent feature states; the current feature is excluded when collecting dependency states.
      * @return `true` if the parsed expression evaluates to true given the resolved feature states, `false` otherwise.
+     * @throws IllegalStateException if strict mode is enabled and a referenced feature does not exist in the store.
      */
     override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
         val featureStates = buildFeatureStates(evalContext)
