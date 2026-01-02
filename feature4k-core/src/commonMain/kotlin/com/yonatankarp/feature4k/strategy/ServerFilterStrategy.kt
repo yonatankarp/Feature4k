@@ -59,10 +59,10 @@ data class ServerFilterStrategy(
     val grantedServers: Set<String> = emptySet(),
 ) : FlippingStrategy {
     /**
-     * Evaluates whether the feature should be enabled based on the server in the context.
+     * Enables the feature only when the evaluation context contains a host that is listed in [grantedServers].
      *
-     * @param evalContext The evaluation context containing the execution context with server identifier
-     * @return `true` if the context has a server and that server is in [grantedServers], `false` otherwise
+     * @param evalContext Evaluation context whose `context.host` value is checked against [grantedServers].
+     * @return `true` if `context.host` is non-null and is contained in [grantedServers], `false` otherwise.
      */
     override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
         val host = evalContext.context.host ?: return false

@@ -23,13 +23,13 @@ object FlippingExecutionContextFixture {
     fun emptyExecutionContext() = FlippingExecutionContext.empty()
 
     /**
-     * Creates a FlippingExecutionContext with a user for testing.
+     * Build a test FlippingExecutionContext containing the specified user and optional source, host, and custom parameters.
      *
-     * @param user The user identifier (default: "test-user", can be null)
-     * @param source Optional source identifier
-     * @param host Optional host identifier
-     * @param customParams Custom parameters map (default: empty)
-     * @return A FlippingExecutionContext configured for testing
+     * @param user User identifier or null.
+     * @param source Optional source identifier.
+     * @param host Optional host identifier.
+     * @param customParams Additional custom parameters to include in the context.
+     * @return A configured FlippingExecutionContext for use in tests.
      */
     fun executionContextWithUser(
         user: String? = "test-user",

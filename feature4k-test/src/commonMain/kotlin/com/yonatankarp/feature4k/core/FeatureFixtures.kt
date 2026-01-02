@@ -70,9 +70,9 @@ object FeatureFixtures {
     )
 
     /**
-     * Creates a Feature with AlwaysOnStrategy.
+     * Creates a Feature configured with the always-on flipping strategy.
      *
-     * @return An enabled Feature with AlwaysOnStrategy.
+     * @return A Feature with enabled = true and flippingStrategy = AlwaysOnStrategy.
      */
     fun featureWithAlwaysOnStrategy() = Feature(
         uid = "feature1",
@@ -81,9 +81,11 @@ object FeatureFixtures {
     )
 
     /**
-     * Creates a Feature with AlwaysOffStrategy.
+     * Creates a Feature configured with the AlwaysOffStrategy.
      *
-     * @return An enabled Feature with AlwaysOffStrategy (will evaluate to false).
+     * The feature has uid "feature1" and is enabled.
+     *
+     * @return A Feature with uid "feature1", enabled = true, and flippingStrategy = AlwaysOffStrategy.
      */
     fun featureWithAlwaysOffStrategy() = Feature(
         uid = "feature1",

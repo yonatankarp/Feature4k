@@ -134,10 +134,24 @@ class Feature4K(
         return result
     }
 
+    /**
+     * Determines whether the given feature passes authorization checks.
+     *
+     * @param feature The feature whose permissions should be evaluated.
+     * @return `true` if the feature defines no required permissions or the configured authorizations manager allows all required permissions, `false` otherwise.
+     */
     private fun isAuthorized(feature: Feature): Boolean = authorizationsManager?.let { manager ->
         feature.hasPermissions().not() || manager.isAllowedAll(feature.permissions)
     } ?: true
 
+    /**
+     * Evaluate the feature's flipping strategy against the provided execution context.
+     *
+     * @param feature The feature whose strategy (if any) will be evaluated.
+     * @param featureId The identifier to use as the feature name in the evaluation context.
+     * @param context The execution context supplied to the strategy evaluator.
+     * @return `true` if the feature has no flipping strategy or the strategy evaluates to `true`, `false` otherwise.
+     */
     private suspend fun evaluateStrategy(
         feature: Feature,
         featureId: String,
@@ -151,6 +165,22 @@ class Feature4K(
         strategy.evaluate(evalContext)
     } ?: true
 
+    /**
+     * Publishes a feature check event to the configured EventPublisher.
+     *
+     * When an EventPublisher is configured, emits a FeatureStoreEvent.Checked with:
+     * - `uid` set to the given featureId
+     * - `eventUid` generated uniquely
+     * - `timestamp` set to the current system time
+     * - `user`, `source`, and `host` taken from the provided context
+     * - `duration` set to `null`
+     * - `value` set to the string form of `result`
+     * - `customProperties` set to an empty map
+     *
+     * @param featureId The feature identifier for which the check was performed.
+     * @param result The boolean result of the feature evaluation.
+     * @param context Execution context supplying user, source, and host for the event.
+     */
     private suspend fun publishCheckEvent(
         featureId: String,
         result: Boolean,
@@ -171,6 +201,12 @@ class Feature4K(
         )
     }
 
+    /**
+     * Handle a lookup for a missing feature by creating a disabled feature when auto-create is enabled.
+     *
+     * @param featureId The unique identifier of the missing feature.
+     * @return `false` indicating the feature is considered disabled (or remains absent).
+     */
     private suspend fun handleNonExistentFeature(featureId: String): Boolean {
         if (autoCreate) {
             featureStore += Feature(uid = featureId, enabled = false)
@@ -394,15 +430,9 @@ class Feature4K(
     }
 
     /**
-     * Retrieves all properties from the store.
-     *
-     * ```kotlin
-     * feature4k.allProperties().forEach { (name, property) ->
-     *     println("$name: ${property.value}")
-     * }
-     * ```
-     *
-     * @return Map of property names to Property objects
-     */
+ * Get all stored properties keyed by property name.
+ *
+ * @return A map from property name to its corresponding `Property` object.
+ */
     suspend fun allProperties(): Map<String, Property<*>> = propertyStore.getAll()
 }

@@ -38,11 +38,11 @@ data class FlippingExecutionContext(
     fun withSource(source: String): FlippingExecutionContext = copy(source = source)
 
     /**
-     * Create a copy of the execution context with the host field set to the given identifier.
-     *
-     * @param host The host identifier to set in the new context.
-     * @return A new FlippingExecutionContext with `host` set to the provided value.
-     */
+ * Creates a new execution context with the host set to the given identifier.
+ *
+ * @param host The host identifier to set in the new context.
+ * @return A FlippingExecutionContext with the host set to the provided identifier.
+ */
     fun withHost(host: String): FlippingExecutionContext = copy(host = host)
 
     /**
@@ -83,10 +83,10 @@ data class FlippingExecutionContext(
 
     companion object {
         /**
-         * Create an empty FlippingExecutionContext with no user, source, host, or custom parameters.
-         *
-         * @return A FlippingExecutionContext whose `user`, `source`, and `host` are `null` and whose `customParams` is an empty map.
-         */
+ * Create an empty FlippingExecutionContext.
+ *
+ * @return A FlippingExecutionContext whose `user`, `source`, and `host` are `null` and whose `customParams` is an empty map.
+ */
         fun empty(): FlippingExecutionContext = FlippingExecutionContext()
     }
 }

@@ -59,10 +59,10 @@ data class ClientFilterStrategy(
     val grantedClients: Set<String> = emptySet(),
 ) : FlippingStrategy {
     /**
-     * Evaluates whether the feature should be enabled based on the client in the context.
+     * Determines whether the feature is enabled for the evaluation's execution source.
      *
-     * @param evalContext The evaluation context containing the execution context with client identifier
-     * @return `true` if the context has a client and that client is in [grantedClients], `false` otherwise
+     * @param evalContext The evaluation context whose execution context provides the `source` identifier to check.
+     * @return `true` if the evaluation context contains a `source` and that `source` is in [grantedClients], `false` otherwise.
      */
     override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
         val source = evalContext.context.source ?: return false
