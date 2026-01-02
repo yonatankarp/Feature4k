@@ -108,16 +108,12 @@ class Feature4KBuilder {
     private val propertiesToCreate = mutableListOf<Property<*>>()
 
     /**
-     * Configures features to be created during initialization.
+     * Collects feature definitions declared in the given DSL block to be created during initialization.
      *
-     * ```kotlin
-     * features {
-     *     feature("dark-mode") {
-     *         enabled = true
-     *         description = "Enable dark theme"
-     *     }
-     * }
-     * ```
+     * Executes the provided `FeaturesBuilder` block and accumulates the resulting features so they
+     * will be created when the builder is built.
+     *
+     * @param block DSL block used to declare features to initialize.
      */
     fun features(block: FeaturesBuilder.() -> Unit) {
         val builder = FeaturesBuilder()
@@ -128,12 +124,9 @@ class Feature4KBuilder {
     /**
      * Configures properties to be created during initialization.
      *
-     * ```kotlin
-     * properties {
-     *     string("api.url", "https://api.example.com")
-     *     int("max.connections", 100)
-     * }
-     * ```
+     * The provided block is executed on a PropertiesBuilder; all properties produced by the builder are added to the list of properties to be created when the Feature4K instance is initialized.
+     *
+     * @param block DSL block used to declare properties.
      */
     fun properties(block: PropertiesBuilder.() -> Unit) {
         val builder = PropertiesBuilder()
@@ -142,7 +135,9 @@ class Feature4KBuilder {
     }
 
     /**
-     * Builds the Feature4K instance and initializes it with configured features and properties.
+     * Constructs a Feature4K configured with the builder's stores, managers, and flags, and initializes it with any collected features and properties.
+     *
+     * @return The initialized Feature4K instance configured with the builder's settings and populated with the collected features and properties.
      */
     internal suspend fun build(): Feature4K {
         val instance = Feature4K(
@@ -170,14 +165,10 @@ class Feature4KBuilder {
 /**
  * DSL entry point for creating Feature4K instances.
  *
- * ```kotlin
- * val feature4k = feature4k {
- *     autoCreate = true
- *     features {
- *         feature("dark-mode") { enabled = true }
- *     }
- * }
- * ```
+ * Use the supplied block to configure the builder before the instance is created and initialized.
+ *
+ * @param block Configuration block applied to a new [Feature4KBuilder].
+ * @return A configured and initialized [Feature4K] instance.
  */
 suspend fun feature4k(block: Feature4KBuilder.() -> Unit): Feature4K {
     val builder = Feature4KBuilder()

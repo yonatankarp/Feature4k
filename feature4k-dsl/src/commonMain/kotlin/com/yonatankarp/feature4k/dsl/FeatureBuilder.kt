@@ -81,14 +81,11 @@ class FeatureBuilder(private val uid: String) {
     private val customProperties: MutableMap<String, Property<*>> = mutableMapOf()
 
     /**
-     * Configures custom properties for this feature.
+     * Adds custom properties to this feature using a PropertiesBuilder.
      *
-     * ```kotlin
-     * customProperties {
-     *     string("config.url", "https://example.com")
-     *     int("max.retries", 3)
-     * }
-     * ```
+     * The provided [block] is executed on a fresh PropertiesBuilder and each resulting property is registered on the feature by its name.
+     *
+     * @param block DSL block that declares properties on a PropertiesBuilder.
      */
     fun customProperties(block: PropertiesBuilder.() -> Unit) {
         val builder = PropertiesBuilder()
@@ -99,7 +96,9 @@ class FeatureBuilder(private val uid: String) {
     }
 
     /**
-     * Builds the Feature instance.
+     * Create a Feature configured by this builder.
+     *
+     * @return The constructed Feature whose properties (uid, enabled, description, group, permissions, flippingStrategy, and customProperties) reflect the builder's current state.
      */
     internal fun build(): Feature = Feature(
         uid = uid,
@@ -113,14 +112,19 @@ class FeatureBuilder(private val uid: String) {
 }
 
 /**
- * DSL entry point for creating Feature instances.
+ * DSL entry point to declare and configure a Feature.
  *
+ * Example:
  * ```kotlin
  * val feature = feature("dark-mode") {
  *     enabled = true
  *     description = "Enable dark theme"
  * }
  * ```
+ *
+ * @param uid The feature's unique identifier.
+ * @param block Configuration block applied to a newly created FeatureBuilder.
+ * @return The constructed Feature configured by the provided block.
  */
 fun feature(uid: String, block: FeatureBuilder.() -> Unit = {}): Feature {
     val builder = FeatureBuilder(uid)
@@ -136,13 +140,10 @@ class FeaturesBuilder {
     private val features = mutableListOf<Feature>()
 
     /**
-     * Adds a feature to the collection.
+     * Adds a feature with the given UID to the collection, configured by the provided builder block.
      *
-     * ```kotlin
-     * feature("dark-mode") {
-     *     enabled = true
-     * }
-     * ```
+     * @param uid The unique identifier for the feature.
+     * @param block A configuration block executed on a new [FeatureBuilder] for this feature.
      */
     fun feature(uid: String, block: FeatureBuilder.() -> Unit = {}) {
         val builder = FeatureBuilder(uid)
@@ -151,7 +152,9 @@ class FeaturesBuilder {
     }
 
     /**
-     * Builds the list of features.
+     * Create an immutable snapshot of the accumulated features.
+     *
+     * @return An immutable List containing the accumulated Feature instances.
      */
     internal fun build(): List<Feature> = features.toList()
 }
