@@ -218,8 +218,8 @@ class RegionFlippingStrategyTest {
         val strategy = RegionFlippingStrategy(grantedRegions = setOf("US"))
         val execContext = FlippingExecutionContext(
             user = "alice",
-            client = "mobile-app",
-            server = "server-1",
+            source = "mobile-app",
+            host = "server-1",
             customParams = mapOf(
                 REGION_PARAM_KEY to "US",
                 "other-param" to "other-value",

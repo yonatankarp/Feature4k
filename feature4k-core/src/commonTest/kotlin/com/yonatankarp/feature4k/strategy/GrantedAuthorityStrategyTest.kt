@@ -281,8 +281,8 @@ class GrantedAuthorityStrategyTest {
         val strategy = GrantedAuthorityStrategy(requiredAuthorities = setOf(ROLE_ADMIN))
         val execContext = executionContextWithUser(
             user = ALICE,
-            client = "mobile-app",
-            server = "prod-server",
+            source = "mobile-app",
+            host = "prod-server",
             customParams = mapOf(
                 "authorities" to ONLY_ADMIN_STRING,
                 "region" to "us-east",
