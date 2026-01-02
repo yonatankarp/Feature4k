@@ -3,7 +3,7 @@ package com.yonatankarp.feature4k.security
 /**
  * Provides authorization decisions for the *current user*.
  *
- * An [AuthorizationManager] exposes the identity of the current user and
+ * An [AuthorizationsManager] exposes the identity of the current user and
  * the set of permissions granted to them, and offers convenience methods
  * for evaluating authorization requirements.
  *
@@ -25,7 +25,7 @@ package com.yonatankarp.feature4k.security
  *
  * @author Yonatan Karp-Rudin
  */
-interface AuthorizationManager {
+interface AuthorizationsManager {
     /**
      * The name or identifier of the current user.
      *
@@ -38,7 +38,7 @@ interface AuthorizationManager {
      * The set of permissions granted to the current user.
      *
      * Implementations should return a complete and immutable snapshot of the
-     * user's permissions at the time this [AuthorizationManager] instance
+     * user's permissions at the time this [AuthorizationsManager] instance
      * was created.
      */
     val currentUserPermissions: Set<String>

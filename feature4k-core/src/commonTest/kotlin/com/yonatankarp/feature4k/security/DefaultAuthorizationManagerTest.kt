@@ -8,12 +8,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotSame
 
-class DefaultAuthorizationManagerTest : AuthorizationManagerContract() {
+class DefaultAuthorizationManagerTest : AuthorizationsManagerContract() {
 
     override fun createManager(
         userName: String,
         permissions: Set<String>,
-    ): AuthorizationManager = DefaultAuthorizationManager(
+    ): AuthorizationsManager = DefaultAuthorizationManager(
         currentUserName = userName,
         currentUserPermissions = permissions,
     )
