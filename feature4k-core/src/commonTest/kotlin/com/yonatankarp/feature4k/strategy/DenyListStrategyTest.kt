@@ -66,7 +66,7 @@ class DenyListStrategyTest {
     fun `should return true when context has null user`() = runTest {
         // Given
         val strategy = DenyListStrategy(deniedUsers = setOf("spammer1", "abuser2"))
-        val execContext = executionContextWithUser(user = null, client = "web-app")
+        val execContext = executionContextWithUser(user = null, source = "web-app")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -218,8 +218,8 @@ class DenyListStrategyTest {
         val strategy = DenyListStrategy(deniedUsers = setOf("spammer1"))
         val execContext = executionContextWithUser(
             user = "alice",
-            client = "mobile-app",
-            server = "prod-server",
+            source = "mobile-app",
+            host = "prod-server",
             customParams = mapOf("region" to REGION_US_EAST),
         )
         val evalContext = featureEvaluationContext(context = execContext)
@@ -237,8 +237,8 @@ class DenyListStrategyTest {
         val strategy = DenyListStrategy(deniedUsers = setOf("spammer1"))
         val execContext = executionContextWithUser(
             user = "spammer1",
-            client = "mobile-app",
-            server = "prod-server",
+            source = "mobile-app",
+            host = "prod-server",
         )
         val evalContext = featureEvaluationContext(context = execContext)
 

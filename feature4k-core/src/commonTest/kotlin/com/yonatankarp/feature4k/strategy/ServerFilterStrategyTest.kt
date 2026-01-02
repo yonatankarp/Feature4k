@@ -23,7 +23,7 @@ class ServerFilterStrategyTest {
     fun `should return true when server is in granted list`() = runTest {
         // Given
         val strategy = ServerFilterStrategy(grantedServers = setOf("server-1", "server-2", "canary-01"))
-        val execContext = executionContextWithUser(server = "server-1")
+        val execContext = executionContextWithUser(host = "server-1")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -37,7 +37,7 @@ class ServerFilterStrategyTest {
     fun `should return false when server is not in granted list`() = runTest {
         // Given
         val strategy = ServerFilterStrategy(grantedServers = setOf("server-1", "server-2", "canary-01"))
-        val execContext = executionContextWithUser(server = "server-99")
+        val execContext = executionContextWithUser(host = "server-99")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -65,7 +65,7 @@ class ServerFilterStrategyTest {
     fun `should return false when context has null server`() = runTest {
         // Given
         val strategy = ServerFilterStrategy(grantedServers = setOf("server-1", "server-2"))
-        val execContext = executionContextWithUser(user = "alice", server = null)
+        val execContext = executionContextWithUser(user = "alice", host = null)
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -79,7 +79,7 @@ class ServerFilterStrategyTest {
     fun `should return false when granted servers list is empty`() = runTest {
         // Given
         val strategy = ServerFilterStrategy(grantedServers = emptySet())
-        val execContext = executionContextWithUser(server = "server-1")
+        val execContext = executionContextWithUser(host = "server-1")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -93,8 +93,8 @@ class ServerFilterStrategyTest {
     fun `should handle single server in granted list`() = runTest {
         // Given
         val strategy = ServerFilterStrategy(grantedServers = setOf("canary-01"))
-        val canaryExecContext = executionContextWithUser(server = "canary-01")
-        val prodExecContext = executionContextWithUser(server = "prod-01")
+        val canaryExecContext = executionContextWithUser(host = "canary-01")
+        val prodExecContext = executionContextWithUser(host = "prod-01")
         val store = InMemoryFeatureStore()
         val canaryEvalContext = featureEvaluationContext(context = canaryExecContext, store = store)
         val prodEvalContext = featureEvaluationContext(context = prodExecContext, store = store)
@@ -108,8 +108,8 @@ class ServerFilterStrategyTest {
     fun `should be case-sensitive for server matching`() = runTest {
         // Given
         val strategy = ServerFilterStrategy(grantedServers = setOf("Server-1"))
-        val upperCaseExecContext = executionContextWithUser(server = "Server-1")
-        val lowerCaseExecContext = executionContextWithUser(server = "server-1")
+        val upperCaseExecContext = executionContextWithUser(host = "Server-1")
+        val lowerCaseExecContext = executionContextWithUser(host = "server-1")
         val store = InMemoryFeatureStore()
         val upperCaseEvalContext = featureEvaluationContext(context = upperCaseExecContext, store = store)
         val lowerCaseEvalContext = featureEvaluationContext(context = lowerCaseExecContext, store = store)
@@ -124,8 +124,8 @@ class ServerFilterStrategyTest {
         // Given
         val manyServers = (1..100).map { "server$it" }.toSet()
         val strategy = ServerFilterStrategy(grantedServers = manyServers)
-        val server50ExecContext = executionContextWithUser(server = "server50")
-        val server101ExecContext = executionContextWithUser(server = "server101")
+        val server50ExecContext = executionContextWithUser(host = "server50")
+        val server101ExecContext = executionContextWithUser(host = "server101")
         val store = InMemoryFeatureStore()
         val server50EvalContext = featureEvaluationContext(context = server50ExecContext, store = store)
         val server101EvalContext = featureEvaluationContext(context = server101ExecContext, store = store)
@@ -191,7 +191,7 @@ class ServerFilterStrategyTest {
     fun `should use default empty set when not specified`() = runTest {
         // Given
         val strategy = ServerFilterStrategy()
-        val execContext = executionContextWithUser(server = "any-server")
+        val execContext = executionContextWithUser(host = "any-server")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When & Then
@@ -217,8 +217,8 @@ class ServerFilterStrategyTest {
         val strategy = ServerFilterStrategy(grantedServers = setOf("server-1"))
         val execContext = executionContextWithUser(
             user = "alice",
-            client = "mobile-app",
-            server = "server-1",
+            source = "mobile-app",
+            host = "server-1",
             customParams = mapOf("region" to "us-east"),
         )
         val evalContext = featureEvaluationContext(context = execContext)

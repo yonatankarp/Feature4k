@@ -5,20 +5,20 @@ import kotlinx.serialization.Serializable
 /**
  * Execution context for feature evaluation.
  *
- * Carries contextual information (user, client, server, custom parameters) that can be used
+ * Carries contextual information (user, source, host, custom parameters) that can be used
  * by flipping strategies to determine if a feature should be enabled.
  *
  * @property user Optional user identifier or principal
- * @property client Optional client identifier (e.g., application name, client ID)
- * @property server Optional server identifier (e.g., hostname, server instance)
+ * @property source Optional source identifier (e.g., application name, client ID, API source)
+ * @property host Optional host identifier (e.g., hostname, server instance)
  * @property customParams Additional custom parameters for strategy evaluation
  * @author Yonatan Karp-Rudin
  */
 @Serializable
 data class FlippingExecutionContext(
     val user: String? = null,
-    val client: String? = null,
-    val server: String? = null,
+    val source: String? = null,
+    val host: String? = null,
     val customParams: Map<String, String> = emptyMap(),
 ) {
     /**
@@ -30,20 +30,20 @@ data class FlippingExecutionContext(
     fun withUser(user: String): FlippingExecutionContext = copy(user = user)
 
     /**
-     * Create a new context with the specified client identifier.
+     * Create a new context with the specified source identifier.
      *
-     * @param client The client identifier to set on the returned context.
-     * @return A new FlippingExecutionContext with `client` set to the provided value.
+     * @param source The source identifier to set on the returned context.
+     * @return A new FlippingExecutionContext with `source` set to the provided value.
      */
-    fun withClient(client: String): FlippingExecutionContext = copy(client = client)
+    fun withSource(source: String): FlippingExecutionContext = copy(source = source)
 
     /**
-     * Create a copy of the execution context with the server field set to the given identifier.
+     * Create a copy of the execution context with the host field set to the given identifier.
      *
-     * @param server The server identifier to set in the new context.
-     * @return A new FlippingExecutionContext with `server` set to the provided value.
+     * @param host The host identifier to set in the new context.
+     * @return A new FlippingExecutionContext with `host` set to the provided value.
      */
-    fun withServer(server: String): FlippingExecutionContext = copy(server = server)
+    fun withHost(host: String): FlippingExecutionContext = copy(host = host)
 
     /**
      * Create a copy of the context with the given custom parameter added.
@@ -83,9 +83,9 @@ data class FlippingExecutionContext(
 
     companion object {
         /**
-         * Create an empty FlippingExecutionContext with no user, client, server, or custom parameters.
+         * Create an empty FlippingExecutionContext with no user, source, host, or custom parameters.
          *
-         * @return A FlippingExecutionContext whose `user`, `client`, and `server` are `null` and whose `customParams` is an empty map.
+         * @return A FlippingExecutionContext whose `user`, `source`, and `host` are `null` and whose `customParams` is an empty map.
          */
         fun empty(): FlippingExecutionContext = FlippingExecutionContext()
     }

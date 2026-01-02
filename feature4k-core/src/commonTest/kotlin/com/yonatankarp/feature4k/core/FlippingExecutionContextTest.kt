@@ -18,8 +18,8 @@ class FlippingExecutionContextTest {
     fun `empty context has all null fields`() {
         with(FlippingExecutionContext()) {
             assertNull(user)
-            assertNull(client)
-            assertNull(server)
+            assertNull(source)
+            assertNull(host)
             assertTrue(customParams.isEmpty())
         }
     }
@@ -28,8 +28,8 @@ class FlippingExecutionContextTest {
     fun `empty companion creates empty context`() {
         with(FlippingExecutionContext.empty()) {
             assertNull(user)
-            assertNull(client)
-            assertNull(server)
+            assertNull(source)
+            assertNull(host)
             assertTrue(customParams.isEmpty())
         }
     }
@@ -38,26 +38,26 @@ class FlippingExecutionContextTest {
     fun `withUser creates new context with user`() {
         with(FlippingExecutionContext().withUser("john.doe")) {
             assertEquals("john.doe", user)
-            assertNull(client)
-            assertNull(server)
+            assertNull(source)
+            assertNull(host)
         }
     }
 
     @Test
-    fun `withClient creates new context with client`() {
-        with(FlippingExecutionContext().withClient("mobile-app")) {
-            assertEquals("mobile-app", client)
+    fun `withSource creates new context with source`() {
+        with(FlippingExecutionContext().withSource("mobile-app")) {
+            assertEquals("mobile-app", source)
             assertNull(user)
-            assertNull(server)
+            assertNull(host)
         }
     }
 
     @Test
-    fun `withServer creates new context with server`() {
-        with(FlippingExecutionContext().withServer("server-01")) {
-            assertEquals("server-01", server)
+    fun `withHost creates new context with host`() {
+        with(FlippingExecutionContext().withHost("server-01")) {
+            assertEquals("server-01", host)
             assertNull(user)
-            assertNull(client)
+            assertNull(source)
         }
     }
 
@@ -99,14 +99,14 @@ class FlippingExecutionContextTest {
         with(
             FlippingExecutionContext()
                 .withUser("alice")
-                .withClient("web-app")
-                .withServer("server-02")
+                .withSource("web-app")
+                .withHost("server-02")
                 .withParam("role", "admin")
                 .withParam("team", "engineering"),
         ) {
             assertEquals("alice", user)
-            assertEquals("web-app", client)
-            assertEquals("server-02", server)
+            assertEquals("web-app", source)
+            assertEquals("server-02", host)
             assertEquals("admin", get("role"))
             assertEquals("engineering", get("team"))
         }
@@ -117,8 +117,8 @@ class FlippingExecutionContextTest {
         val original =
             FlippingExecutionContext(
                 user = "bob",
-                client = "api-client",
-                server = "server-03",
+                source = "api-client",
+                host = "server-03",
                 customParams = mapOf("env" to "staging", "version" to "1.2.3"),
             )
 
