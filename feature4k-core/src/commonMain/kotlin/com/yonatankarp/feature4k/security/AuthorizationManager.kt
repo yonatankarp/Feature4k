@@ -47,8 +47,8 @@ interface AuthorizationManager {
      * Determines whether the current user is allowed access when **any**
      * of the required permissions is sufficient.
      *
-     * An empty [required] set is treated as *no match* and therefore
-     * results in `true`.
+     * An empty [required] set results in `false` since there are no
+     * required permissions to match against.
      *
      * @param required the set of permissions required to perform an action
      * @return `true` if the current user possesses *at least one* of the
