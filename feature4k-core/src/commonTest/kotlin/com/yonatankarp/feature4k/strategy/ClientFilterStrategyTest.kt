@@ -23,7 +23,7 @@ class ClientFilterStrategyTest {
     fun `should return true when client is in granted list`() = runTest {
         // Given
         val strategy = ClientFilterStrategy(grantedClients = setOf("mobile-app", "web-app", "admin-portal"))
-        val execContext = executionContextWithUser(client = "mobile-app")
+        val execContext = executionContextWithUser(source = "mobile-app")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -37,7 +37,7 @@ class ClientFilterStrategyTest {
     fun `should return false when client is not in granted list`() = runTest {
         // Given
         val strategy = ClientFilterStrategy(grantedClients = setOf("mobile-app", "web-app", "admin-portal"))
-        val execContext = executionContextWithUser(client = "legacy-app")
+        val execContext = executionContextWithUser(source = "legacy-app")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -65,7 +65,7 @@ class ClientFilterStrategyTest {
     fun `should return false when context has null client`() = runTest {
         // Given
         val strategy = ClientFilterStrategy(grantedClients = setOf("mobile-app", "web-app"))
-        val execContext = executionContextWithUser(user = "alice", client = null)
+        val execContext = executionContextWithUser(user = "alice", source = null)
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -79,7 +79,7 @@ class ClientFilterStrategyTest {
     fun `should return false when granted clients list is empty`() = runTest {
         // Given
         val strategy = ClientFilterStrategy(grantedClients = emptySet())
-        val execContext = executionContextWithUser(client = "mobile-app")
+        val execContext = executionContextWithUser(source = "mobile-app")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -93,8 +93,8 @@ class ClientFilterStrategyTest {
     fun `should handle single client in granted list`() = runTest {
         // Given
         val strategy = ClientFilterStrategy(grantedClients = setOf("mobile-app"))
-        val mobileExecContext = executionContextWithUser(client = "mobile-app")
-        val webExecContext = executionContextWithUser(client = "web-app")
+        val mobileExecContext = executionContextWithUser(source = "mobile-app")
+        val webExecContext = executionContextWithUser(source = "web-app")
         val store = InMemoryFeatureStore()
         val mobileEvalContext = featureEvaluationContext(context = mobileExecContext, store = store)
         val webEvalContext = featureEvaluationContext(context = webExecContext, store = store)
@@ -108,8 +108,8 @@ class ClientFilterStrategyTest {
     fun `should be case-sensitive for client matching`() = runTest {
         // Given
         val strategy = ClientFilterStrategy(grantedClients = setOf("Mobile-App"))
-        val upperCaseExecContext = executionContextWithUser(client = "Mobile-App")
-        val lowerCaseExecContext = executionContextWithUser(client = "mobile-app")
+        val upperCaseExecContext = executionContextWithUser(source = "Mobile-App")
+        val lowerCaseExecContext = executionContextWithUser(source = "mobile-app")
         val store = InMemoryFeatureStore()
         val upperCaseEvalContext = featureEvaluationContext(context = upperCaseExecContext, store = store)
         val lowerCaseEvalContext = featureEvaluationContext(context = lowerCaseExecContext, store = store)
@@ -124,8 +124,8 @@ class ClientFilterStrategyTest {
         // Given
         val manyClients = (1..100).map { "client$it" }.toSet()
         val strategy = ClientFilterStrategy(grantedClients = manyClients)
-        val client50ExecContext = executionContextWithUser(client = "client50")
-        val client101ExecContext = executionContextWithUser(client = "client101")
+        val client50ExecContext = executionContextWithUser(source = "client50")
+        val client101ExecContext = executionContextWithUser(source = "client101")
         val store = InMemoryFeatureStore()
         val client50EvalContext = featureEvaluationContext(context = client50ExecContext, store = store)
         val client101EvalContext = featureEvaluationContext(context = client101ExecContext, store = store)
@@ -191,7 +191,7 @@ class ClientFilterStrategyTest {
     fun `should use default empty set when not specified`() = runTest {
         // Given
         val strategy = ClientFilterStrategy()
-        val execContext = executionContextWithUser(client = "any-client")
+        val execContext = executionContextWithUser(source = "any-client")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When & Then
@@ -217,8 +217,8 @@ class ClientFilterStrategyTest {
         val strategy = ClientFilterStrategy(grantedClients = setOf("mobile-app"))
         val execContext = executionContextWithUser(
             user = "alice",
-            client = "mobile-app",
-            server = "prod-server",
+            source = "mobile-app",
+            host = "prod-server",
             customParams = mapOf("region" to "us-east"),
         )
         val evalContext = featureEvaluationContext(context = execContext)

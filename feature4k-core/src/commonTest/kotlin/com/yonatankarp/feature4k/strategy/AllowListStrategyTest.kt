@@ -66,7 +66,7 @@ class AllowListStrategyTest {
     fun `should return false when context has null user`() = runTest {
         // Given
         val strategy = AllowListStrategy(allowedUsers = setOf("alice", "bob"))
-        val execContext = executionContextWithUser(user = null, client = "web-app")
+        val execContext = executionContextWithUser(user = null, source = "web-app")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -218,8 +218,8 @@ class AllowListStrategyTest {
         val strategy = AllowListStrategy(allowedUsers = setOf("alice"))
         val execContext = executionContextWithUser(
             user = "alice",
-            client = "mobile-app",
-            server = "prod-server",
+            source = "mobile-app",
+            host = "prod-server",
             customParams = mapOf("region" to REGION_US_EAST),
         )
         val evalContext = featureEvaluationContext(context = execContext)

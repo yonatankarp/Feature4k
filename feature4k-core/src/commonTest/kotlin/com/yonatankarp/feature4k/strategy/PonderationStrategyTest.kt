@@ -184,7 +184,7 @@ class PonderationStrategyTest {
         // Given
         val strategy = PonderationStrategy(weight = Weight.FIFTY_PERCENT)
         val execContext =
-            executionContextWithUser(user = null, client = "web-app")
+            executionContextWithUser(user = null, source = "web-app")
         val evalContext = featureEvaluationContext(context = execContext)
 
         // When
@@ -336,8 +336,8 @@ class PonderationStrategyTest {
         val execContext1 = executionContextWithUser(user = user)
         val execContext2 = executionContextWithUser(
             user = user,
-            client = "mobile-app",
-            server = "prod-server",
+            source = "mobile-app",
+            host = "prod-server",
             customParams = mapOf("region" to REGION_US_EAST),
         )
         val evalContext1 = featureEvaluationContext(context = execContext1)

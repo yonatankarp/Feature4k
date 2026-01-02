@@ -65,7 +65,7 @@ data class ClientFilterStrategy(
      * @return `true` if the context has a client and that client is in [grantedClients], `false` otherwise
      */
     override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
-        val client = evalContext.context.client ?: return false
-        return client in grantedClients
+        val source = evalContext.context.source ?: return false
+        return source in grantedClients
     }
 }

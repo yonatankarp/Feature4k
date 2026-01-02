@@ -26,20 +26,20 @@ object FlippingExecutionContextFixture {
      * Creates a FlippingExecutionContext with a user for testing.
      *
      * @param user The user identifier (default: "test-user", can be null)
-     * @param client Optional client identifier
-     * @param server Optional server identifier
+     * @param source Optional source identifier
+     * @param host Optional host identifier
      * @param customParams Custom parameters map (default: empty)
      * @return A FlippingExecutionContext configured for testing
      */
     fun executionContextWithUser(
         user: String? = "test-user",
-        client: String? = null,
-        server: String? = null,
+        source: String? = null,
+        host: String? = null,
         customParams: Map<String, String> = emptyMap(),
     ) = FlippingExecutionContext(
         user = user,
-        client = client,
-        server = server,
+        source = source,
+        host = host,
         customParams = customParams,
     )
 

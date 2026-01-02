@@ -2,6 +2,8 @@ package com.yonatankarp.feature4k.core
 
 import com.yonatankarp.feature4k.property.PropertyInt
 import com.yonatankarp.feature4k.property.PropertyString
+import com.yonatankarp.feature4k.strategy.AlwaysOffStrategy
+import com.yonatankarp.feature4k.strategy.AlwaysOnStrategy
 
 /**
  * Test fixtures for Feature objects.
@@ -65,5 +67,27 @@ object FeatureFixtures {
             "maxRetries" to PropertyInt(name = "maxRetries", value = 3),
             "message" to PropertyString(name = "message", value = "test"),
         ),
+    )
+
+    /**
+     * Creates a Feature with AlwaysOnStrategy.
+     *
+     * @return An enabled Feature with AlwaysOnStrategy.
+     */
+    fun featureWithAlwaysOnStrategy() = Feature(
+        uid = "feature1",
+        enabled = true,
+        flippingStrategy = AlwaysOnStrategy,
+    )
+
+    /**
+     * Creates a Feature with AlwaysOffStrategy.
+     *
+     * @return An enabled Feature with AlwaysOffStrategy (will evaluate to false).
+     */
+    fun featureWithAlwaysOffStrategy() = Feature(
+        uid = "feature1",
+        enabled = true,
+        flippingStrategy = AlwaysOffStrategy,
     )
 }

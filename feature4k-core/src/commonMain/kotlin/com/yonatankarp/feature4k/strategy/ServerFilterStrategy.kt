@@ -65,7 +65,7 @@ data class ServerFilterStrategy(
      * @return `true` if the context has a server and that server is in [grantedServers], `false` otherwise
      */
     override suspend fun evaluate(evalContext: FeatureEvaluationContext): Boolean {
-        val server = evalContext.context.server ?: return false
-        return server in grantedServers
+        val host = evalContext.context.host ?: return false
+        return host in grantedServers
     }
 }
