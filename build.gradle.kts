@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.spotless)
     alias(libs.plugins.kover)
+    alias(libs.plugins.dokka)
 }
 
 spotless {
@@ -15,7 +16,14 @@ spotless {
 }
 
 dependencies {
-    kover(project(":feature4k-core"))
-    kover(project(":feature4k-dsl"))
-    kover(project(":feature4k-web"))
+    // Code coverage
+    subprojects
+        .filter { it.name.startsWith("feature4k-") }
+        .filter { it.name.contains("test").not() }
+        .forEach { kover(it) }
+
+    // Documentation
+    subprojects
+        .filter { it.name.startsWith("feature4k-") }
+        .forEach { dokka(it) }
 }
