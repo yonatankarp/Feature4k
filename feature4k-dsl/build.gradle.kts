@@ -1,6 +1,7 @@
 plugins {
     id("feature4k.multiplatform")
     id("feature4k.coverage")
+    id("feature4k.documentation")
 }
 
 kotlin {
