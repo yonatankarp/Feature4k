@@ -1,6 +1,6 @@
 package com.yonatankarp.feature4k.audit
 
-import com.yonatankarp.feature4k.store.StoreEvent
+import com.yonatankarp.feature4k.event.Feature4KEvent
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Instant
@@ -34,32 +34,32 @@ import kotlinx.datetime.Instant
  */
 class InMemoryEventRepository : EventRepository {
 
-    private val events = mutableListOf<StoreEvent>()
+    private val events = mutableListOf<Feature4KEvent>()
     private val mutex = Mutex()
 
-    override suspend fun save(event: StoreEvent) {
+    override suspend fun save(event: Feature4KEvent) {
         mutex.withLock {
             events.add(event)
         }
     }
 
-    override suspend fun findByTimeRange(start: Instant, end: Instant): List<StoreEvent> = mutex.withLock {
+    override suspend fun findByTimeRange(start: Instant, end: Instant): List<Feature4KEvent> = mutex.withLock {
         events
             .filter { it.timestamp in start..end }
             .sortedBy { it.timestamp }
     }
 
-    override suspend fun findByUid(uid: String): List<StoreEvent> = mutex.withLock {
+    override suspend fun findByUid(uid: String): List<Feature4KEvent> = mutex.withLock {
         events
             .filter { it.uid == uid }
             .sortedBy { it.timestamp }
     }
 
-    override suspend fun findAll(): List<StoreEvent> = mutex.withLock {
+    override suspend fun findAll(): List<Feature4KEvent> = mutex.withLock {
         events.sortedBy { it.timestamp }
     }
 
-    override suspend fun findBy(predicate: (StoreEvent) -> Boolean): List<StoreEvent> = mutex.withLock {
+    override suspend fun findBy(predicate: (Feature4KEvent) -> Boolean): List<Feature4KEvent> = mutex.withLock {
         events
             .filter(predicate)
             .sortedBy { it.timestamp }

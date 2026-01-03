@@ -1,4 +1,4 @@
-package com.yonatankarp.feature4k.store
+package com.yonatankarp.feature4k.event
 
 import com.yonatankarp.feature4k.audit.AuditFixtures.ADMIN_USER
 import com.yonatankarp.feature4k.audit.AuditFixtures.LOCALHOST

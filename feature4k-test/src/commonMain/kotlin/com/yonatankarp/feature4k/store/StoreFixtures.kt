@@ -1,8 +1,8 @@
 package com.yonatankarp.feature4k.store
 
-import com.yonatankarp.feature4k.audit.emission.ChannelEventEmitter
-import com.yonatankarp.feature4k.audit.emission.NoOpEventEmitter
-import com.yonatankarp.feature4k.audit.emission.SharedFlowEventEmitter
+import com.yonatankarp.feature4k.event.ChannelEventBus
+import com.yonatankarp.feature4k.event.NoOpEventBus
+import com.yonatankarp.feature4k.event.SharedFlowEventBus
 
 /**
  * Test fixtures for Store objects.
@@ -12,82 +12,82 @@ import com.yonatankarp.feature4k.audit.emission.SharedFlowEventEmitter
  */
 object StoreFixtures {
     /**
-     * Creates an InMemoryPropertyStore with SharedFlow event emission for testing.
+     * Creates an InMemoryPropertyStore with SharedFlow event bus for testing.
      *
-     * This fixture uses [SharedFlowEventEmitter] to allow tests to observe and
+     * This fixture uses [com.yonatankarp.feature4k.event.SharedFlowEventBus] to allow tests to observe and
      * verify store events with replay support. Configured with larger buffers
      * to handle high-volume test scenarios.
      *
-     * @return An InMemoryPropertyStore configured with SharedFlowEventEmitter
+     * @return An InMemoryPropertyStore configured with SharedFlowEventBus
      */
     fun inMemoryPropertyStoreWithSharedFlow() = InMemoryPropertyStore(
-        eventEmitter = SharedFlowEventEmitter(
+        eventBus = SharedFlowEventBus(
             replay = 50,
             extraBufferCapacity = 200,
         ),
     )
 
     /**
-     * Creates an InMemoryPropertyStore with Channel event emission for testing.
+     * Creates an InMemoryPropertyStore with Channel event bus for testing.
      *
-     * This fixture uses [ChannelEventEmitter] to allow tests to observe and
+     * This fixture uses [com.yonatankarp.feature4k.event.ChannelEventBus] to allow tests to observe and
      * verify store events without replay.
      *
-     * @return An InMemoryPropertyStore configured with ChannelEventEmitter
+     * @return An InMemoryPropertyStore configured with ChannelEventBus
      */
     fun inMemoryPropertyStoreWithChannel() = InMemoryPropertyStore(
-        eventEmitter = ChannelEventEmitter(),
+        eventBus = ChannelEventBus(),
     )
 
     /**
-     * Creates an InMemoryPropertyStore with no event emission.
+     * Creates an InMemoryPropertyStore with no event bus.
      *
-     * This fixture uses [NoOpEventEmitter] for tests that don't require
+     * This fixture uses [com.yonatankarp.feature4k.event.NoOpEventBus] for tests that don't require
      * event observation (default behavior).
      *
-     * @return An InMemoryPropertyStore configured with NoOpEventEmitter
+     * @return An InMemoryPropertyStore configured with NoOpEventBus
      */
     fun inMemoryPropertyStoreWithNoOp() = InMemoryPropertyStore(
-        eventEmitter = NoOpEventEmitter(),
+        eventBus = NoOpEventBus(),
     )
 
     /**
-     * Creates an InMemoryFeatureStore with SharedFlow event emission for testing.
+     * Creates an InMemoryFeatureStore with SharedFlow event bus for testing.
      *
-     * This fixture uses [SharedFlowEventEmitter] to allow tests to observe and
+     * This fixture uses [com.yonatankarp.feature4k.event.SharedFlowEventBus] to allow tests to observe and
      * verify store events with replay support. Configured with larger buffers
      * to handle high-volume test scenarios.
      *
-     * @return An InMemoryFeatureStore configured with SharedFlowEventEmitter
+     * @return An InMemoryFeatureStore configured with SharedFlowEventBus
      */
     fun inMemoryFeatureStoreWithSharedFlow() = InMemoryFeatureStore(
-        eventEmitter = SharedFlowEventEmitter(
+        eventBus = SharedFlowEventBus(
             replay = 50,
             extraBufferCapacity = 200,
         ),
     )
 
     /**
-     * Creates an InMemoryFeatureStore with Channel event emission for testing.
+     * Creates an InMemoryFeatureStore with Channel event bus for testing.
      *
-     * This fixture uses [ChannelEventEmitter] to allow tests to observe and
+     * This fixture uses [com.yonatankarp.feature4k.event.ChannelEventBus] to allow tests to observe and
      * verify store events without replay.
      *
-     * @return An InMemoryFeatureStore configured with ChannelEventEmitter
+     * @return An InMemoryFeatureStore configured with ChannelEventBus
      */
     fun inMemoryFeatureStoreWithChannel() = InMemoryFeatureStore(
-        eventEmitter = ChannelEventEmitter(),
+        eventBus = ChannelEventBus(),
     )
 
     /**
-     * Creates an InMemoryFeatureStore with no event emission.
+     * Creates an InMemoryFeatureStore with no event bus.
      *
-     * This fixture uses [NoOpEventEmitter] for tests that don't require
+     * This fixture uses [com.yonatankarp.feature4k.event.NoOpEventBus] for tests that don't require
      * event observation (default behavior).
      *
-     * @return An InMemoryFeatureStore configured with NoOpEventEmitter
+     * @return An InMemoryFeatureStore configured with NoOpEventBus
      */
     fun inMemoryFeatureStoreWithNoOp() = InMemoryFeatureStore(
-        eventEmitter = NoOpEventEmitter(),
+        eventBus = NoOpEventBus(),
     )
 }

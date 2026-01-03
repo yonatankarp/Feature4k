@@ -1,5 +1,6 @@
 package com.yonatankarp.feature4k.store
 
+import com.yonatankarp.feature4k.event.PropertyStoreEvent
 import com.yonatankarp.feature4k.property.Property
 import kotlinx.coroutines.flow.Flow
 
@@ -21,7 +22,7 @@ interface PropertyStore {
      * Create a new property.
      *
      * @param property Property to create
-     * @throws PropertyAlreadyExistException if property already exists
+     * @throws [PropertyAlreadyExistException] if property already exists
      */
     suspend operator fun plusAssign(property: Property<*>)
 
@@ -55,7 +56,7 @@ interface PropertyStore {
      * Delete a property.
      *
      * @param propertyName Property name
-     * @throws PropertyNotFoundException if property does not exist
+     * @throws [PropertyNotFoundException] if property does not exist
      */
     suspend operator fun minusAssign(propertyName: String)
 

@@ -1,6 +1,5 @@
 package com.yonatankarp.feature4k.core
 
-import com.yonatankarp.feature4k.audit.EventPublisher
 import com.yonatankarp.feature4k.core.FeatureFixtures.basicFeature
 import com.yonatankarp.feature4k.core.FeatureFixtures.disabledFeature
 import com.yonatankarp.feature4k.core.FeatureFixtures.enabledFeature
@@ -8,6 +7,9 @@ import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithAlwaysOffStrate
 import com.yonatankarp.feature4k.core.FeatureFixtures.featureWithAlwaysOnStrategy
 import com.yonatankarp.feature4k.core.IdentifierFixtures.NON_EXISTENT
 import com.yonatankarp.feature4k.core.IdentifierFixtures.PROPERTY_UID
+import com.yonatankarp.feature4k.event.CollectorEventBus
+import com.yonatankarp.feature4k.event.Feature4KEvent
+import com.yonatankarp.feature4k.event.FeatureStoreEvent
 import com.yonatankarp.feature4k.exception.FeatureAlreadyExistException
 import com.yonatankarp.feature4k.exception.FeatureNotFoundException
 import com.yonatankarp.feature4k.exception.PropertyAlreadyExistException
@@ -16,8 +18,6 @@ import com.yonatankarp.feature4k.property.PropertyInt
 import com.yonatankarp.feature4k.property.PropertyString
 import com.yonatankarp.feature4k.security.DefaultAuthorizationManager
 import com.yonatankarp.feature4k.security.PermissionFixtures.READ_PERMISSIONS
-import com.yonatankarp.feature4k.store.FeatureStoreEvent
-import com.yonatankarp.feature4k.store.StoreEvent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -174,17 +174,16 @@ class Feature4KTest {
     @Test
     fun `check should publish event when publisher is configured`() = runTest {
         // Given
-        val events = mutableListOf<StoreEvent>()
-        val publisher = EventPublisher { events.add(it) }
-        val feature4k = Feature4K(eventPublisher = publisher)
+        val eventBus = CollectorEventBus<Feature4KEvent>()
+        val feature4k = Feature4K(eventBus = eventBus)
         feature4k.create(enabledFeature())
 
         // When
         feature4k["feature1"]
 
         // Then
-        assertEquals(1, events.size)
-        val event = events[0] as FeatureStoreEvent.Checked
+        assertEquals(1, eventBus.events.size)
+        val event = eventBus.events[0] as FeatureStoreEvent.Checked
         assertEquals("feature1", event.uid)
         assertEquals("true", event.value)
     }

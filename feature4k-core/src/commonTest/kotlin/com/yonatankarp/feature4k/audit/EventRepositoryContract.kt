@@ -12,7 +12,7 @@ import com.yonatankarp.feature4k.audit.EventFixtures.fullAuditEvent
 import com.yonatankarp.feature4k.audit.EventFixtures.propertyCreatedEvent
 import com.yonatankarp.feature4k.core.IdentifierFixtures.FEATURE_UID
 import com.yonatankarp.feature4k.core.IdentifierFixtures.NON_EXISTENT
-import com.yonatankarp.feature4k.store.FeatureStoreEvent
+import com.yonatankarp.feature4k.event.FeatureStoreEvent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlin.test.Test
