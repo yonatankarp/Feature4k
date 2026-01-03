@@ -1,12 +1,14 @@
-package com.yonatankarp.feature4k.store
+package com.yonatankarp.feature4k.event
 
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
 
 /**
- * Base interface for all store events.
+ * Base interface for all Feature4K events.
  *
- * Store events serve dual purposes:
+ * This interface is open for extension, allowing library users to create
+ * their own custom event types for application-specific needs.
+ *
+ * Events serve dual purposes:
  * 1. Real-time observation of changes through Flow (cache invalidation, UI updates)
  * 2. Persistent audit trail with full metadata (user, timestamp, source, etc.)
  *
@@ -22,12 +24,11 @@ import kotlinx.serialization.Serializable
  * @property value Additional value associated with the event (optional)
  * @property customProperties Additional custom metadata
  *
- * @see FeatureStoreEvent
- * @see PropertyStoreEvent
+ * @see com.yonatankarp.feature4k.event.FeatureStoreEvent
+ * @see com.yonatankarp.feature4k.event.PropertyStoreEvent
  * @author Yonatan Karp-Rudin
  */
-@Serializable
-sealed interface StoreEvent {
+interface Feature4KEvent {
     val uid: String
     val eventUid: String
     val timestamp: Instant

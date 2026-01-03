@@ -1,4 +1,4 @@
-package com.yonatankarp.feature4k.store
+package com.yonatankarp.feature4k.event
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -11,11 +11,11 @@ import kotlinx.serialization.Serializable
  *
  * For feature events, the [uid] field maps to [Feature.uid][com.yonatankarp.feature4k.core.Feature.uid].
  *
- * @see StoreEvent
+ * @see com.yonatankarp.feature4k.event.Feature4KEvent
  * @author Yonatan Karp-Rudin
  */
 @Serializable
-sealed interface FeatureStoreEvent : StoreEvent {
+sealed interface FeatureStoreEvent : Feature4KEvent {
 
     /**
      * Event emitted when a feature is created in the store.

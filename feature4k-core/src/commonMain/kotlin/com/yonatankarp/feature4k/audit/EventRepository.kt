@@ -1,6 +1,6 @@
 package com.yonatankarp.feature4k.audit
 
-import com.yonatankarp.feature4k.store.StoreEvent
+import com.yonatankarp.feature4k.event.Feature4KEvent
 import kotlinx.datetime.Instant
 
 /**
@@ -19,7 +19,7 @@ interface EventRepository {
      *
      * @param event The event to save
      */
-    suspend fun save(event: StoreEvent)
+    suspend fun save(event: Feature4KEvent)
 
     /**
      * Retrieves all events within a time range.
@@ -31,7 +31,7 @@ interface EventRepository {
     suspend fun findByTimeRange(
         start: Instant,
         end: Instant,
-    ): List<StoreEvent>
+    ): List<Feature4KEvent>
 
     /**
      * Retrieves all events for a specific feature or property.
@@ -39,14 +39,14 @@ interface EventRepository {
      * @param uid The unique identifier of the feature or property
      * @return List of events for the specified entity, ordered by timestamp
      */
-    suspend fun findByUid(uid: String): List<StoreEvent>
+    suspend fun findByUid(uid: String): List<Feature4KEvent>
 
     /**
      * Retrieves all events in the repository.
      *
      * @return List of all events, ordered by timestamp
      */
-    suspend fun findAll(): List<StoreEvent>
+    suspend fun findAll(): List<Feature4KEvent>
 
     /**
      * Retrieves events that match a custom filter predicate.
@@ -57,5 +57,5 @@ interface EventRepository {
      * @param predicate Filter function to apply to events
      * @return List of events matching the predicate, ordered by timestamp
      */
-    suspend fun findBy(predicate: (StoreEvent) -> Boolean): List<StoreEvent>
+    suspend fun findBy(predicate: (Feature4KEvent) -> Boolean): List<Feature4KEvent>
 }

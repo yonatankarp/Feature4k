@@ -1,10 +1,10 @@
 package com.yonatankarp.feature4k.store
 
 import com.yonatankarp.feature4k.core.Feature
+import com.yonatankarp.feature4k.event.FeatureStoreEvent
 import com.yonatankarp.feature4k.store.StoreFixtures.inMemoryFeatureStoreWithSharedFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
@@ -31,7 +31,7 @@ class InMemoryFeatureStoreTest : FeatureStoreContract() {
 
         // When
         val job = launch {
-            store.observeChanges().take(100).toList(events)
+            store.observeChanges().take(100).collect { events.add(it) }
         }
 
         repeat(50) { i ->
@@ -72,7 +72,7 @@ class InMemoryFeatureStoreTest : FeatureStoreContract() {
 
         // When
         val collectJob = launch {
-            store.observeChanges().take(expectedEvents).toList(events)
+            store.observeChanges().take(expectedEvents).collect { events.add(it) }
         }
 
         val jobs = List(featureCount) { i ->

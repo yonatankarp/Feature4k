@@ -1,4 +1,4 @@
-package com.yonatankarp.feature4k.store
+package com.yonatankarp.feature4k.event
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -10,11 +10,11 @@ import kotlinx.serialization.Serializable
  *
  * For property events, the [uid] field contains the property name identifier.
  *
- * @see StoreEvent
+ * @see Feature4KEvent
  * @author Yonatan Karp-Rudin
  */
 @Serializable
-sealed interface PropertyStoreEvent : StoreEvent {
+sealed interface PropertyStoreEvent : Feature4KEvent {
 
     /**
      * Event emitted when a property is created in the store.

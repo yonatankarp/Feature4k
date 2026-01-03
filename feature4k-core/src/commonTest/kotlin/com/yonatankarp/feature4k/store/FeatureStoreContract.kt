@@ -2,12 +2,12 @@ package com.yonatankarp.feature4k.store
 
 import com.yonatankarp.feature4k.core.Feature
 import com.yonatankarp.feature4k.core.IdentifierFixtures.NON_EXISTENT
+import com.yonatankarp.feature4k.event.FeatureStoreEvent
 import com.yonatankarp.feature4k.exception.FeatureAlreadyExistException
 import com.yonatankarp.feature4k.exception.FeatureNotFoundException
 import com.yonatankarp.feature4k.exception.GroupNotFoundException
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -576,12 +576,12 @@ abstract class FeatureStoreContract {
         // Given
         val store = createStore()
         val feature = Feature(uid = "test", enabled = true)
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
             launch {
-                store.observeChanges().take(1).toList(events)
+                store.observeChanges().take(1).collect { events.add(it) }
             }
         store += feature
         job.join()
@@ -596,7 +596,7 @@ abstract class FeatureStoreContract {
     fun `should emit Enabled event when feature is enabled`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -604,7 +604,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "test", enabled = false)
         store.enable("test")
@@ -620,7 +620,7 @@ abstract class FeatureStoreContract {
     fun `should emit Disabled event when feature is disabled`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -628,7 +628,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "test", enabled = true)
         store.disable("test")
@@ -644,7 +644,7 @@ abstract class FeatureStoreContract {
     fun `should emit Updated event when feature is updated`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -652,7 +652,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "test", enabled = true)
         store["test"] = Feature(uid = "test", enabled = false)
@@ -668,7 +668,7 @@ abstract class FeatureStoreContract {
     fun `should emit Deleted event when feature is deleted`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -676,7 +676,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "test", enabled = true)
         store -= "test"
@@ -692,7 +692,7 @@ abstract class FeatureStoreContract {
     fun `should emit RoleUpdated event when feature role is updated`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -700,7 +700,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "test", enabled = true)
         store.grantRoleOnFeature(featureId = "test", roleName = "testRole")
@@ -717,7 +717,7 @@ abstract class FeatureStoreContract {
     fun `should emit RoleDeleted event when feature role is removed`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -725,7 +725,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
 
         store += Feature(
@@ -750,7 +750,7 @@ abstract class FeatureStoreContract {
     fun `should emit Enabled events when group is enabled`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -758,7 +758,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(3) // Skip 3 Created events from setup
                     .take(2)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "feature1", enabled = false, group = "mygroup")
         store += Feature(uid = "feature2", enabled = false, group = "mygroup")
@@ -781,7 +781,7 @@ abstract class FeatureStoreContract {
     fun `should emit Disabled events when group is disabled`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -789,7 +789,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(3) // Skip 3 Created events from setup
                     .take(2)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "feature1", enabled = true, group = "mygroup")
         store += Feature(uid = "feature2", enabled = true, group = "mygroup")
@@ -817,7 +817,7 @@ abstract class FeatureStoreContract {
     fun `should emit Updated event when feature is added to group`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -825,7 +825,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "test", enabled = true)
         store.addToGroup("test", "mygroup")
@@ -841,7 +841,7 @@ abstract class FeatureStoreContract {
     fun `should emit Updated event when feature is removed from group`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -849,7 +849,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "test", enabled = true, group = "mygroup")
         store.removeFromGroup("test", "mygroup")
@@ -865,7 +865,7 @@ abstract class FeatureStoreContract {
     fun `should emit Deleted events when clearing all features`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         // When
         val job =
@@ -873,7 +873,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(3) // Skip 3 Created events from setup
                     .take(3)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(uid = "feature1", enabled = true)
         store += Feature(uid = "feature2", enabled = false)
@@ -905,7 +905,7 @@ abstract class FeatureStoreContract {
     fun `should emit Created events when importing features`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         val featuresToImport = listOf(
             Feature(uid = "new1", enabled = true),
@@ -915,7 +915,7 @@ abstract class FeatureStoreContract {
         // When
         val job =
             launch {
-                store.observeChanges().take(2).toList(events)
+                store.observeChanges().take(2).collect { events.add(it) }
             }
         store.importFeatures(featuresToImport)
         job.join()
@@ -931,7 +931,7 @@ abstract class FeatureStoreContract {
     fun `should emit Updated event when importing existing feature`() = runTest {
         // Given
         val store = createStore()
-        val events = mutableListOf<StoreEvent>()
+        val events = mutableListOf<FeatureStoreEvent>()
 
         val featuresToImport = listOf(
             Feature(
@@ -947,7 +947,7 @@ abstract class FeatureStoreContract {
                 store.observeChanges()
                     .drop(1) // Skip Created event from setup
                     .take(1)
-                    .toList(events)
+                    .collect { events.add(it) }
             }
         store += Feature(
             uid = "existing",

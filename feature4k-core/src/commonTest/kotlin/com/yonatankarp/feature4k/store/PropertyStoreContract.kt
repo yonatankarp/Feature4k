@@ -1,6 +1,7 @@
 package com.yonatankarp.feature4k.store
 
 import com.yonatankarp.feature4k.core.IdentifierFixtures.NON_EXISTENT
+import com.yonatankarp.feature4k.event.PropertyStoreEvent
 import com.yonatankarp.feature4k.exception.PropertyAlreadyExistException
 import com.yonatankarp.feature4k.exception.PropertyNotFoundException
 import com.yonatankarp.feature4k.property.PropertyBoolean
@@ -8,7 +9,6 @@ import com.yonatankarp.feature4k.property.PropertyInt
 import com.yonatankarp.feature4k.property.PropertyString
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -254,7 +254,7 @@ abstract class PropertyStoreContract {
 
         // When
         val job = launch {
-            store.observeChanges().take(1).toList(events)
+            store.observeChanges().take(1).collect { events.add(it) }
         }
         store += property
         job.join()
@@ -276,7 +276,7 @@ abstract class PropertyStoreContract {
             store.observeChanges()
                 .drop(1) // Skip Created event from setup
                 .take(1)
-                .toList(events)
+                .collect { events.add(it) }
         }
         store += PropertyString(name = "test", value = "original")
         store["test"] = PropertyString(name = "test", value = "updated")
@@ -299,7 +299,7 @@ abstract class PropertyStoreContract {
             store.observeChanges()
                 .drop(1) // Skip Created event from setup
                 .take(1)
-                .toList(events)
+                .collect { events.add(it) }
         }
         store += PropertyString(name = "test", value = "value")
         store -= "test"
@@ -322,7 +322,7 @@ abstract class PropertyStoreContract {
             store.observeChanges()
                 .drop(3) // Skip 3 Created events from setup
                 .take(3)
-                .toList(events)
+                .collect { events.add(it) }
         }
         store += PropertyString(name = "prop1", value = "value1")
         store += PropertyString(name = "prop2", value = "value2")
@@ -351,7 +351,7 @@ abstract class PropertyStoreContract {
 
         // When
         val job = launch {
-            store.observeChanges().take(2).toList(events)
+            store.observeChanges().take(2).collect { events.add(it) }
         }
         store.importProperties(propertiesToImport)
         job.join()
@@ -378,7 +378,7 @@ abstract class PropertyStoreContract {
             store.observeChanges()
                 .drop(1) // Skip Created event from setup
                 .take(1)
-                .toList(events)
+                .collect { events.add(it) }
         }
         store += PropertyString(name = "existing", value = "original")
         store.importProperties(propertiesToImport)

@@ -1,10 +1,11 @@
 package com.yonatankarp.feature4k.store
 
 import com.yonatankarp.feature4k.core.Feature
+import com.yonatankarp.feature4k.event.FeatureStoreEvent
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Repository interface for persisting and retrieving [Feature]s.
+ * Repository interface for persisting and retrieving [com.yonatankarp.feature4k.core.Feature]s.
  *
  * All operations are suspend functions to support asynchronous I/O across all platforms.
  * Store implementations can observe changes through [observeChanges] Flow.
@@ -23,7 +24,7 @@ interface FeatureStore {
      * Enable a feature by its unique identifier.
      *
      * @param featureId Unique feature identifier
-     * @throws FeatureNotFoundException if feature does not exist
+     * @throws com.yonatankarp.feature4k.exception.FeatureNotFoundException if feature does not exist
      */
     suspend fun enable(featureId: String)
 
@@ -31,7 +32,7 @@ interface FeatureStore {
      * Disable a feature by its unique identifier.
      *
      * @param featureId Unique feature identifier
-     * @throws FeatureNotFoundException if feature does not exist
+     * @throws com.yonatankarp.feature4k.exception.FeatureNotFoundException if feature does not exist
      */
     suspend fun disable(featureId: String)
 
@@ -49,7 +50,7 @@ interface FeatureStore {
      * Idiomatic Kotlin operator for addition: store += feature
      *
      * @param feature Feature to create
-     * @throws FeatureAlreadyExistException if feature already exists
+     * @throws com.yonatankarp.feature4k.exception.FeatureAlreadyExistException if feature already exists
      */
     suspend operator fun plusAssign(feature: Feature)
 
@@ -86,7 +87,7 @@ interface FeatureStore {
      * Idiomatic Kotlin operator for removal: store -= featureId
      *
      * @param featureId Unique feature identifier
-     * @throws FeatureNotFoundException if feature does not exist
+     * @throws com.yonatankarp.feature4k.exception.FeatureNotFoundException if feature does not exist
      */
     suspend operator fun minusAssign(featureId: String)
 
@@ -95,7 +96,7 @@ interface FeatureStore {
      *
      * @param featureId Unique feature identifier
      * @param roleName Role name to grant
-     * @throws FeatureNotFoundException if feature does not exist
+     * @throws com.yonatankarp.feature4k.exception.FeatureNotFoundException if feature does not exist
      */
     suspend fun grantRoleOnFeature(
         featureId: String,
@@ -107,7 +108,7 @@ interface FeatureStore {
      *
      * @param featureId Unique feature identifier
      * @param roleName Role name to remove
-     * @throws FeatureNotFoundException if feature does not exist
+     * @throws com.yonatankarp.feature4k.exception.FeatureNotFoundException if feature does not exist
      */
     suspend fun removeRoleFromFeature(
         featureId: String,
@@ -118,7 +119,7 @@ interface FeatureStore {
      * Enable all features in a group.
      *
      * @param groupName Group name
-     * @throws GroupNotFoundException if group does not exist
+     * @throws com.yonatankarp.feature4k.exception.GroupNotFoundException if group does not exist
      */
     suspend fun enableGroup(groupName: String)
 
@@ -126,7 +127,7 @@ interface FeatureStore {
      * Disable all features in a group.
      *
      * @param groupName Group name
-     * @throws GroupNotFoundException if group does not exist
+     * @throws com.yonatankarp.feature4k.exception.GroupNotFoundException if group does not exist
      */
     suspend fun disableGroup(groupName: String)
 
@@ -143,7 +144,7 @@ interface FeatureStore {
      *
      * @param groupName Group name
      * @return Map of feature IDs to Feature objects in the group
-     * @throws GroupNotFoundException if group does not exist
+     * @throws com.yonatankarp.feature4k.exception.GroupNotFoundException if group does not exist
      */
     suspend fun getGroup(groupName: String): Map<String, Feature>
 
@@ -152,7 +153,7 @@ interface FeatureStore {
      *
      * @param featureId Unique feature identifier
      * @param groupName Group name
-     * @throws FeatureNotFoundException if feature does not exist
+     * @throws com.yonatankarp.feature4k.exception.FeatureNotFoundException if feature does not exist
      */
     suspend fun addToGroup(
         featureId: String,
@@ -164,7 +165,7 @@ interface FeatureStore {
      *
      * @param featureId Unique feature identifier
      * @param groupName Group name
-     * @throws FeatureNotFoundException if feature does not exist
+     * @throws com.yonatankarp.feature4k.exception.FeatureNotFoundException if feature does not exist
      */
     suspend fun removeFromGroup(
         featureId: String,

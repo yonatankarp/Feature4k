@@ -1,6 +1,8 @@
 package com.yonatankarp.feature4k.core
 
-import com.yonatankarp.feature4k.audit.EventPublisher
+import com.yonatankarp.feature4k.event.EventBus
+import com.yonatankarp.feature4k.event.Feature4KEvent
+import com.yonatankarp.feature4k.event.FeatureStoreEvent
 import com.yonatankarp.feature4k.exception.FeatureAlreadyExistException
 import com.yonatankarp.feature4k.exception.FeatureNotFoundException
 import com.yonatankarp.feature4k.exception.PropertyAlreadyExistException
@@ -8,7 +10,6 @@ import com.yonatankarp.feature4k.exception.PropertyNotFoundException
 import com.yonatankarp.feature4k.property.Property
 import com.yonatankarp.feature4k.security.AuthorizationsManager
 import com.yonatankarp.feature4k.store.FeatureStore
-import com.yonatankarp.feature4k.store.FeatureStoreEvent
 import com.yonatankarp.feature4k.store.InMemoryFeatureStore
 import com.yonatankarp.feature4k.store.InMemoryPropertyStore
 import com.yonatankarp.feature4k.store.PropertyStore
@@ -30,7 +31,7 @@ import kotlinx.datetime.Clock
  * - [FeatureStore] - Persistent storage for features
  * - [PropertyStore] - Persistent storage for properties
  * - [AuthorizationsManager] - Permission checking for current user
- * - [EventPublisher] - Asynchronous event emission for audit trails
+ * - [EventBus] - Asynchronous event emission and observation for audit trails
  *
  * ## Usage
  *
@@ -48,7 +49,7 @@ import kotlinx.datetime.Clock
  *     featureStore = SqlDelightFeatureStore(database),
  *     propertyStore = SqlDelightPropertyStore(database),
  *     authorizationsManager = myAuthManager,
- *     eventPublisher = myEventPublisher,
+ *     eventBus = myEventBus,
  *     autoCreate = true
  * )
  * ```
@@ -64,7 +65,7 @@ import kotlinx.datetime.Clock
  * @property featureStore Storage backend for features (defaults to in-memory)
  * @property propertyStore Storage backend for properties (defaults to in-memory)
  * @property authorizationsManager Optional authorization provider for permission checks
- * @property eventPublisher Optional event publisher for audit trail
+ * @property eventBus Optional event bus for emitting and observing audit events (defaults to no-op)
  * @property autoCreate Whether to auto-create features when checking non-existent ones
  *
  * @author Yonatan Karp-Rudin
@@ -73,7 +74,7 @@ class Feature4K(
     private val featureStore: FeatureStore = InMemoryFeatureStore(),
     private val propertyStore: PropertyStore = InMemoryPropertyStore(),
     private val authorizationsManager: AuthorizationsManager? = null,
-    private val eventPublisher: EventPublisher? = null,
+    private val eventBus: EventBus<Feature4KEvent>? = null,
     private val autoCreate: Boolean = false,
 ) {
     /**
@@ -156,7 +157,7 @@ class Feature4K(
         result: Boolean,
         context: FlippingExecutionContext,
     ) {
-        eventPublisher?.publish(
+        eventBus?.emit(
             FeatureStoreEvent.Checked(
                 uid = featureId,
                 eventUid = Uid.generate(),

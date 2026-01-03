@@ -1,7 +1,9 @@
 package com.yonatankarp.feature4k.store
 
-import com.yonatankarp.feature4k.audit.emission.NoOpEventEmitter
-import com.yonatankarp.feature4k.audit.emission.StoreEventEmitter
+import com.yonatankarp.feature4k.event.EventBus
+import com.yonatankarp.feature4k.event.NoOpEventBus
+import com.yonatankarp.feature4k.event.PropertyEventFactory
+import com.yonatankarp.feature4k.event.PropertyStoreEvent
 import com.yonatankarp.feature4k.exception.PropertyAlreadyExistException
 import com.yonatankarp.feature4k.exception.PropertyNotFoundException
 import com.yonatankarp.feature4k.property.Property
@@ -24,12 +26,12 @@ import kotlinx.coroutines.sync.withLock
  * For production use with persistence requirements, consider using a database-backed
  * store implementation.
  *
- * @property eventEmitter Event emitter for publishing store changes (defaults to [NoOpEventEmitter])
+ * @property eventBus Event bus for publishing and observing store changes (defaults to [NoOpEventBus])
  * @property eventFactory Factory for creating property events with audit metadata
  * @author Yonatan Karp-Rudin
  */
 class InMemoryPropertyStore(
-    private val eventEmitter: StoreEventEmitter<PropertyStoreEvent> = NoOpEventEmitter(),
+    private val eventBus: EventBus<PropertyStoreEvent> = NoOpEventBus(),
     private val eventFactory: PropertyEventFactory = PropertyEventFactory.Default,
 ) : PropertyStore {
     private val properties = mutableMapOf<String, Property<*>>()
@@ -45,7 +47,7 @@ class InMemoryPropertyStore(
                 throw PropertyAlreadyExistException(property.name)
             }
             properties[property.name] = property
-            eventEmitter.emit(eventFactory.created(property.name))
+            eventBus.emit(eventFactory.created(property.name))
         }
     }
 
@@ -61,7 +63,7 @@ class InMemoryPropertyStore(
             val isUpdate = propertyName in properties
             properties[propertyName] = property
             val event = if (isUpdate) eventFactory.updated(propertyName) else eventFactory.created(propertyName)
-            eventEmitter.emit(event)
+            eventBus.emit(event)
         }
     }
 
@@ -75,7 +77,7 @@ class InMemoryPropertyStore(
                 throw PropertyNotFoundException(propertyName)
             }
             properties.remove(propertyName)
-            eventEmitter.emit(eventFactory.deleted(propertyName))
+            eventBus.emit(eventFactory.deleted(propertyName))
         }
     }
 
@@ -83,7 +85,7 @@ class InMemoryPropertyStore(
         mutex.withLock {
             val propertyNames = properties.keys.toList()
             properties.clear()
-            propertyNames.forEach { eventEmitter.emit(eventFactory.deleted(it)) }
+            propertyNames.forEach { eventBus.emit(eventFactory.deleted(it)) }
         }
     }
 
@@ -93,7 +95,7 @@ class InMemoryPropertyStore(
                 val isUpdate = this.properties.containsKey(property.name)
                 this.properties[property.name] = property
                 val event = if (isUpdate) eventFactory.updated(property.name) else eventFactory.created(property.name)
-                eventEmitter.emit(event)
+                eventBus.emit(event)
             }
         }
     }
@@ -102,5 +104,5 @@ class InMemoryPropertyStore(
         // No-op for in-memory store
     }
 
-    override fun observeChanges(): Flow<PropertyStoreEvent> = eventEmitter.observe()
+    override fun observeChanges(): Flow<PropertyStoreEvent> = eventBus.observe()
 }

@@ -5,8 +5,8 @@ import com.yonatankarp.feature4k.audit.AuditFixtures.LOCALHOST
 import com.yonatankarp.feature4k.audit.AuditFixtures.WEB_API_SOURCE
 import com.yonatankarp.feature4k.core.IdentifierFixtures.FEATURE_UID
 import com.yonatankarp.feature4k.core.IdentifierFixtures.PROPERTY_UID
-import com.yonatankarp.feature4k.store.FeatureStoreEvent
-import com.yonatankarp.feature4k.store.PropertyStoreEvent
+import com.yonatankarp.feature4k.event.FeatureStoreEvent
+import com.yonatankarp.feature4k.event.PropertyStoreEvent
 import com.yonatankarp.feature4k.utils.Uid
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

@@ -1,4 +1,4 @@
-package com.yonatankarp.feature4k.store
+package com.yonatankarp.feature4k.event
 
 import com.yonatankarp.feature4k.utils.Uid
 import kotlinx.datetime.Clock

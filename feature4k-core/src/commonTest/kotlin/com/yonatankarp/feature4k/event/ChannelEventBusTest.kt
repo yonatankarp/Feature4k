@@ -1,4 +1,4 @@
-package com.yonatankarp.feature4k.audit.emission
+package com.yonatankarp.feature4k.event
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -10,15 +10,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * Test suite for [ChannelEventEmitter].
+ * Test suite for [com.yonatankarp.feature4k.event.ChannelEventBus].
  *
  * @author Yonatan Karp-Rudin
  */
-class ChannelEventEmitterTest {
+class ChannelEventBusTest {
     @Test
     fun `should emit and observe events`() = runTest {
         // Given
-        val emitter = ChannelEventEmitter<String>()
+        val emitter = ChannelEventBus<String>()
         val expected = listOf("event1", "event2", "event3")
 
         // When
@@ -29,13 +29,13 @@ class ChannelEventEmitterTest {
         // Then
         val events = emitter.observe().take(3).toList()
         job.join()
-        assertEquals(expected, events, "ChannelEventEmitter should emit all events in order")
+        assertEquals(expected, events, "ChannelEventBus should emit all events in order")
     }
 
     @Test
     fun `should buffer events until consumed`() = runTest {
         // Given
-        val emitter = ChannelEventEmitter<String>()
+        val emitter = ChannelEventBus<String>()
 
         // When - emit events before observing
         emitter.emit("event1")
@@ -44,13 +44,13 @@ class ChannelEventEmitterTest {
 
         // Then
         val events = emitter.observe().take(3).toList()
-        assertEquals(listOf("event1", "event2", "event3"), events, "ChannelEventEmitter should buffer events until consumed")
+        assertEquals(listOf("event1", "event2", "event3"), events, "ChannelEventBus should buffer events until consumed")
     }
 
     @Test
     fun `should handle concurrent emissions without blocking`() = runTest {
         // Given
-        val emitter = ChannelEventEmitter<Int>()
+        val emitter = ChannelEventBus<Int>()
         val eventCount = 100
 
         // When
