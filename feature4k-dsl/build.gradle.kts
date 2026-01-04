@@ -12,6 +12,7 @@ kotlin {
         }
 
         commonTest.dependencies {
+            implementation(project(":feature4k-test"))
             implementation(libs.kotlinx.coroutines.test)
         }
     }
